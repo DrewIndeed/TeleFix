@@ -3,8 +3,6 @@
 App description here
 
 ## Members
-
-
 - Le Nguyen Truong An - s3820098
 - Nguyen Bao Khang - s3817970
 - Pham Cong Minh - s3818102
