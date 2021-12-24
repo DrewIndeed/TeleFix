@@ -7,4 +7,32 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Color Palette 1 -->
+    <color name="dark_blue">#1D37E4</color>
+    <color name="btn_blue">#3955E3</color>
+    <color name="blue">#0D4B71</color>
+    <color name="light_blue">#03A9F4</color>
+    <color name="xlight_blue">#70C0F1</color>
+    <color name="green">#14A24B</color>
+    <color name="light_green">#289E55</color>
+    <color name="light_gray">#DDDDDD</color>
+    <color name="xlight_gray">#9CE1E0E0</color>
+    <color name="xxlight_gray">#43E1E0E0</color>
+    <color name="gray">#878787</color>
+    <color name="faded_gray">#404040</color>
+    <color name="dark_delete">#AF1623</color>
+    <color name="middle_delete">#EA2435</color>
+    <color name="delete">#FF4A4A</color>
+    <color name="orange">#FF9800</color>
+    <color name="transparent">#00FF9800</color>
+    <color name="light_purple">#8539F3</color>
+
+    <!-- BMW Color Palette -->
+    <color name="bmw_light_blue">#4599FE</color>
+    <color name="bmw_dark_blue">#031E49</color>
+    <color name="bmw_red">#EE0406</color>
+    <color name="bmw_white">#FFFDFE</color>
+    <color name="bmw_dark_gray">#2D4046</color>
+    <color name="bmw_light_gray">#B8CAD1</color>
 </resources>
