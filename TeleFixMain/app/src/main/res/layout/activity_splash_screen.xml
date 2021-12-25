@@ -33,4 +33,21 @@
         android:layout_marginBottom="60dp"
         app:SpinKit_Color="#fffdfe" />
 
+    <Button
+        android:id="@+id/start_btn"
+        android:layout_width="243dp"
+        android:layout_height="61dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="77dp"
+        android:layout_marginEnd="73dp"
+        android:layout_marginBottom="62dp"
+        android:background="@drawable/custom_btn_bg_1"
+        android:backgroundTint="@null"
+        android:visibility="invisible"
+        android:text="Start"
+        android:textSize="18sp"
+        tools:ignore="HardcodedText" />
+
 </RelativeLayout>
