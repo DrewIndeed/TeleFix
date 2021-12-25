@@ -17,7 +17,7 @@
         android:layout_marginStart="80dp"
         android:layout_marginTop="178dp"
         android:layout_marginEnd="80dp"
-        android:background="@drawable/logo_white_2"
+        android:background="@drawable/logo"
         tools:ignore="ContentDescription" />
 
     <com.github.ybq.android.spinkit.SpinKitView
