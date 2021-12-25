@@ -16,6 +16,12 @@
         <item name="android:windowAnimationStyle">@style/ActivityAnim</item>
     </style>
 
+    <style name="CustomSwitchText">
+        <item name="android:textColor">@color/bmw_white</item>
+        <item name="android:textStyle">italic</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
     <style name="ActivityAnim" parent="@android:style/Animation.Activity">
         <item name="android:activityOpenEnterAnimation">@anim/slide_in</item>
         <item name="android:activityCloseEnterAnimation">@anim/slide_in</item>

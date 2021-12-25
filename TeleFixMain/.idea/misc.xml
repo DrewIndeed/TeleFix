@@ -4,8 +4,12 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable-hdpi/custom_btn_bg_2.xml" value="0.3104166666666667" />
+        <entry key="app/src/main/res/drawable-hdpi/ic_login_email.xml" value="0.2328125" />
         <entry key="app/src/main/res/drawable/custom_btn_bg_1.xml" value="0.3104166666666667" />
         <entry key="app/src/main/res/drawable/custom_btn_bg_3.xml" value="0.3104166666666667" />
+        <entry key="app/src/main/res/drawable/ic_nvg_home.xml" value="0.26846846846846845" />
+        <entry key="app/src/main/res/drawable/signup_thumb.xml" value="0.26846846846846845" />
+        <entry key="app/src/main/res/drawable/signup_track.xml" value="0.2693693693693694" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.28125" />
         <entry key="app/src/main/res/layout/activity_signup.xml" value="0.26157407407407407" />

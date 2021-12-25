@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/start_bg"
     tools:context=".SignUpActivity">
 
@@ -18,7 +19,7 @@
             android:layout_width="148dp"
             android:layout_height="125dp"
             android:layout_marginTop="44dp"
-            android:layout_marginBottom="50dp"
+            android:layout_marginBottom="20dp"
             android:background="@drawable/logo"
             tools:ignore="ContentDescription" />
 
@@ -106,6 +107,19 @@
             android:textColorHint="@color/light_gray"
             android:textStyle="italic"
             tools:ignore="HardcodedText,TextContrastCheck" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:textOff="Customer"
+            android:textOn="Mechanic"
+            android:textSize="20sp"
+            app:switchTextAppearance="@style/CustomSwitchText"
+            android:thumb="@drawable/signup_thumb"
+            app:showText="true"
+            app:track="@drawable/signup_track"
+            tools:ignore="HardcodedText" />
 
         <Button
             android:id="@+id/btn_signup"
