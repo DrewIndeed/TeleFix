@@ -9,16 +9,16 @@
     tools:context=".SignUpActivity">
 
     <ImageView
-        android:id="@+id/logo_above_signup"
+        android:id="@+id/logo_above_login"
         android:layout_width="148dp"
         android:layout_height="125dp"
         android:layout_marginTop="44dp"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="100dp"
         android:background="@drawable/logo"
         tools:ignore="ContentDescription" />
 
     <EditText
-        android:id="@+id/name_signup"
+        android:id="@+id/email_phone_login"
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:layout_marginLeft="15dp"
@@ -29,28 +29,7 @@
         android:drawablePadding="10dp"
         android:ems="10"
         android:gravity="center_vertical"
-        android:hint="Name"
-        android:importantForAutofill="no"
-        android:inputType="textPersonName"
-        android:padding="15dp"
-        android:textColor="@color/bmw_white"
-        android:textColorHint="@color/light_gray"
-        android:textStyle="italic"
-        tools:ignore="HardcodedText,TextContrastCheck" />
-
-    <EditText
-        android:id="@+id/email_signup"
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginRight="15dp"
-        android:background="@drawable/custom_btn_bg_2"
-        android:drawableStart="@drawable/ic_login_email"
-        android:drawablePadding="10dp"
-        android:ems="10"
-        android:gravity="center_vertical"
-        android:hint="Email"
+        android:hint="Email / Phone"
         android:importantForAutofill="no"
         android:inputType="textPersonName"
         android:padding="15dp"
@@ -60,28 +39,7 @@
         tools:ignore="HardcodedText,TextContrastCheck,TextFields" />
 
     <EditText
-        android:id="@+id/phone_signup"
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginRight="15dp"
-        android:background="@drawable/custom_btn_bg_2"
-        android:drawableStart="@drawable/ic_login_phone"
-        android:drawablePadding="10dp"
-        android:ems="10"
-        android:gravity="center_vertical"
-        android:hint="Phone"
-        android:importantForAutofill="no"
-        android:inputType="textPersonName"
-        android:padding="15dp"
-        android:textColor="@color/bmw_white"
-        android:textColorHint="@color/light_gray"
-        android:textStyle="italic"
-        tools:ignore="HardcodedText,TextContrastCheck,TextFields" />
-
-    <EditText
-        android:id="@+id/pwd_signup"
+        android:id="@+id/pwd_login"
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:layout_marginLeft="15dp"
@@ -102,14 +60,15 @@
         tools:ignore="HardcodedText,TextContrastCheck" />
 
     <Button
-        android:id="@+id/btn_signup"
+        android:id="@+id/btn_login"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_marginLeft="70dp"
         android:layout_marginTop="30dp"
         android:layout_marginRight="70dp"
+        android:layout_marginBottom="50dp"
         android:background="@drawable/custom_btn_bg_3"
-        android:text="Sign Up"
+        android:text="Login"
         android:textSize="17sp"
         tools:ignore="HardcodedText,TextContrastCheck" />
 
@@ -122,13 +81,13 @@
         android:background="@color/bmw_light_gray" />
 
     <TextView
-        android:id="@+id/jump_to_login"
+        android:id="@+id/jump_to_signup"
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:layout_marginBottom="40dp"
         android:gravity="center"
         android:letterSpacing=".15"
-        android:text="Already have an account?"
+        android:text="Not having an account yet?"
         android:textColor="@color/bmw_white"
         android:textSize="16sp"
         android:textStyle="bold"
