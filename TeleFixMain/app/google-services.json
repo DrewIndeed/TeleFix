@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "622933455642",
+    "project_id": "telefix-hd2021c",
+    "storage_bucket": "telefix-hd2021c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:622933455642:android:3e54c49e4e40419474b2a3",
+        "android_client_info": {
+          "package_name": "com.example.telefixmain"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "622933455642-j2418n8vba95ikvlupos13r9a9umr71j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdmkcB0wVKsc8U7q6FiIeIpcpxkJP7uLM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "622933455642-j2418n8vba95ikvlupos13r9a9umr71j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
