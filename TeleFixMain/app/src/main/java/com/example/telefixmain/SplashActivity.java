@@ -40,10 +40,11 @@ public class SplashActivity extends AppCompatActivity {
 
         // delay to change
         new Handler().postDelayed(() -> {
+            startBtn.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out));
             ((RelativeLayout) loadingAnim.getParent()).removeView(loadingAnim);
             startBtn.setVisibility(View.VISIBLE);
             startBtn.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
-        }, 5000);
+        }, 3000);
 
         // animation when start button is clicked
         startBtn.setOnClickListener(view -> {
