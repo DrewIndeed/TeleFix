@@ -43,7 +43,7 @@
         android:layout_marginStart="77dp"
         android:layout_marginEnd="73dp"
         android:layout_marginBottom="62dp"
-        android:background="@drawable/custom_btn_bg_1"
+        android:background="@drawable/custom_btn_bg_3"
         android:backgroundTint="@null"
         android:visibility="invisible"
         android:text="Start"

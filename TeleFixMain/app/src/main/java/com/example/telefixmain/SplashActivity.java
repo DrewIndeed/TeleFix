@@ -53,7 +53,7 @@ public class SplashActivity extends AppCompatActivity {
 
             new Handler().postDelayed(() -> {
                 // jump to Login/Sign up activity
-                Intent jumpToLogin = new Intent(this, LoginActivity.class);
+                Intent jumpToLogin = new Intent(this, SignUpActivity.class);
                 startActivity(jumpToLogin);
                 finish();
             }, 1000);
