@@ -18,7 +18,7 @@
             android:layout_width="148dp"
             android:layout_height="125dp"
             android:layout_marginTop="44dp"
-            android:layout_marginBottom="100dp"
+            android:layout_marginBottom="80dp"
             android:background="@drawable/logo"
             tools:ignore="ContentDescription" />
 
@@ -54,12 +54,12 @@
             android:drawableStart="@drawable/ic_login_pwd"
             android:drawableEnd="@drawable/ic_pwd_visibility_off"
             android:drawablePadding="10dp"
-            android:longClickable="false"
             android:ems="10"
             android:gravity="center_vertical"
             android:hint="Password"
             android:importantForAutofill="no"
             android:inputType="textPassword"
+            android:longClickable="false"
             android:padding="15dp"
             android:textColor="@color/bmw_white"
             android:textColorHint="@color/light_gray"

@@ -58,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
         // jump tp Sign Up
         jumpToSignup = findViewById(R.id.jump_to_signup);
         jumpToSignup.setOnClickListener(view -> {
-            jumpToSignup.setTextColor(getResources().getColor(R.color.teal_200));
+            jumpToSignup.setTextColor(getResources().getColor(R.color.orange));
             new Handler().postDelayed(() -> {
                 jumpToSignup.setTextColor(getResources().getColor(R.color.bmw_white));
                 startActivity(new Intent(this, SignUpActivity.class));
