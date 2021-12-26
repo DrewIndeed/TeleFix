@@ -1,12 +1,10 @@
 package com.example.telefixmain;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 
@@ -20,6 +18,10 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView botNav;
     RelativeLayout rlMain;
+
+    // keep track of fragments orders
+    int prevFragment = 1;
+    int currentFragment;
 
     @SuppressLint("NonConstantResourceId")
     @Override
@@ -39,9 +41,13 @@ public class MainActivity extends AppCompatActivity {
                 new HomeFragment()).commit();
         botNav.setSelectedItemId(R.id.nav_home);
 
-        // set listener for tabs changes
+        // on nav bar item selected listener
         botNav.setOnNavigationItemSelectedListener(item -> {
             Fragment fragmentContainer = null;
+            prevFragment = botNav.getSelectedItemId();
+            currentFragment = item.getItemId();
+
+            // return fragment according to item's id
             switch (item.getItemId()) {
                 case R.id.nav_home:
                     fragmentContainer = new HomeFragment();
@@ -56,9 +62,28 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
 
-            getSupportFragmentManager().beginTransaction().replace(R.id.rl_main,
-                    Objects.requireNonNull(fragmentContainer)).commit();
-
+            // generate animations according to fragment's order
+            if (prevFragment < currentFragment) {
+                getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(
+                                R.anim.enter_from_right,
+                                R.anim.exit_to_left,
+                                R.anim.enter_from_left,
+                                R.anim.exit_to_right
+                        )
+                        .replace(R.id.rl_main, Objects.requireNonNull(fragmentContainer))
+                        .commit();
+            } else if (prevFragment > currentFragment) {
+                getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(
+                                R.anim.enter_from_left,
+                                R.anim.exit_to_right,
+                                R.anim.enter_from_right,
+                                R.anim.exit_to_left
+                        )
+                        .replace(R.id.rl_main, Objects.requireNonNull(fragmentContainer))
+                        .commit();
+            }
             return true;
         });
     }
