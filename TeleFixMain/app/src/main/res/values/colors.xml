@@ -36,4 +36,5 @@
     <color name="bmw_dark_gray">#2D4046</color>
     <color name="bmw_light_gray">#B8CAD1</color>
     <color name="bmw_default_transparent">#4DFFFFFF</color>
+    <color name="bmw_transparent_1">#F2FFFFFF</color>
 </resources>
