@@ -1,6 +1,7 @@
 package com.example.telefixmain.Fragment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -12,9 +13,10 @@ import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 
 import com.example.telefixmain.R;
+import com.example.telefixmain.SosActivity;
 
 public class HomeFragment extends Fragment {
-    LinearLayout homeContent;
+    LinearLayout homeContent, jumpToSos;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -37,6 +39,10 @@ public class HomeFragment extends Fragment {
         homeContent.startAnimation(AnimationUtils.loadAnimation((Activity) getActivity(),
                 R.anim.fade_in));
 
+        // jump to sos activity
+        jumpToSos = root.findViewById(R.id.ll_sos_home);
+        jumpToSos.setOnClickListener(view -> startActivity(
+                new Intent((Activity) getActivity(), SosActivity.class)));
 
         // Inflate the layout for this fragment
         return root;

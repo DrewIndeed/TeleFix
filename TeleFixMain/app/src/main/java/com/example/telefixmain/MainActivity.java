@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.example.telefixmain.Fragment.HistoryFragment;
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         rlMain = findViewById(R.id.rl_main);
         rlMain.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
 
-        // binding with xml
+        // bottom navigation - binding with xml
         botNav = findViewById(R.id.bottom_nvg);
 
         // set default fragment
