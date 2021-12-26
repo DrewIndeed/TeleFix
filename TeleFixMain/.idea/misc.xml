@@ -19,7 +19,7 @@
         <entry key="app/src/main/res/layout/activity_signup.xml" value="0.26157407407407407" />
         <entry key="app/src/main/res/layout/activity_splash_screen.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_history.xml" value="0.2554054054054054" />
-        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.3033517548355349" />
+        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.2554054054054054" />
         <entry key="app/src/main/res/menu/item_menu.xml" value="0.2554054054054054" />
       </map>
