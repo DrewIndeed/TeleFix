@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.animation.AnimationUtils;
+import android.widget.RelativeLayout;
 
 import com.example.telefixmain.Fragment.HistoryFragment;
 import com.example.telefixmain.Fragment.HomeFragment;
@@ -17,12 +19,17 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView botNav;
+    RelativeLayout rlMain;
 
     @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // main content fade in
+        rlMain = findViewById(R.id.rl_main);
+        rlMain.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
 
         // binding with xml
         botNav = findViewById(R.id.bottom_nvg);

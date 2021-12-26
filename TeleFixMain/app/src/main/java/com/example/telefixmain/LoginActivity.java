@@ -35,16 +35,29 @@ public class LoginActivity extends AppCompatActivity {
         pwdLogin.setOnTouchListener((view, motionEvent) -> {
             final int right = 2;
             if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                if (motionEvent.getRawX() >= pwdLogin.getRight() - pwdLogin.getCompoundDrawables()[right].getBounds().width()) {
+                if (motionEvent.getRawX() >= pwdLogin.getRight() -
+                        pwdLogin.getCompoundDrawables()[right].getBounds().width()) {
                     int selection = pwdLogin.getSelectionEnd();
 
                     if (pwdIsVisible) {
-                        pwdLogin.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_login_pwd, 0, R.drawable.ic_pwd_visibility_off, 0);
-                        pwdLogin.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                        pwdLogin.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                                R.drawable.ic_login_pwd,
+                                0,
+                                R.drawable.ic_pwd_visibility_off,
+                                0);
+                        pwdLogin.setTransformationMethod(
+                                PasswordTransformationMethod.getInstance()
+                        );
                         pwdIsVisible = false;
                     } else {
-                        pwdLogin.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_login_pwd, 0, R.drawable.ic_pwd_visibility, 0);
-                        pwdLogin.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                        pwdLogin.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                                R.drawable.ic_login_pwd,
+                                0,
+                                R.drawable.ic_pwd_visibility,
+                                0);
+                        pwdLogin.setTransformationMethod(
+                                HideReturnsTransformationMethod.getInstance()
+                        );
                         pwdIsVisible = true;
                     }
 

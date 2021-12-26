@@ -37,16 +37,29 @@ public class SignUpActivity extends AppCompatActivity {
         pwdSignup.setOnTouchListener((view, motionEvent) -> {
             final int right = 2;
             if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                if (motionEvent.getRawX() >= pwdSignup.getRight() - pwdSignup.getCompoundDrawables()[right].getBounds().width()) {
+                if (motionEvent.getRawX() >= pwdSignup.getRight() -
+                        pwdSignup.getCompoundDrawables()[right].getBounds().width()) {
                     int selection = pwdSignup.getSelectionEnd();
 
                     if (pwdIsVisible) {
-                        pwdSignup.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_login_pwd, 0, R.drawable.ic_pwd_visibility_off, 0);
-                        pwdSignup.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                        pwdSignup.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                                R.drawable.ic_login_pwd,
+                                0,
+                                R.drawable.ic_pwd_visibility_off,
+                                0);
+                        pwdSignup.setTransformationMethod(
+                                PasswordTransformationMethod.getInstance()
+                        );
                         pwdIsVisible = false;
                     } else {
-                        pwdSignup.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_login_pwd, 0, R.drawable.ic_pwd_visibility, 0);
-                        pwdSignup.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                        pwdSignup.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                                R.drawable.ic_login_pwd,
+                                0,
+                                R.drawable.ic_pwd_visibility,
+                                0);
+                        pwdSignup.setTransformationMethod(
+                                HideReturnsTransformationMethod.getInstance()
+                        );
                         pwdIsVisible = true;
                     }
 
@@ -60,6 +73,7 @@ public class SignUpActivity extends AppCompatActivity {
         // login dummy button
         btnSignup = findViewById(R.id.btn_signup);
         btnSignup.setOnClickListener(view -> {
+            overridePendingTransition(0, 0);
             startActivity(new Intent(this, MainActivity.class));
             finish();
         });
