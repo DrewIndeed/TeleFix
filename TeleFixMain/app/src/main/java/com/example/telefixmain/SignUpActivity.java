@@ -21,7 +21,6 @@ public class SignUpActivity extends AppCompatActivity {
     TextView jumpToLogin;
     EditText pwdSignup;
     boolean pwdIsVisible = false;
-    Button btnSignup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +40,7 @@ public class SignUpActivity extends AppCompatActivity {
                         pwdSignup.getCompoundDrawables()[right].getBounds().width()) {
                     int selection = pwdSignup.getSelectionEnd();
 
+                    // change visibility icon and text edit displayed content
                     if (pwdIsVisible) {
                         pwdSignup.setCompoundDrawablesRelativeWithIntrinsicBounds(
                                 R.drawable.ic_login_pwd,
@@ -70,15 +70,7 @@ public class SignUpActivity extends AppCompatActivity {
             return false;
         });
 
-        // login dummy button
-        btnSignup = findViewById(R.id.btn_signup);
-        btnSignup.setOnClickListener(view -> {
-            overridePendingTransition(0, 0);
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-        });
-
-        // jump tp Login
+        // jump to Login Activity
         jumpToLogin = findViewById(R.id.jump_to_login);
         jumpToLogin.setOnClickListener(v -> {
             jumpToLogin.setTextColor(getResources().getColor(R.color.orange));
