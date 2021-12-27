@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 @SuppressLint("ClickableViewAccessibility")
 public class SignUpActivity extends AppCompatActivity {
+    // xml element containers
     LinearLayout llSignup;
     TextView jumpToLogin;
     EditText pwdSignup;
@@ -40,26 +41,35 @@ public class SignUpActivity extends AppCompatActivity {
                         pwdSignup.getCompoundDrawables()[right].getBounds().width()) {
                     int selection = pwdSignup.getSelectionEnd();
 
-                    // change visibility icon and text edit displayed content
                     if (pwdIsVisible) {
+                        // change visibility icon
                         pwdSignup.setCompoundDrawablesRelativeWithIntrinsicBounds(
                                 R.drawable.ic_login_pwd,
                                 0,
                                 R.drawable.ic_pwd_visibility_off,
                                 0);
+
+                        // change showing content
                         pwdSignup.setTransformationMethod(
                                 PasswordTransformationMethod.getInstance()
                         );
+
+                        // change state tracking variable
                         pwdIsVisible = false;
                     } else {
+                        // change visibility icon
                         pwdSignup.setCompoundDrawablesRelativeWithIntrinsicBounds(
                                 R.drawable.ic_login_pwd,
                                 0,
                                 R.drawable.ic_pwd_visibility,
                                 0);
+
+                        // change showing content
                         pwdSignup.setTransformationMethod(
                                 HideReturnsTransformationMethod.getInstance()
                         );
+
+                        // change state tracking variable
                         pwdIsVisible = true;
                     }
 

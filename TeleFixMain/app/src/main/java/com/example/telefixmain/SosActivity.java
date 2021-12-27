@@ -92,6 +92,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onBackPressed() {
+        // make it empty to prevent going back using the device's "Back" button
     }
 
     @Override

@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.example.telefixmain.Fragment.HistoryFragment;
@@ -48,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
             prevFragment = botNav.getSelectedItemId();
             currentFragment = item.getItemId();
 
-            // return fragment according to item's id
+            // return fragment instances according to item's id
             switch (item.getItemId()) {
                 case R.id.nav_home:
                     fragmentContainer = new HomeFragment();

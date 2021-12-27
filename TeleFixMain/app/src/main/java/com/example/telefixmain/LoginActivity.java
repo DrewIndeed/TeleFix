@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 @SuppressLint("ClickableViewAccessibility")
 public class LoginActivity extends AppCompatActivity {
+    // xml element containers
     LinearLayout llLogin;
     TextView jumpToSignup;
     Button btnLogIn;
@@ -88,12 +89,15 @@ public class LoginActivity extends AppCompatActivity {
         // signing in
         btnLogIn = findViewById(R.id.btn_login);
         inputEmail = findViewById(R.id.email_login);
-        btnLogIn.setOnClickListener(view -> signIn(
-                inputEmail.getText().toString(),
-                inputPwd.getText().toString())
-        );
+        btnLogIn.setOnClickListener(view -> {
+            try {
+                signIn(inputEmail.getText().toString(), inputPwd.getText().toString());
+            } catch (IllegalArgumentException | NullPointerException e) {
+                System.out.println(e.getMessage());
+            }
+        });
 
-        // jump tp Sign Up Activity
+        // jump to Sign Up Activity
         jumpToSignup = findViewById(R.id.jump_to_signup);
         jumpToSignup.setOnClickListener(view -> {
             jumpToSignup.setTextColor(getResources().getColor(R.color.orange));
@@ -111,7 +115,8 @@ public class LoginActivity extends AppCompatActivity {
      * @param email    : string from email text input
      * @param password : string from password text input
      */
-    private void signIn(String email, String password) {
+    private void signIn(String email, String password) throws IllegalArgumentException,
+            NullPointerException {
         // [START sign_in_with_email]
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
