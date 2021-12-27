@@ -102,8 +102,8 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     /**
-    * Method to construct and show bottom sheet dialog
-    */
+     * Method to construct and show bottom sheet dialog
+     */
     @SuppressLint("InflateParams")
     private void openBottomSheetDialog() {
         // layout inflater
@@ -112,7 +112,12 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
         bottomSheetDialog.setContentView(viewDialog);
         bottomSheetDialog.show();
 
+        // expand bottom dialog as default state
         BottomSheetBehavior.from((View) viewDialog.getParent()).setState(BottomSheetBehavior.STATE_EXPANDED);
+
+        // click close icon to dismiss dialog
+        viewDialog.findViewById(R.id.sheet_close_icon)
+                .setOnClickListener(view -> bottomSheetDialog.dismiss());
     }
 
     /**
