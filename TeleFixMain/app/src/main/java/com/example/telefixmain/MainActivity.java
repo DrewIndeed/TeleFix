@@ -87,4 +87,9 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        // make it empty to prevent going back using the device's "Back" button
+    }
 }
