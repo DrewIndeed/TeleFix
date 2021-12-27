@@ -12,6 +12,8 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -55,12 +57,19 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
     // define location of Ho Chi Minh City, Vietnam
     private final LatLng HO_CHI_MINH = new LatLng(10.8231, 106.6297);
 
+    // xml
+    RelativeLayout rlSos;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // binding with the layout for this activity
         setContentView(R.layout.activity_sos);
+
+        // main content fade in
+        rlSos = findViewById(R.id.rl_sos);
+        rlSos.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
 
         // binding the created fragment from xml file
         supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.google_map);
