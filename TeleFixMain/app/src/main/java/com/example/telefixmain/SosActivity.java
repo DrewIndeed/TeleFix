@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -81,6 +82,16 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
             ActivityCompat.requestPermissions(SosActivity.this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 200);
         }
+
+        // back to home fragment
+        findViewById(R.id.back_home_at_sos).setOnClickListener(view -> {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
     }
 
     @Override
