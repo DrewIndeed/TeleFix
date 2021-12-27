@@ -34,15 +34,23 @@ public class HomeFragment extends Fragment {
         ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_home,
                 container, false);
 
+        // get fragment's activity
+        Activity fragmentActivity = getActivity();
+
         // fade in content
         homeContent = root.findViewById(R.id.ll_home_fragment);
-        homeContent.startAnimation(AnimationUtils.loadAnimation((Activity) getActivity(),
+        homeContent.startAnimation(AnimationUtils.loadAnimation(getActivity(),
                 R.anim.fade_in));
 
         // jump to sos activity
         jumpToSos = root.findViewById(R.id.ll_sos_home);
-        jumpToSos.setOnClickListener(view -> startActivity(
-                new Intent((Activity) getActivity(), SosActivity.class)));
+        jumpToSos.setOnClickListener(view -> {
+            Intent intent = new Intent(fragmentActivity, SosActivity.class);
+            startActivity(intent);
+            if (fragmentActivity != null) {
+                fragmentActivity.finish();
+            }
+        });
 
         // Inflate the layout for this fragment
         return root;

@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -21,7 +22,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.Objects;
 
@@ -89,6 +93,26 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // enable the abilities to adjust zoom level
         mMap.getUiSettings().setZoomControlsEnabled(true);
+
+        // on map clicked listener
+        mMap.setOnMapClickListener(clickedLocation -> {
+            // open bottom sheet dialog
+            openBottomSheetDialog();
+        });
+    }
+
+    /**
+    * Method to construct and show bottom sheet dialog
+    */
+    @SuppressLint("InflateParams")
+    private void openBottomSheetDialog() {
+        // layout inflater
+        View viewDialog = getLayoutInflater().inflate(R.layout.map_bottom_sheet, null);
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        bottomSheetDialog.setContentView(viewDialog);
+        bottomSheetDialog.show();
+
+        BottomSheetBehavior.from((View) viewDialog.getParent()).setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     /**
@@ -135,6 +159,9 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
                     // move camera to that location
                     googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+
+                    // add dummy marker for testing map bottom sheet
+                    googleMap.addMarker(new MarkerOptions().position(currentLocation).title("Ho Chi Minh City"));
                 });
             } else { // if the last location does not exist
                 Log.d(TAG, "Current location is null. Using defaults.");
