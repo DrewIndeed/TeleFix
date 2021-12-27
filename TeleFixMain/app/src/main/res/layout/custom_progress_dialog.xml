@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="150dp"
+    android:layout_height="150dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/bmw_dark_blue"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <com.github.ybq.android.spinkit.SpinKitView
+        android:id="@+id/spin_kit_of_dialog"
+        style="@style/SpinKitView.Large.CubeGrid"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="35dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        app:SpinKit_Color="@color/bmw_white" />
+
+    <TextView
+        android:id="@+id/text_of_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginBottom="35dp"
+        android:text="Loading..."
+        android:textColor="@color/bmw_white"
+        tools:ignore="HardcodedText" />
+</LinearLayout>
