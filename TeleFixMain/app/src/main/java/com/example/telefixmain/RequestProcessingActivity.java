@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 
 import com.shuhart.stepview.StepView;
@@ -12,7 +13,7 @@ import com.shuhart.stepview.StepView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OnWayActivity extends AppCompatActivity {
+public class RequestProcessingActivity extends AppCompatActivity {
     // xml
     StepView stepView;
     Button goBtn, backBtn;
@@ -27,8 +28,7 @@ public class OnWayActivity extends AppCompatActivity {
 
         // binding with xml
         stepView = findViewById(R.id.step_view_on_way);
-        goBtn = findViewById(R.id.go_btn);
-        backBtn = findViewById(R.id.back_btn);
+        stepView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
 
         // add steps for step view
         List<String> steps = new ArrayList<>();
@@ -39,30 +39,26 @@ public class OnWayActivity extends AppCompatActivity {
         stepView.setSteps(steps);
 
         // animate going from step 1 to step 2
-        new Handler().postDelayed(() -> {
-            currentStep++;
-            stepView.go(currentStep, true);
-        }, 1000);
+        autoGo();
+    }
 
-        // buttons on click listeners
-        goBtn.setOnClickListener(view -> {
+    /**
+     * Method to auto increasing steps of step view
+     */
+    private void autoGo() {
+        new Handler().postDelayed(() -> {
             if (currentStep < stepView.getStepCount() - 1) {
                 currentStep++;
                 stepView.go(currentStep, true);
             } else {
                 stepView.done(true);
+                return;
             }
-        });
-
-        backBtn.setOnClickListener(view -> {
-            if (currentStep > 1) {
-                currentStep--;
-            }
-            stepView.done(false);
-            stepView.go(currentStep, true);
-        });
+            autoGo();
+        }, 1000);
     }
 
     @Override
-    public void onBackPressed() { }
+    public void onBackPressed() {
+    }
 }

@@ -14,7 +14,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -139,6 +138,9 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
             // get on site support
             bottomDialogView.findViewById(R.id.btn_on_site_support)
                     .setOnClickListener(view -> {
+                        // dismiss dialog before open a new one to avoid window leak
+                        sosBottomDialog.dismiss();
+
                         // waiting bottom dialog
                         View waitDialog = openBottomSheetDialog(
                                 R.layout.mechanic_waiting, R.id.mechanic_wait_close_icon);
@@ -173,7 +175,11 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
                             // jump to mechanic arrival tracking activity
                             new Handler().postDelayed(() -> {
-                                startActivity(new Intent(this, OnWayActivity.class));
+                                // dismiss dialog before open a new one to avoid window leak
+                                sosBottomDialog.dismiss();
+
+                                // start intent
+                                startActivity(new Intent(this, RequestProcessingActivity.class));
                                 finish();
                             }, 4000);
                         }, 3000);
