@@ -10,11 +10,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -31,6 +34,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.Objects;
+
+import pl.droidsonroids.gif.GifImageView;
 
 public class SosActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -59,6 +64,13 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
     // xml
     RelativeLayout rlSos;
+
+    // bottom dialog tracking
+    BottomSheetDialog sosBottomDialog;
+
+    // lottie anim
+    LottieAnimationView lotteAboveMsg;
+    GifImageView waitGif;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +116,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
         // make it empty to prevent going back using the device's "Back" button
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         // initialize mMap
@@ -124,8 +137,38 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
             // get on site support
             bottomDialogView.findViewById(R.id.btn_on_site_support)
                     .setOnClickListener(view -> {
-                        openBottomSheetDialog(
+                        // waiting bottom dialog
+                        View waitDialog = openBottomSheetDialog(
                                 R.layout.mechanic_waiting, R.id.mechanic_wait_close_icon);
+
+                        // animate msg
+                        TextView dialogMsg = waitDialog.findViewById(R.id.mechanic_wait_msg);
+                        dialogMsg.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
+
+                        // init waiting anim
+                        lotteAboveMsg = waitDialog.findViewById(R.id.done_waiting_anim);
+                        waitGif = waitDialog.findViewById(R.id.mechanic_wait_gif);
+
+                        // animate when found mechanic
+                        new Handler().postDelayed(() -> {
+                            // hide waiting gif
+                            waitGif.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out));
+
+                            // lottie done anim
+                            lotteAboveMsg.setVisibility(View.VISIBLE);
+                            lotteAboveMsg.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
+
+                            // change msg
+                            dialogMsg.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out));
+                            dialogMsg.setText("Request processed. Mechanic found.");
+                            dialogMsg.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
+
+                            // jump to mechanic arrival tracking activity
+                            new Handler().postDelayed(() -> {
+                                startActivity(new Intent(this, OnWayActivity.class));
+                                finish();
+                            }, 4000);
+                        }, 3000);
                     });
         });
     }
@@ -138,6 +181,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
         // layout inflater
         View viewDialog = getLayoutInflater().inflate(inflatedLayout, null);
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        sosBottomDialog = bottomSheetDialog;
         bottomSheetDialog.setContentView(viewDialog);
         bottomSheetDialog.show();
 
