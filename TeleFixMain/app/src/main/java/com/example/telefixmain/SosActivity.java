@@ -14,6 +14,8 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -151,6 +153,12 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
                         // animate when found mechanic
                         new Handler().postDelayed(() -> {
+                            // hide dialog dismiss ability
+                            ImageView closeDialogBtn = waitDialog.findViewById(R.id.mechanic_wait_close_icon);
+                            closeDialogBtn.setEnabled(false);
+                            closeDialogBtn.setVisibility(View.INVISIBLE);
+                            sosBottomDialog.setCancelable(false);
+
                             // hide waiting gif
                             waitGif.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out));
 
@@ -160,7 +168,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
                             // change msg
                             dialogMsg.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out));
-                            dialogMsg.setText("Request processed. Mechanic found.");
+                            dialogMsg.setText("Your mechanic is on his/her way!");
                             dialogMsg.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
 
                             // jump to mechanic arrival tracking activity

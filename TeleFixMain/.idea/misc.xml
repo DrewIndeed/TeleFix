@@ -28,7 +28,7 @@
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.28125" />
         <entry key="app/src/main/res/layout/activity_mechanic_wait.xml" value="0.55" />
-        <entry key="app/src/main/res/layout/activity_on_way.xml" value="0.12522522522522522" />
+        <entry key="app/src/main/res/layout/activity_on_way.xml" value="0.5" />
         <entry key="app/src/main/res/layout/activity_signup.xml" value="0.26157407407407407" />
         <entry key="app/src/main/res/layout/activity_sos.xml" value="0.5" />
         <entry key="app/src/main/res/layout/activity_splash_screen.xml" value="0.25" />
