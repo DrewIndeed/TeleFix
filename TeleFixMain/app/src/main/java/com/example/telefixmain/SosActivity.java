@@ -118,7 +118,15 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
         // on map clicked listener
         mMap.setOnMapClickListener(clickedLocation -> {
             // open bottom sheet dialog
-            openBottomSheetDialog();
+            View bottomDialogView = openBottomSheetDialog(
+                    R.layout.map_bottom_sheet, R.id.sheet_close_icon);
+
+            // get on site support
+            bottomDialogView.findViewById(R.id.btn_on_site_support)
+                    .setOnClickListener(view -> {
+                        openBottomSheetDialog(
+                                R.layout.mechanic_waiting, R.id.mechanic_wait_close_icon);
+                    });
         });
     }
 
@@ -126,19 +134,22 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
      * Method to construct and show bottom sheet dialog
      */
     @SuppressLint("InflateParams")
-    private void openBottomSheetDialog() {
+    private View openBottomSheetDialog(int inflatedLayout, int closeIcon) {
         // layout inflater
-        View viewDialog = getLayoutInflater().inflate(R.layout.map_bottom_sheet, null);
+        View viewDialog = getLayoutInflater().inflate(inflatedLayout, null);
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
         bottomSheetDialog.setContentView(viewDialog);
         bottomSheetDialog.show();
 
         // expand bottom dialog as default state
-        BottomSheetBehavior.from((View) viewDialog.getParent()).setState(BottomSheetBehavior.STATE_EXPANDED);
+        BottomSheetBehavior.from((View) viewDialog.getParent())
+                .setState(BottomSheetBehavior.STATE_EXPANDED);
 
         // click close icon to dismiss dialog
-        viewDialog.findViewById(R.id.sheet_close_icon)
+        viewDialog.findViewById(closeIcon)
                 .setOnClickListener(view -> bottomSheetDialog.dismiss());
+
+        return viewDialog;
     }
 
     /**
