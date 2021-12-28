@@ -44,4 +44,13 @@
         app:sv_stepLineWidth="2dp"
         app:sv_stepNumberTextSize="18sp"
         app:sv_stepPadding="5dp" />
+
+    <Button
+        android:id="@+id/to_payment_button"
+        android:layout_width="300dp"
+        android:layout_height="75dp"
+        android:background="@drawable/custom_btn_bg_7"
+        android:text="Proceed to Payment"
+        android:visibility="invisible"
+        tools:ignore="HardcodedText,TextContrastCheck" />
 </LinearLayout>

@@ -152,29 +152,29 @@ public class LoginActivity extends AppCompatActivity {
         // verifying log in info
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
-                            if (task.isSuccessful()) {
-                                // show msg and hide progress dialog
-                                new Handler().postDelayed(() -> {
-                                    cpd.dismiss();
-                                    Toast.makeText(this,
-                                            "Logged in successfully", Toast.LENGTH_SHORT).show();
+                    System.out.println("SUCCESS!!");
+                    if (task.isSuccessful()) {
+                        // show msg and hide progress dialog
+                        new Handler().postDelayed(() -> {
+                            cpd.dismiss();
+                            Toast.makeText(this,
+                                    "Logged in successfully", Toast.LENGTH_SHORT).show();
 
-                                    // jump into main activity
-                                    new Handler().postDelayed(() -> {
-                                        startActivity(new Intent(this, MainActivity.class));
-                                        finish();
-                                    }, 500);
-                                }, 1000);
-                            } else {
-                                // show msg and hide progress dialog
-                                new Handler().postDelayed(() -> {
-                                    cpd.dismiss();
-                                    Toast.makeText(this,
-                                            "Email or Password is incorrect", Toast.LENGTH_SHORT).show();
-                                }, 1000);
-                            }
-                        }
-                );
+                            // jump into main activity
+                            new Handler().postDelayed(() -> {
+                                startActivity(new Intent(this, MainActivity.class));
+                                finish();
+                            }, 500);
+                        }, 1000);
+                    } else {
+                        // show msg and hide progress dialog
+                        new Handler().postDelayed(() -> {
+                            cpd.dismiss();
+                            Toast.makeText(this,
+                                    "Email or Password is incorrect", Toast.LENGTH_SHORT).show();
+                        }, 1000);
+                    }
+                });
         // [END sign_in_with_email]
     }
 }

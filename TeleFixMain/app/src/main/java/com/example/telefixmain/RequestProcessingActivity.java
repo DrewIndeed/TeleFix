@@ -2,11 +2,11 @@ package com.example.telefixmain;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 
 import com.shuhart.stepview.StepView;
 
@@ -16,7 +16,6 @@ import java.util.List;
 public class RequestProcessingActivity extends AppCompatActivity {
     // xml
     StepView stepView;
-    Button goBtn, backBtn;
 
     // keep track of currentStep
     private int currentStep = 0;
@@ -24,7 +23,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_on_way);
+        setContentView(R.layout.activity_request_processing);
 
         // binding with xml
         stepView = findViewById(R.id.step_view_on_way);
@@ -52,6 +51,15 @@ public class RequestProcessingActivity extends AppCompatActivity {
                 stepView.go(currentStep, true);
             } else {
                 stepView.done(true);
+                findViewById(R.id.to_payment_button).setVisibility(View.VISIBLE);
+                findViewById(R.id.to_payment_button).startAnimation(
+                        AnimationUtils.loadAnimation(this, R.anim.fade_in));
+
+                // DUMMY
+                findViewById(R.id.to_payment_button).setOnClickListener(view -> {
+                    startActivity(new Intent(this, MainActivity.class));
+                    finish();
+                });
                 return;
             }
             autoGo();
