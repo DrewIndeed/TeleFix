@@ -1,6 +1,7 @@
 package com.example.telefixmain;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -9,11 +10,16 @@ import android.os.Handler;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 @SuppressLint("ClickableViewAccessibility")
 public class SignUpActivity extends AppCompatActivity {
@@ -22,6 +28,7 @@ public class SignUpActivity extends AppCompatActivity {
     TextView jumpToLogin;
     EditText pwdSignup;
     boolean pwdIsVisible = false;
+    SwitchCompat userTypeSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +85,25 @@ public class SignUpActivity extends AppCompatActivity {
                 }
             }
             return false;
+        });
+
+        // enable vendor id input based on user type
+        userTypeSwitch = findViewById(R.id.user_type_sign_up_switch);
+        findViewById(R.id.vendor_id_signup).setVisibility(View.GONE);
+        userTypeSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (b) {
+                findViewById(R.id.vendor_id_signup).setVisibility(View.VISIBLE);
+                findViewById(R.id.vendor_id_signup).startAnimation(
+                        AnimationUtils.loadAnimation(this, R.anim.fade_in)
+                );
+            } else {
+                findViewById(R.id.vendor_id_signup).startAnimation(
+                        AnimationUtils.loadAnimation(this, R.anim.fade_out)
+                );
+                new Handler().postDelayed(() -> {
+                    findViewById(R.id.vendor_id_signup).setVisibility(View.GONE);
+                }, 1000);
+            }
         });
 
         // jump to Login Activity

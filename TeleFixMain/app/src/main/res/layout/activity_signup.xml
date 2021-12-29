@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/start_bg"
     tools:context=".SignUpActivity">
 
     <LinearLayout
         android:id="@+id/ll_signup"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -108,16 +108,38 @@
             android:textStyle="italic"
             tools:ignore="HardcodedText,TextContrastCheck" />
 
+        <EditText
+            android:id="@+id/vendor_id_signup"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/custom_btn_bg_2"
+            android:drawableStart="@drawable/ic_login_apartment"
+            android:drawablePadding="10dp"
+            android:ems="10"
+            android:gravity="center_vertical"
+            android:hint="Vendor ID"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:padding="15dp"
+            android:textColor="@color/bmw_white"
+            android:textColorHint="@color/light_gray"
+            android:textStyle="italic"
+            tools:ignore="HardcodedText,TextContrastCheck,TextFields" />
+
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/user_type_sign_up_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:textOff="Customer"
             android:textOn="Mechanic"
             android:textSize="20sp"
-            app:switchTextAppearance="@style/CustomSwitchText"
             android:thumb="@drawable/signup_thumb"
             app:showText="true"
+            app:switchTextAppearance="@style/CustomSwitchText"
             app:track="@drawable/signup_track"
             tools:ignore="HardcodedText" />
 
@@ -146,13 +168,13 @@
             android:id="@+id/jump_to_login"
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="80dp"
             android:gravity="center"
             android:letterSpacing=".15"
             android:text="Already have an account?"
             android:textColor="@color/bmw_white"
             android:textSize="16sp"
             android:textStyle="bold"
-            tools:ignore="HardcodedText" />
+            tools:ignore="HardcodedText,TextContrastCheck" />
     </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
