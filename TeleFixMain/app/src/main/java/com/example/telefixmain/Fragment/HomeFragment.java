@@ -47,19 +47,15 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
         // init fragment activity
         fragmentActivity = getActivity();
 
         // init progress dialog
         cpd = new CustomProgressDialog(Objects.requireNonNull(fragmentActivity));
-    }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
         // root
         ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_home,
                 container, false);
@@ -76,7 +72,7 @@ public class HomeFragment extends Fragment {
         if (mUser != null) {
             DatabaseHandler.getSingleUser(
                     db,
-                    getActivity(),
+                    fragmentActivity,
                     mUser.getUid(),
                     userResult, () -> {
                         // render on ui
@@ -86,6 +82,8 @@ public class HomeFragment extends Fragment {
 
                             // render user name on UI
                             userName.setText(userResult.get(0).getName());
+                            userName.startAnimation(AnimationUtils.loadAnimation(fragmentActivity,
+                                    R.anim.fade_in));
                         }
                     }
             );
