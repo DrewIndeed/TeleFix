@@ -6,28 +6,22 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
 import com.example.telefixmain.Model.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class DatabaseHandler {
     public static void createUserOnDatabase(FirebaseFirestore db, Context context,
-                                     String id,
-                                     String name,
-                                     String phone,
-                                     String email,
-                                     boolean isMechanic,
-                                     String vendorId) {
+                                            String id,
+                                            String name,
+                                            String phone,
+                                            String email,
+                                            boolean isMechanic,
+                                            String vendorId) {
 
         // Create a new user
         HashMap<String, Object> data = new HashMap<>();
@@ -53,21 +47,29 @@ public class DatabaseHandler {
                 });
     }
 
-    public static void getSingleUser(FirebaseFirestore db, Context context, String id, ArrayList<User> resultContainer) {
+    public static void getSingleUser(FirebaseFirestore db, Context context,
+                                     String id, ArrayList<User> resultContainer,
+                                     Runnable callback) {
+        // document reference instance
         DocumentReference docRef = db.collection("users").document(id);
 
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    // Document found in the offline cache
-                    DocumentSnapshot document = task.getResult();
-                    User user = document.toObject(User.class);
-                    resultContainer.add(user);
-                    Toast.makeText(context,"Query user successfully", Toast.LENGTH_SHORT).show();
-                } else {
-                    Log.d(TAG, "Cached get failed: ", task.getException());
-                }
+        // start querying by id
+        docRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                // Document found in the offline cache
+                DocumentSnapshot document = task.getResult();
+                User user = document.toObject(User.class);
+
+                // add found user object to container
+                resultContainer.add(user);
+
+                // run call back function
+                callback.run();
+
+                // success msg
+                System.out.println("QUERY USER SUCCESSFULLY!");
+            } else {
+                Log.d(TAG, "Cached get failed: ", task.getException());
             }
         });
     }
