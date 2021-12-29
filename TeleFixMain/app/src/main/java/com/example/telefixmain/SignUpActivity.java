@@ -1,8 +1,5 @@
 package com.example.telefixmain;
 
-import static android.content.ContentValues.TAG;
-
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
@@ -21,12 +18,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.telefixmain.Dialog.CustomProgressDialog;
 import com.example.telefixmain.Util.DatabaseHandler;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Objects;
 
 @SuppressLint("ClickableViewAccessibility")
 public class SignUpActivity extends AppCompatActivity {
@@ -46,8 +43,11 @@ public class SignUpActivity extends AppCompatActivity {
     SwitchCompat userTypeSwitch;
     boolean isMechanic = false;
 
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    // progress dialog
+    CustomProgressDialog cpd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +57,9 @@ public class SignUpActivity extends AppCompatActivity {
         // sign up contents fade in
         llSignup = findViewById(R.id.ll_signup);
         llSignup.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
+
+        // init progress dialog
+        cpd = new CustomProgressDialog(this);
 
         // toggle password
         pwdSignup = findViewById(R.id.pwd_signup);
@@ -122,9 +125,9 @@ public class SignUpActivity extends AppCompatActivity {
                 vendorIdSignup.startAnimation(
                         AnimationUtils.loadAnimation(this, R.anim.fade_out)
                 );
-                new Handler().postDelayed(() -> {
-                    findViewById(R.id.vendor_id_signup).setVisibility(View.GONE);
-                }, 1000);
+                new Handler().postDelayed(() ->
+                                findViewById(R.id.vendor_id_signup).setVisibility(View.GONE),
+                        1000);
             }
         });
 
@@ -136,17 +139,29 @@ public class SignUpActivity extends AppCompatActivity {
 
         // Signup information
         btnSignUp = findViewById(R.id.btn_signup);
-        btnSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createAccount(emailSignup.getText().toString(), pwdSignup.getText().toString());
+        btnSignUp.setOnClickListener(view -> {
+            if ((userTypeSwitch.isChecked() && (nameSignup.getText().toString().equals("")
+                    || emailSignup.getText().toString().equals("")
+                    || phoneSignup.getText().toString().equals("")
+                    || pwdSignup.getText().toString().equals("")
+                    || vendorIdSignup.getText().toString().equals("")))
+                    ||
+                    (!userTypeSwitch.isChecked() && (nameSignup.getText().toString().equals("")
+                            || emailSignup.getText().toString().equals("")
+                            || phoneSignup.getText().toString().equals("")
+                            || pwdSignup.getText().toString().equals("")))
+            ) {
 
+                Toast.makeText(this,
+                        "Please fill in all information!", Toast.LENGTH_SHORT).show();
+            } else {
+                createAccount(emailSignup.getText().toString(), pwdSignup.getText().toString());
             }
         });
 
         // jump to Login Activity
         jumpToLogin = findViewById(R.id.jump_to_login);
-        jumpToLogin.setOnClickListener(v -> {
+        jumpToLogin.setOnClickListener(view -> {
             jumpToLogin.setTextColor(getResources().getColor(R.color.orange));
             new Handler().postDelayed(() -> {
                 jumpToLogin.setTextColor(getResources().getColor(R.color.bmw_white));
@@ -159,31 +174,52 @@ public class SignUpActivity extends AppCompatActivity {
 
     private void createAccount(String email, String password) {
         // [START create_user_with_email]
+
+        // show progress dialog
+        cpd.changeText("Singing up ...");
+        cpd.show();
+
         mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // sign up success, create user on Firestore database
-                            String id = mAuth.getCurrentUser().getUid();
-                            String email = mAuth.getCurrentUser().getEmail();
-                            DatabaseHandler.createUserOnDatabase(db,SignUpActivity.this,
-                                    id,
-                                    nameSignup.getText().toString(),
-                                    phoneSignup.getText().toString(),
-                                    email,
-                                    isMechanic,
-                                    vendorIdSignup.getText().toString());
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // sign up success, create user on Firestore database
+                        String id = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+                        String email1 = mAuth.getCurrentUser().getEmail();
+                        DatabaseHandler.createUserOnDatabase(db, SignUpActivity.this,
+                                id,
+                                nameSignup.getText().toString(),
+                                phoneSignup.getText().toString(),
+                                email1,
+                                isMechanic,
+                                vendorIdSignup.getText().toString());
+
+                        // show msg and hide progress dialog
+                        new Handler().postDelayed(() -> {
+                            cpd.dismiss();
+                            Toast.makeText(this,
+                                    "Signed up successfully!", Toast.LENGTH_SHORT).show();
+
                             // jump into main activity
                             new Handler().postDelayed(() -> {
-                                startActivity(new Intent(SignUpActivity.this, MainActivity.class));
+                                startActivity(new Intent(this, LoginActivity.class));
                                 finish();
                             }, 500);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Toast.makeText(SignUpActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
+                        }, 1000);
+                    } else {
+                        // If sign up fails, display a message to the user.
+                        new Handler().postDelayed(() -> {
+                            cpd.dismiss();
+                            Toast.makeText(this,
+                                    "Signed up failed!", Toast.LENGTH_SHORT).show();
+                        }, 1000);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    System.out.println(e.getMessage());
+                    if ((Objects.requireNonNull(e.getMessage()))
+                            .equals("The email address is already in use by another account.")) {
+                        Toast.makeText(this,
+                                "Email is already in use!", Toast.LENGTH_SHORT).show();
                     }
                 });
         // [END create_user_with_email]
