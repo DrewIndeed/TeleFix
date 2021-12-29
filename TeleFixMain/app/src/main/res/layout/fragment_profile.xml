@@ -9,6 +9,8 @@
     tools:context=".Fragment.ProfileFragment">
 
     <LinearLayout
+        android:id="@+id/ll_profile"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
@@ -169,8 +171,8 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="20dp"
             android:layout_marginLeft="30dp"
+            android:layout_marginTop="20dp"
             android:layout_marginRight="30dp"
             android:background="@color/bmw_light_gray" />
 
