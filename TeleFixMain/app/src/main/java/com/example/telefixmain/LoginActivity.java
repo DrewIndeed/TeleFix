@@ -152,13 +152,13 @@ public class LoginActivity extends AppCompatActivity {
         // verifying log in info
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
-                    System.out.println("SUCCESS!!");
+                    System.out.println("LOGIN VERIFIED COMPLETED!");
                     if (task.isSuccessful()) {
                         // show msg and hide progress dialog
                         new Handler().postDelayed(() -> {
                             cpd.dismiss();
                             Toast.makeText(this,
-                                    "Logged in successfully", Toast.LENGTH_SHORT).show();
+                                    "Logged in successfully!", Toast.LENGTH_SHORT).show();
 
                             // jump into main activity
                             new Handler().postDelayed(() -> {
@@ -171,7 +171,7 @@ public class LoginActivity extends AppCompatActivity {
                         new Handler().postDelayed(() -> {
                             cpd.dismiss();
                             Toast.makeText(this,
-                                    "Email or Password is incorrect", Toast.LENGTH_SHORT).show();
+                                    "Email or Password is incorrect!", Toast.LENGTH_SHORT).show();
                         }, 1000);
                     }
                 });

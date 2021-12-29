@@ -1,5 +1,7 @@
 package com.example.telefixmain.Model;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 
 public class User {
@@ -67,5 +69,18 @@ public class User {
 
     public void setRegisteredVehicles(ArrayList<String> registeredVehicles) {
         this.registeredVehicles = registeredVehicles;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", isVendor=" + isVendor +
+                ", vendorId='" + vendorId + '\'' +
+                '}';
     }
 }
