@@ -167,7 +167,8 @@
             android:layout_height="50dp"
             android:layout_marginTop="30dp"
             android:layout_marginBottom="40dp"
-            android:background="@drawable/custom_btn_bg_2"
+            android:visibility="gone"
+            android:background="@drawable/custom_btn_bg_8"
             android:text="Update profile"
             tools:ignore="HardcodedText,TextContrastCheck" />
 

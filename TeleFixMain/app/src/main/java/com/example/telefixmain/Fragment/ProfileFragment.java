@@ -107,13 +107,13 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                updateProfileBtn.setBackground(getResources().getDrawable(R.drawable.custom_btn_bg_2));
+                updateProfileBtn.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (!profileEmail.getText().toString().equals(userResult.get(0).getEmail()))
-                    updateProfileBtn.setBackground(getResources().getDrawable(R.drawable.custom_btn_bg_8));
+                if (profileEmail.getText().toString().equals(userResult.get(0).getEmail()))
+                    updateProfileBtn.setVisibility(View.GONE);
             }
         });
 
@@ -125,13 +125,13 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                updateProfileBtn.setBackground(getResources().getDrawable(R.drawable.custom_btn_bg_2));
+                updateProfileBtn.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (!profileName.getText().toString().equals(userResult.get(0).getName()))
-                    updateProfileBtn.setBackground(getResources().getDrawable(R.drawable.custom_btn_bg_8));
+                if (profileName.getText().toString().equals(userResult.get(0).getName()))
+                    updateProfileBtn.setVisibility(View.GONE);
             }
         });
 
@@ -143,13 +143,13 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                updateProfileBtn.setBackground(getResources().getDrawable(R.drawable.custom_btn_bg_2));
+                updateProfileBtn.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (!profilePhone.getText().toString().equals(userResult.get(0).getPhone()))
-                    updateProfileBtn.setBackground(getResources().getDrawable(R.drawable.custom_btn_bg_8));
+                if (profilePhone.getText().toString().equals(userResult.get(0).getPhone()))
+                    updateProfileBtn.setVisibility(View.GONE);
             }
         });
 
