@@ -62,6 +62,7 @@ public class HomeFragment extends Fragment {
 
         // fade in content
         homeContent = root.findViewById(R.id.ll_home_fragment);
+        homeContent.setVisibility(View.VISIBLE);
         homeContent.startAnimation(AnimationUtils.loadAnimation(fragmentActivity,
                 R.anim.fade_in));
 
