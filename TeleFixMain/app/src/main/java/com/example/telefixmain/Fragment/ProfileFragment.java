@@ -2,6 +2,7 @@ package com.example.telefixmain.Fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -16,12 +17,15 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.telefixmain.Dialog.CustomProgressDialog;
+import com.example.telefixmain.LoginActivity;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.DatabaseHandler;
+import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,6 +40,7 @@ public class ProfileFragment extends Fragment {
     LinearLayout profileContent;
     EditText profileName, profileEmail, profilePhone;
     Button updateProfileBtn, changePwdBtn;
+    TextView signOut;
 
     // progress dialog
     CustomProgressDialog cpd;
@@ -86,6 +91,7 @@ public class ProfileFragment extends Fragment {
         profilePhone = root.findViewById(R.id.et_profile_phone);
         // auto fill edit text
         if (mUser != null) {
+            // get user from database and fill in text inputs
             DatabaseHandler.getSingleUser(
                     db,
                     fragmentActivity,
@@ -103,6 +109,32 @@ public class ProfileFragment extends Fragment {
                         }
                     }
             );
+
+            // log out
+            signOut = root.findViewById(R.id.tv_sign_out);
+            signOut.setOnClickListener(view -> {
+                AuthUI.getInstance()
+                        .signOut(fragmentActivity)
+                        .addOnCompleteListener(task -> {
+                            // dialog to show signing out
+                            cpd.changeText("Signing out ...");
+                            cpd.show();
+
+                            new Handler().postDelayed(() -> {
+                                // dismiss dialog
+                                cpd.dismiss();
+
+                                // jump to log in activity
+                                new Handler().postDelayed(() -> {
+                                    // user is now signed out
+                                    Toast.makeText(fragmentActivity, "Singed out successfully!",
+                                            Toast.LENGTH_SHORT).show();
+                                    startActivity(new Intent(fragmentActivity, LoginActivity.class));
+                                    fragmentActivity.finish();
+                                }, 500);
+                            }, 1000);
+                        });
+            });
         }
 
         // update button related
