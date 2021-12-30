@@ -10,7 +10,6 @@
 
     <LinearLayout
         android:id="@+id/ll_profile"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
@@ -59,6 +58,7 @@
                 tools:ignore="HardcodedText,TextContrastCheck" />
 
             <EditText
+                android:id="@+id/tv_profile_name"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginLeft="20dp"
@@ -68,7 +68,7 @@
                 android:importantForAutofill="no"
                 android:inputType="textPersonName"
                 android:padding="20dp"
-                android:text="Andrew Le Nguyen"
+                android:text="User's name"
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 tools:ignore="HardcodedText,LabelFor,TextContrastCheck" />
@@ -93,6 +93,7 @@
                 tools:ignore="HardcodedText,TextContrastCheck" />
 
             <EditText
+                android:id="@+id/tv_profile_email"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginLeft="20dp"
@@ -102,10 +103,10 @@
                 android:importantForAutofill="no"
                 android:inputType="textPersonName"
                 android:padding="20dp"
-                android:text="truongan1730@gmail.com"
+                android:text="User's email"
                 android:textColor="@color/white"
                 android:textSize="18sp"
-                tools:ignore="HardcodedText,LabelFor" />
+                tools:ignore="HardcodedText,LabelFor,TextFields" />
         </LinearLayout>
 
         <LinearLayout
@@ -127,6 +128,7 @@
                 tools:ignore="HardcodedText" />
 
             <EditText
+                android:id="@+id/tv_profile_phone"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginLeft="20dp"
@@ -136,10 +138,10 @@
                 android:importantForAutofill="no"
                 android:inputType="textPersonName"
                 android:padding="20dp"
-                android:text="+84 79 330 7576"
+                android:text="User's phone"
                 android:textColor="@color/bmw_white"
                 android:textSize="18sp"
-                tools:ignore="HardcodedText,LabelFor" />
+                tools:ignore="HardcodedText,LabelFor,TextFields" />
         </LinearLayout>
 
         <View
