@@ -112,29 +112,27 @@ public class ProfileFragment extends Fragment {
 
             // log out
             signOut = root.findViewById(R.id.tv_sign_out);
-            signOut.setOnClickListener(view -> {
-                AuthUI.getInstance()
-                        .signOut(fragmentActivity)
-                        .addOnCompleteListener(task -> {
-                            // dialog to show signing out
-                            cpd.changeText("Signing out ...");
-                            cpd.show();
+            signOut.setOnClickListener(view -> AuthUI.getInstance()
+                    .signOut(fragmentActivity)
+                    .addOnCompleteListener(task -> {
+                        // dialog to show signing out
+                        cpd.changeText("Signing out ...");
+                        cpd.show();
 
+                        new Handler().postDelayed(() -> {
+                            // dismiss dialog
+                            cpd.dismiss();
+
+                            // jump to log in activity
                             new Handler().postDelayed(() -> {
-                                // dismiss dialog
-                                cpd.dismiss();
-
-                                // jump to log in activity
-                                new Handler().postDelayed(() -> {
-                                    // user is now signed out
-                                    Toast.makeText(fragmentActivity, "Singed out successfully!",
-                                            Toast.LENGTH_SHORT).show();
-                                    startActivity(new Intent(fragmentActivity, LoginActivity.class));
-                                    fragmentActivity.finish();
-                                }, 500);
-                            }, 1000);
-                        });
-            });
+                                // user is now signed out
+                                Toast.makeText(fragmentActivity, "Singed out successfully!",
+                                        Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(fragmentActivity, LoginActivity.class));
+                                fragmentActivity.finish();
+                            }, 500);
+                        }, 1000);
+                    }));
         }
 
         // update button related
