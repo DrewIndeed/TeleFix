@@ -30,19 +30,19 @@ public class SignUpActivity extends AppCompatActivity {
     // xml element containers
     LinearLayout llSignup;
     TextView jumpToLogin;
-
     EditText nameSignup;
     EditText pwdSignup;
     EditText emailSignup;
     EditText phoneSignup;
     EditText vendorIdSignup;
-
     Button btnSignUp;
 
+    // about password
     boolean pwdIsVisible = false;
     SwitchCompat userTypeSwitch;
     boolean isMechanic = false;
 
+    // database objects
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -140,6 +140,7 @@ public class SignUpActivity extends AppCompatActivity {
         // Signup information
         btnSignUp = findViewById(R.id.btn_signup);
         btnSignUp.setOnClickListener(view -> {
+            // check fields if they are empty
             if ((userTypeSwitch.isChecked() && (nameSignup.getText().toString().equals("")
                     || emailSignup.getText().toString().equals("")
                     || phoneSignup.getText().toString().equals("")
@@ -172,6 +173,12 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Method to get user verified from Firebase Authentication and sign up
+     *
+     * @param email    : string from email text input
+     * @param password : string from password text input
+     */
     private void createAccount(String email, String password) {
         // [START create_user_with_email]
 

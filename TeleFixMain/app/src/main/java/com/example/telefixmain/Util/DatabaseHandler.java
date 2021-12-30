@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DatabaseHandler {
+    /**
+     * Method to create new user on database
+     */
     public static void createUserOnDatabase(FirebaseFirestore db, Context context,
                                             String id,
                                             String name,
@@ -47,6 +50,9 @@ public class DatabaseHandler {
                 });
     }
 
+    /**
+     * Method to get single user from database based on id
+     */
     public static void getSingleUser(FirebaseFirestore db, Context context,
                                      String id, ArrayList<User> resultContainer,
                                      Runnable callback) {

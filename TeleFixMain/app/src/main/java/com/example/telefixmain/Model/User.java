@@ -9,10 +9,8 @@ public class User {
     private String name;
     private String email;
     private String phone;
-
     private boolean isVendor;
     private String vendorId;
-
     private ArrayList<String> registeredVehicles;
 
     public String getId() {
