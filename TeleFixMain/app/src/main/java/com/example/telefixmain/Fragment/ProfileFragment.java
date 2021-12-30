@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -15,11 +16,14 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.example.telefixmain.Dialog.CustomProgressDialog;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.DatabaseHandler;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -31,7 +35,7 @@ public class ProfileFragment extends Fragment {
     // xml
     LinearLayout profileContent;
     EditText profileName, profileEmail, profilePhone;
-    Button updateProfileBtn;
+    Button updateProfileBtn, changePwdBtn;
 
     // progress dialog
     CustomProgressDialog cpd;
@@ -44,6 +48,12 @@ public class ProfileFragment extends Fragment {
     // Global Arraylist to store result
     ArrayList<User> userResult = new ArrayList<>();
 
+    // bottom dialog tracking
+    BottomSheetDialog pwdChangeBottomDialog;
+
+    // fragment's activity
+    Activity fragmentActivity;
+
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -53,7 +63,7 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // fragment activity
-        Activity fragmentActivity = getActivity();
+        fragmentActivity = getActivity();
 
         // init progress dialog
         cpd = new CustomProgressDialog(Objects.requireNonNull(fragmentActivity));
@@ -153,7 +163,116 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        // show change pwd change dialog
+        changePwdBtn = root.findViewById(R.id.btn_change_pwd);
+        changePwdBtn.setOnClickListener(view -> {
+            // show bottom sheet dialog to change password
+            View changePwdDialog = openPwdChangeBottomSheetDialog(
+                    R.layout.change_password_dialog, R.id.pwd_change_close_icon);
+
+            // password edit texts
+            EditText currentPwdInput = changePwdDialog.findViewById(R.id.et_enter_current_pwd);
+            EditText newPwdInput = changePwdDialog.findViewById(R.id.et_enter_new_pwd);
+
+            // read update button click
+            Button updatePwdBtn = changePwdDialog.findViewById(R.id.btn_start_update_pwd);
+            updatePwdBtn.setOnClickListener(subview -> {
+                try {
+                    if (newPwdInput.getText().toString().equals("")
+                            || newPwdInput.getText().toString().length() < 6) {
+                        // show msg on screen
+                        Toast.makeText(fragmentActivity,
+                                "New password's length: 6",
+                                Toast.LENGTH_SHORT).show();
+                    } else {
+                        // call verifying log in method
+                        signInFromPwdChangeDialog(userResult.get(0).getEmail(),
+                                currentPwdInput.getText().toString(), () -> {
+                                    // show msg on screen
+                                    Toast.makeText(fragmentActivity,
+                                            "New password is: "
+                                                    + newPwdInput.getText().toString(),
+                                            Toast.LENGTH_SHORT).show();
+                                });
+                    }
+                } catch (IllegalArgumentException | NullPointerException e) {
+                    // hide progress dialog
+                    cpd.dismiss();
+
+                    // print error
+                    System.out.println(e.getMessage());
+
+                    // show msg on screen
+                    Toast.makeText(fragmentActivity,
+                            "Current password is empty!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
         // Inflate the layout for this fragment
         return root;
+    }
+
+    /**
+     * Method to construct and show bottom sheet dialog
+     */
+    @SuppressLint("InflateParams")
+    private View openPwdChangeBottomSheetDialog(int inflatedLayout, int closeIcon) {
+        // layout inflater
+        View viewDialog = getLayoutInflater().inflate(inflatedLayout, null);
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(fragmentActivity);
+        pwdChangeBottomDialog = bottomSheetDialog;
+        bottomSheetDialog.setContentView(viewDialog);
+        bottomSheetDialog.show();
+
+        // expand bottom dialog as default state
+        BottomSheetBehavior.from((View) viewDialog.getParent())
+                .setState(BottomSheetBehavior.STATE_EXPANDED);
+
+        // click close icon to dismiss dialog
+        viewDialog.findViewById(closeIcon)
+                .setOnClickListener(view -> bottomSheetDialog.dismiss());
+
+        return viewDialog;
+    }
+
+    /**
+     * Method to get user verified from Firebase Authentication and log in
+     *
+     * @param email    : string from email text input
+     * @param password : string from password text input
+     */
+    private void signInFromPwdChangeDialog(String email, String password, Runnable callback)
+            throws IllegalArgumentException, NullPointerException {
+        // [START sign_in_with_email]
+
+        // show progress dialog
+        cpd.changeText("Verifying before update ...");
+        cpd.show();
+
+        // verifying log in info
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(fragmentActivity, task -> {
+                    System.out.println("VERIFIED USER INFO!");
+                    if (task.isSuccessful()) {
+                        // show msg and hide progress dialog
+                        new Handler().postDelayed(() -> {
+                            cpd.dismiss();
+                            Toast.makeText(fragmentActivity,
+                                    "Correct current's password!", Toast.LENGTH_SHORT).show();
+
+                            // run callback function
+                            callback.run();
+                        }, 1000);
+                    } else {
+                        // show msg and hide progress dialog
+                        new Handler().postDelayed(() -> {
+                            cpd.dismiss();
+                            Toast.makeText(fragmentActivity,
+                                    "Incorrect current's password!", Toast.LENGTH_SHORT).show();
+                        }, 1000);
+                    }
+                });
+        // [END sign_in_with_email]
     }
 }
