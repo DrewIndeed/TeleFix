@@ -188,11 +188,28 @@ public class ProfileFragment extends Fragment {
                         // call verifying log in method
                         signInFromPwdChangeDialog(userResult.get(0).getEmail(),
                                 currentPwdInput.getText().toString(), () -> {
-                                    // show msg on screen
-                                    Toast.makeText(fragmentActivity,
-                                            "New password is: "
-                                                    + newPwdInput.getText().toString(),
-                                            Toast.LENGTH_SHORT).show();
+                                    // progress dialog
+                                    cpd.changeText("Updating password ...");
+                                    cpd.show();
+
+                                    // update password on Firebase Auth
+                                    mUser.updatePassword(newPwdInput.getText().toString().trim())
+                                            .addOnCompleteListener(task -> {
+                                                if (task.isSuccessful()) {
+                                                    // show msg and dismiss dialog
+                                                    new Handler().postDelayed(() -> {
+                                                        // dismiss dialogs
+                                                        cpd.dismiss();
+                                                        pwdChangeBottomDialog.dismiss();
+
+                                                        // show msg
+                                                        Toast.makeText(fragmentActivity,
+                                                                "Password updated!",
+                                                                Toast.LENGTH_SHORT).show();
+                                                    }, 1000);
+                                                }
+                                            });
+
                                 });
                     }
                 } catch (IllegalArgumentException | NullPointerException e) {
@@ -259,10 +276,10 @@ public class ProfileFragment extends Fragment {
                         new Handler().postDelayed(() -> {
                             cpd.dismiss();
                             Toast.makeText(fragmentActivity,
-                                    "Correct current's password!", Toast.LENGTH_SHORT).show();
+                                    "Verified current user!", Toast.LENGTH_SHORT).show();
 
                             // run callback function
-                            callback.run();
+                            new Handler().postDelayed(callback, 1000);
                         }, 1000);
                     } else {
                         // show msg and hide progress dialog
