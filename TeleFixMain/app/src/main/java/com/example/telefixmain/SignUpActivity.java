@@ -193,12 +193,12 @@ public class SignUpActivity extends AppCompatActivity {
                         String id = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
                         String email1 = mAuth.getCurrentUser().getEmail();
                         DatabaseHandler.createUserOnDatabase(db, SignUpActivity.this,
-                                id,
-                                nameSignup.getText().toString(),
-                                phoneSignup.getText().toString(),
-                                email1,
+                                id.trim(),
+                                nameSignup.getText().toString().trim(),
+                                phoneSignup.getText().toString().trim(),
+                                Objects.requireNonNull(email1).trim(),
                                 isMechanic,
-                                vendorIdSignup.getText().toString());
+                                vendorIdSignup.getText().toString().trim());
 
                         // show msg and hide progress dialog
                         new Handler().postDelayed(() -> {
