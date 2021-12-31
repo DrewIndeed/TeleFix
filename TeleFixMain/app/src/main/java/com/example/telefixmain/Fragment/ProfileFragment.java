@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.example.telefixmain.Dialog.CustomProgressDialog;
 import com.example.telefixmain.LoginActivity;
+import com.example.telefixmain.MainActivity;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.DatabaseHandler;
@@ -58,6 +59,9 @@ public class ProfileFragment extends Fragment {
 
     // fragment's activity
     Activity fragmentActivity;
+
+    // global User container
+    User userTracker;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -102,10 +106,13 @@ public class ProfileFragment extends Fragment {
                             // log to keep track
                             System.out.println(userResult.toString());
 
+                            // set global User
+                            userTracker = userResult.get(0);
+
                             // render user name on UI
-                            profileEmail.setText(userResult.get(0).getEmail());
-                            profileName.setText(userResult.get(0).getName());
-                            profilePhone.setText(userResult.get(0).getPhone());
+                            profileEmail.setText(userTracker.getEmail());
+                            profileName.setText(userTracker.getName());
+                            profilePhone.setText(userTracker.getPhone());
                         }
                     }
             );
@@ -152,7 +159,7 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (profileEmail.getText().toString().equals(userResult.get(0).getEmail()))
+                if (profileEmail.getText().toString().equals(userTracker.getEmail()))
                     updateProfileBtn.setVisibility(View.GONE);
             }
         });
@@ -170,7 +177,7 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (profileName.getText().toString().equals(userResult.get(0).getName()))
+                if (profileName.getText().toString().equals(userTracker.getName()))
                     updateProfileBtn.setVisibility(View.GONE);
             }
         });
@@ -188,9 +195,60 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (profilePhone.getText().toString().equals(userResult.get(0).getPhone()))
+                if (profilePhone.getText().toString().equals(userTracker.getPhone()))
                     updateProfileBtn.setVisibility(View.GONE);
             }
+        });
+        // update user info button listener
+        updateProfileBtn.setOnClickListener(view -> {
+            // progress dialog
+            cpd.changeText("Updating user's information ...");
+            cpd.show();
+
+            // update user info on database
+            DatabaseHandler.updateUser(
+                    db,
+                    fragmentActivity,
+                    userTracker.getId().trim(),
+                    profileName.getText().toString().trim(),
+                    profilePhone.getText().toString().trim(),
+                    profileEmail.getText().toString().trim(),
+                    userTracker.isVendor(),
+                    userTracker.getVendorId().trim(),
+                    userTracker.getRegisteredVehicles(),
+                    () -> {
+                        // update user email on Firebase Auth
+                        mUser.updateEmail(profileEmail.getText().toString().trim())
+                                .addOnCompleteListener(task -> new Handler().postDelayed(() -> {
+                                    if (task.isSuccessful()) {
+                                        // dismiss dialog
+                                        cpd.dismiss();
+
+                                        // show msg
+                                        Toast.makeText(fragmentActivity,
+                                                "Updated user's info successfully!",
+                                                Toast.LENGTH_SHORT).show();
+
+                                        new Handler().postDelayed(() -> {
+                                            // progress dialog to refresh Main Activity
+                                            cpd.changeText("Refreshing ... ");
+                                            cpd.show();
+
+                                            new Handler().postDelayed(() -> {
+                                                // dismiss dialog
+                                                cpd.dismiss();
+
+                                                // refresh Main Activity
+                                                startActivity(new Intent(fragmentActivity,
+                                                        MainActivity.class));
+                                                fragmentActivity.finish();
+                                            }, 1000);
+                                        }, 1000);
+                                    }
+
+                                }, 1000));
+                    }
+            );
         });
 
         // show change pwd change dialog
@@ -212,7 +270,7 @@ public class ProfileFragment extends Fragment {
                             || newPwdInput.getText().toString().length() < 6) {
                         // show msg on screen
                         Toast.makeText(fragmentActivity,
-                                "New password's length: 6",
+                                "New password's minimum length: 6",
                                 Toast.LENGTH_SHORT).show();
                     } else {
                         // call verifying log in method

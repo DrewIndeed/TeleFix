@@ -3,6 +3,7 @@ package com.example.telefixmain.Util;
 import static android.content.ContentValues.TAG;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -13,6 +14,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class DatabaseHandler {
     /**
@@ -78,5 +80,45 @@ public class DatabaseHandler {
                 Log.d(TAG, "Cached get failed: ", task.getException());
             }
         });
+    }
+
+    /**
+     * Method to update user's info by email
+     */
+    public static void updateUser(FirebaseFirestore db, Context context,
+                                  String id,
+                                  String name,
+                                  String phone,
+                                  String email,
+                                  boolean isMechanic,
+                                  String vendorId,
+                                  ArrayList<String> registeredVehicles,
+                                  Runnable callback) {
+
+        // Updated data container
+        HashMap<String, Object> updatedData = new HashMap<>();
+
+        // Inject updated data
+        updatedData.put("id", id);
+        updatedData.put("name", name);
+        updatedData.put("phone", phone);
+        updatedData.put("email", email);
+        updatedData.put("isMechanic", isMechanic);
+        updatedData.put("vendorId", vendorId);
+        updatedData.put("registerVehicles", registeredVehicles);
+
+        // search from database
+        db.collection("users")
+                .document(id)
+                .set(updatedData)
+                // run callback function if success
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) callback.run();
+                })
+                .addOnFailureListener(e -> {
+                    // this will be called when data updated unsuccessfully
+                    System.out.println(e.getMessage());
+                    Toast.makeText(context, "Updated user failed!", Toast.LENGTH_SHORT).show();
+                });
     }
 }
