@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.telefixmain.Model.User;
+import com.example.telefixmain.Model.Vendor;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -120,5 +121,32 @@ public class DatabaseHandler {
                     System.out.println(e.getMessage());
                     Toast.makeText(context, "Updated user failed!", Toast.LENGTH_SHORT).show();
                 });
+    }
+    /**
+     * Method to update vendor's info
+     */
+    public static void getAllVendors(FirebaseFirestore db, Context context,
+                                     ArrayList<Vendor> resultContainer,
+                                     Runnable callback) {
+        // Add a new document with a generated ID
+        db.collection("vendors")
+            .get() // Get data from Firestore
+            .addOnCompleteListener(task -> {
+
+                // Loop through document and add into zones container
+                for (DocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
+                    Vendor vendor = doc.toObject(Vendor.class);
+                    resultContainer.add(vendor);
+                }
+                // run call back function
+                callback.run();
+
+                // success msg
+                System.out.println("QUERY VENDORS SUCCESSFULLY!");
+            })
+            .addOnFailureListener(e -> {
+                // fail msg
+                System.out.println("QUERY VENDORS FAILED!");
+            });
     }
 }

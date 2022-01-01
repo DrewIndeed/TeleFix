@@ -14,11 +14,14 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.example.telefixmain.Model.Vendor;
+import com.example.telefixmain.Util.DatabaseHandler;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -33,7 +36,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import pl.droidsonroids.gif.GifImageView;
@@ -56,12 +61,16 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
     // TAG for exception handling
     private static final String TAG = SosActivity.class.getSimpleName();
+    private ArrayList<Vendor> resultContainer = new ArrayList<>();
 
     // Current location container
     LatLng currentLocation;
 
     // define location of Ho Chi Minh City, Vietnam
     private final LatLng HO_CHI_MINH = new LatLng(10.8231, 106.6297);
+
+    // firestore
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     // xml
     RelativeLayout rlSos;
@@ -104,6 +113,19 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
             ActivityCompat.requestPermissions(SosActivity.this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 200);
         }
+
+        // Fetch vendors
+        Button fetchBtn = findViewById(R.id.fetch_vendors);
+        fetchBtn.setOnClickListener(view -> {
+            DatabaseHandler.getAllVendors(db, SosActivity.this, resultContainer,
+                    () -> {
+                        // render on ui
+                        if (resultContainer.size() > 0) {
+                            // log to keep track
+                            System.out.println(resultContainer.get(0).toString());
+                        }});
+        });
+
 
         // back to home fragment
         findViewById(R.id.back_home_at_sos).setOnClickListener(view -> {
