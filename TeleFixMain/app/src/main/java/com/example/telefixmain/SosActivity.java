@@ -121,8 +121,16 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                     () -> {
                         // render on ui
                         if (resultContainer.size() > 0) {
-                            // log to keep track
-                            System.out.println(resultContainer.get(0).toString());
+                            for (Vendor vendor :
+                                    resultContainer) {
+                                LatLng LatLng = new LatLng(Double.parseDouble(vendor.getLat()),Double.parseDouble(vendor.getLng()));
+                                MarkerOptions markerOptions = new MarkerOptions()
+                                        .position(LatLng)
+                                    .title(vendor.getName());
+                                mMap.addMarker(markerOptions);
+                            }
+
+                            System.out.println("FETCH MARKER ON MAPS SUCCESSFULLY");
                         }});
         });
 
