@@ -179,6 +179,37 @@
     </HorizontalScrollView>
 
     <RelativeLayout
+        android:id="@+id/rl_open_close_slot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="11dp"
+            android:layout_marginTop="2dp"
+            android:src="@drawable/ic_sheet_clock"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/open_close_content"
+            android:layout_width="331dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="45dp"
+            android:layout_marginEnd="15dp"
+            android:lineSpacingExtra="5sp"
+            android:text="Open: 00:00AM - Close: 00:00AM"
+            android:textSize="18sp"
+            tools:ignore="HardcodedText" />
+    </RelativeLayout>
+
+    <RelativeLayout
         android:id="@+id/rl_address_slot"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
