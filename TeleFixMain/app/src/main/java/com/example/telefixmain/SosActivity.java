@@ -31,6 +31,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
@@ -61,7 +62,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
     // TAG for exception handling
     private static final String TAG = SosActivity.class.getSimpleName();
-    private ArrayList<Vendor> resultContainer = new ArrayList<>();
+    ArrayList<Vendor> resultContainer = new ArrayList<>();
 
     // Current location container
     LatLng currentLocation;
@@ -69,7 +70,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
     // define location of Ho Chi Minh City, Vietnam
     private final LatLng HO_CHI_MINH = new LatLng(10.8231, 106.6297);
 
-    // firestore
+    // Firestore
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     // xml
@@ -116,23 +117,26 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // Fetch vendors
         Button fetchBtn = findViewById(R.id.fetch_vendors);
-        fetchBtn.setOnClickListener(view -> {
-            DatabaseHandler.getAllVendors(db, SosActivity.this, resultContainer,
-                    () -> {
-                        // render on ui
-                        if (resultContainer.size() > 0) {
-                            for (Vendor vendor :
-                                    resultContainer) {
-                                LatLng LatLng = new LatLng(Double.parseDouble(vendor.getLat()),Double.parseDouble(vendor.getLng()));
-                                MarkerOptions markerOptions = new MarkerOptions()
-                                        .position(LatLng)
-                                    .title(vendor.getName());
-                                mMap.addMarker(markerOptions);
-                            }
+        fetchBtn.setOnClickListener(view ->
+                DatabaseHandler.getAllVendors(db, SosActivity.this, resultContainer,
+                        () -> {
+                            // render on ui
+                            if (resultContainer.size() > 0) {
+                                for (Vendor vendor : resultContainer) {
+                                    LatLng LatLng = new LatLng(
+                                            Double.parseDouble(vendor.getLat()),
+                                            Double.parseDouble(vendor.getLng())
+                                    );
+                                    MarkerOptions markerOptions = new MarkerOptions()
+                                            .position(LatLng)
+                                            .title(vendor.getName())
+                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker));
+                                    mMap.addMarker(markerOptions);
+                                }
 
-                            System.out.println("FETCH MARKER ON MAPS SUCCESSFULLY");
-                        }});
-        });
+                                System.out.println("FETCH MARKER ON MAPS SUCCESSFULLY");
+                            }
+                        }));
 
 
         // back to home fragment
@@ -284,9 +288,6 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
                     // move camera to that location
                     googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
-
-                    // add dummy marker for testing map bottom sheet
-                    googleMap.addMarker(new MarkerOptions().position(currentLocation).title("Ho Chi Minh City"));
                 });
             } else { // if the last location does not exist
                 Log.d(TAG, "Current location is null. Using defaults.");

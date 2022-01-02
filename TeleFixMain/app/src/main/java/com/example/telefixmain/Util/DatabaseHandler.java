@@ -3,7 +3,6 @@ package com.example.telefixmain.Util;
 import static android.content.ContentValues.TAG;
 
 import android.content.Context;
-import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
