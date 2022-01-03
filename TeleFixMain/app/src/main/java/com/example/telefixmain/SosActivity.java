@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.telefixmain.Model.Vendor;
+import com.example.telefixmain.Util.BookingHandler;
 import com.example.telefixmain.Util.DatabaseHandler;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -39,6 +40,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -71,8 +76,16 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
     // define location of Ho Chi Minh City, Vietnam
     private final LatLng HO_CHI_MINH = new LatLng(10.8231, 106.6297);
 
+    // Current user
+    // database objects
+    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private final FirebaseUser mUser = mAuth.getCurrentUser();
+
     // Firestore
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    // Realtime Database
+    private final FirebaseDatabase vendorsBookings = FirebaseDatabase.getInstance();
 
     // xml
     RelativeLayout rlSos;
@@ -140,7 +153,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                     // construct a marker
                                     MarkerOptions markerOptions = new MarkerOptions()
                                             .position(LatLng)
-                                            .title(vendor.getName())
+                                            .title(vendor.getId())  // Get the ID for tracing (disable marker title later on)
                                             .icon(BitmapDescriptorFactory
                                                     .fromResource(R.drawable.map_marker));
 
@@ -183,6 +196,9 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // on markers clicked listener
         mMap.setOnMarkerClickListener(clickedMarker -> {
+            String clickedMarkerId = clickedMarker.getTitle();  // Get the vendors ID through marker title
+            clickedMarker.hideInfoWindow(); // Not showing the non-sense ID string
+
             // get marker location info
             LatLng clickedMarkerLocation = clickedMarker.getPosition();
             Double clickedMarkerLat = clickedMarkerLocation.latitude;
@@ -199,6 +215,9 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                         // dismiss dialog before open a new one to avoid window leak
                         sosBottomDialog.dismiss();
 
+                        // Create sos booking request on Realtime Database
+                        BookingHandler.sendSOSRequest(vendorsBookings, SosActivity.this, clickedMarkerId, mUser.getUid());
+
                         // waiting bottom dialog
                         View waitDialog = openBottomSheetDialog(
                                 R.layout.mechanic_waiting, R.id.mechanic_wait_close_icon,
@@ -213,35 +232,35 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                         waitGif = waitDialog.findViewById(R.id.mechanic_wait_gif);
 
                         // animate when found mechanic
-                        new Handler().postDelayed(() -> {
-                            // hide dialog dismiss ability
-                            ImageView closeDialogBtn = waitDialog.findViewById(R.id.mechanic_wait_close_icon);
-                            closeDialogBtn.setEnabled(false);
-                            closeDialogBtn.setVisibility(View.INVISIBLE);
-                            sosBottomDialog.setCancelable(false);
-
-                            // hide waiting gif
-                            waitGif.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out));
-
-                            // lottie done anim
-                            lotteAboveMsg.setVisibility(View.VISIBLE);
-                            lotteAboveMsg.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
-
-                            // change msg
-                            dialogMsg.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out));
-                            dialogMsg.setText("Your mechanic is on his/her way!");
-                            dialogMsg.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
-
-                            // jump to mechanic arrival tracking activity
-                            new Handler().postDelayed(() -> {
-                                // dismiss dialog before open a new one to avoid window leak
-                                sosBottomDialog.dismiss();
-
-                                // start intent
-                                startActivity(new Intent(this, RequestProcessingActivity.class));
-                                finish();
-                            }, 4000);
-                        }, 3000);
+//                        new Handler().postDelayed(() -> {
+//                            // hide dialog dismiss ability
+//                            ImageView closeDialogBtn = waitDialog.findViewById(R.id.mechanic_wait_close_icon);
+//                            closeDialogBtn.setEnabled(false);
+//                            closeDialogBtn.setVisibility(View.INVISIBLE);
+//                            sosBottomDialog.setCancelable(false);
+//
+//                            // hide waiting gif
+//                            waitGif.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out));
+//
+//                            // lottie done anim
+//                            lotteAboveMsg.setVisibility(View.VISIBLE);
+//                            lotteAboveMsg.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
+//
+//                            // change msg
+//                            dialogMsg.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out));
+//                            dialogMsg.setText("Your mechanic is on his/her way!");
+//                            dialogMsg.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
+//
+//                            // jump to mechanic arrival tracking activity
+//                            new Handler().postDelayed(() -> {
+//                                // dismiss dialog before open a new one to avoid window leak
+//                                sosBottomDialog.dismiss();
+//
+//                                // start intent
+//                                startActivity(new Intent(this, RequestProcessingActivity.class));
+//                                finish();
+//                            }, 4000);
+//                        }, 3000);
                     });
             return false;
         });
