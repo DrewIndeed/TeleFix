@@ -20,13 +20,15 @@ public class BookingHandler {
     public static void sendSOSRequest (FirebaseDatabase rootNode,
                                        Context context,
                                        String vendorId,
-                                       String userId) {
+                                       String userId,
+                                       String requestId,
+                                       long timeCreated,
+                                       Runnable callback) {
 
         System.out.println(vendorId + " " + userId);
         DatabaseReference vendorRef = rootNode.getReference(vendorId);
 
-        SOSMetadata sosRequest = new SOSMetadata(userId);
-        String requestId = UUID.randomUUID().toString();
+        SOSMetadata sosRequest = new SOSMetadata(userId, timeCreated);
 
         vendorRef.child("sos").child("metadata").child(requestId).setValue(sosRequest)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -41,5 +43,6 @@ public class BookingHandler {
                         Toast.makeText(context,"" + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+        callback.run();
     }
 }

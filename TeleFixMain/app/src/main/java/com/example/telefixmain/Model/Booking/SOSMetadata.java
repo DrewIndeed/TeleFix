@@ -10,9 +10,9 @@ public class SOSMetadata {
         // Default constructor required for calls to DataSnapshot.getValue(SOSMetadata.class)
     }
 
-    public SOSMetadata(String userId) {
+    public SOSMetadata(String userId, long timestampCreated) {
         this.mechanicId = "";
         this.userId = userId;
-        this.timestampCreated = System.currentTimeMillis() / 1000L;
+        this.timestampCreated = timestampCreated;
     }
 }
