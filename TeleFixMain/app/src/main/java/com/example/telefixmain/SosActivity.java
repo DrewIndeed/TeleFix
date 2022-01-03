@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.telefixmain.Model.Vendor;
@@ -33,6 +34,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -48,8 +50,8 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
     // set the interval in which update should be received. The fastest interval indicates
     // that the application can receive the update faster when available.
-    private static final long UPDATE_INTERVAL = 10000;
-    private static final long FASTEST_INTERVAL = 5000;
+    private static final long UPDATE_INTERVAL = 8000;
+    private static final long FASTEST_INTERVAL = 3000;
 
     // map as class attribute to use in multiple methods
     private GoogleMap mMap;
@@ -60,12 +62,11 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
     // using methods this class to get the last known location
     private FusedLocationProviderClient client;
 
-    // TAG for exception handling
-    private static final String TAG = SosActivity.class.getSimpleName();
-    ArrayList<Vendor> resultContainer = new ArrayList<>();
-
     // Current location container
     LatLng currentLocation;
+
+    // TAG for exception handling
+    private static final String TAG = SosActivity.class.getSimpleName();
 
     // define location of Ho Chi Minh City, Vietnam
     private final LatLng HO_CHI_MINH = new LatLng(10.8231, 106.6297);
@@ -75,6 +76,9 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
     // xml
     RelativeLayout rlSos;
+    Button refreshBtn;
+    TextView sheetLocation, sheetRating, sheetAddress,
+            sheetWebsite, sheetContact, sheetOpenCloseTime;
 
     // bottom dialog tracking
     BottomSheetDialog sosBottomDialog;
@@ -82,6 +86,10 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
     // lottie anim
     LottieAnimationView lotteAboveMsg;
     GifImageView waitGif;
+
+    // results containers
+    ArrayList<Vendor> vendorsResultContainer = new ArrayList<>();
+    ArrayList<Marker> vendorsMarkersContainer = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,28 +124,37 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
         // Fetch vendors
-        Button fetchBtn = findViewById(R.id.fetch_vendors);
-        fetchBtn.setOnClickListener(view ->
-                DatabaseHandler.getAllVendors(db, SosActivity.this, resultContainer,
+        refreshBtn = findViewById(R.id.refresh_btn_at_sos);
+        refreshBtn.setOnClickListener(view ->
+                DatabaseHandler.getAllVendors(db, SosActivity.this, vendorsResultContainer,
                         () -> {
                             // render on ui
-                            if (resultContainer.size() > 0) {
-                                for (Vendor vendor : resultContainer) {
+                            if (vendorsResultContainer.size() > 0) {
+                                for (Vendor vendor : vendorsResultContainer) {
+                                    // get marker position
                                     LatLng LatLng = new LatLng(
                                             Double.parseDouble(vendor.getLat()),
                                             Double.parseDouble(vendor.getLng())
                                     );
+
+                                    // construct a marker
                                     MarkerOptions markerOptions = new MarkerOptions()
                                             .position(LatLng)
                                             .title(vendor.getName())
-                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker));
-                                    mMap.addMarker(markerOptions);
+                                            .icon(BitmapDescriptorFactory
+                                                    .fromResource(R.drawable.map_marker));
+
+                                    // add marker to map
+                                    Marker currentMaker = mMap.addMarker(markerOptions);
+
+                                    // add marker to array list to keep track and get info
+                                    vendorsMarkersContainer.add(currentMaker);
                                 }
 
-                                System.out.println("FETCH MARKER ON MAPS SUCCESSFULLY");
+                                // log to keep track
+                                System.out.println("FETCH VENDORS SUCCESSFULLY!");
                             }
                         }));
-
 
         // back to home fragment
         findViewById(R.id.back_home_at_sos).setOnClickListener(view -> {
@@ -157,17 +174,24 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
         // initialize mMap
         mMap = googleMap;
 
-        // start updating location by intervals
-        startLocationUpdate();
-
         // enable the abilities to adjust zoom level
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
-        // on map clicked listener
-        mMap.setOnMapClickListener(clickedLocation -> {
+        // on map clicked listener (for testing to see if connection is fine)
+        mMap.setOnMapClickListener(location -> Toast.makeText(this,
+                "Detected map clicked", Toast.LENGTH_SHORT).show());
+
+        // on markers clicked listener
+        mMap.setOnMarkerClickListener(clickedMarker -> {
+            // get marker location info
+            LatLng clickedMarkerLocation = clickedMarker.getPosition();
+            Double clickedMarkerLat = clickedMarkerLocation.latitude;
+            Double clickedMarkerLng = clickedMarkerLocation.longitude;
+
             // open bottom sheet dialog
             View bottomDialogView = openBottomSheetDialog(
-                    R.layout.map_bottom_sheet, R.id.sheet_close_icon);
+                    R.layout.map_bottom_sheet, R.id.sheet_close_icon,
+                    clickedMarkerLat, clickedMarkerLng);
 
             // get on site support
             bottomDialogView.findViewById(R.id.btn_on_site_support)
@@ -177,7 +201,8 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
                         // waiting bottom dialog
                         View waitDialog = openBottomSheetDialog(
-                                R.layout.mechanic_waiting, R.id.mechanic_wait_close_icon);
+                                R.layout.mechanic_waiting, R.id.mechanic_wait_close_icon,
+                                0.0, 0.0);
 
                         // animate msg
                         TextView dialogMsg = waitDialog.findViewById(R.id.mechanic_wait_msg);
@@ -218,16 +243,70 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                             }, 4000);
                         }, 3000);
                     });
+            return false;
         });
+
+        // start updating location by intervals (turn off when testing)
+        startLocationUpdate();
     }
 
     /**
      * Method to construct and show bottom sheet dialog
      */
-    @SuppressLint("InflateParams")
-    private View openBottomSheetDialog(int inflatedLayout, int closeIcon) {
+    @SuppressLint({"InflateParams", "SetTextI18n"})
+    private View openBottomSheetDialog(int inflatedLayout,
+                                       int closeIcon,
+                                       Double markerLat,
+                                       Double markerLng) {
         // layout inflater
         View viewDialog = getLayoutInflater().inflate(inflatedLayout, null);
+
+        // change view inner content
+        for (Vendor vd : vendorsResultContainer) {
+            // compare lat lng to get the representative vendor
+            if (Double.parseDouble(vd.getLat()) == markerLat &&
+                    Double.parseDouble(vd.getLng()) == markerLng) {
+                // log to keep track
+                System.out.println("TARGET VENDOR: " + vd.toString());
+
+                // extracting info from target vendor
+                String sheetLocationInfoValue = vd.getName();
+                String sheetRatingValue = vd.getRating();
+                String sheetAddressValue = vd.getLocation();
+                String sheetWebsiteValue = vd.getWebsite();
+                String sheetContactValue = vd.getContact();
+                String openTimeValue = vd.getOpenTime();
+                String closeTimeValue = vd.getCloseTime();
+
+                // binding text view for bottom sheet info updates
+                sheetLocation = viewDialog.findViewById(R.id.sheet_location_info);
+                sheetRating = viewDialog.findViewById(R.id.rating_value);
+                sheetAddress = viewDialog.findViewById(R.id.address_content);
+                sheetContact = viewDialog.findViewById(R.id.phone_content);
+                sheetWebsite = viewDialog.findViewById(R.id.website_content);
+                sheetOpenCloseTime = viewDialog.findViewById(R.id.open_close_content);
+
+                // update sheet display info
+                // always available values
+                sheetLocation.setText(sheetLocationInfoValue);
+                sheetAddress.setText(sheetAddressValue);
+                sheetOpenCloseTime.setText("Open: " + openTimeValue + " - Close: " + closeTimeValue);
+                // might be missing values
+                if (sheetRatingValue.equals("")) sheetRating.setText("_");
+                else sheetRating.setText(sheetRatingValue);
+
+                if (sheetContactValue.equals("")) sheetContact.setText("No Contact");
+                else sheetContact.setText(sheetContactValue);
+
+                if (sheetWebsiteValue.equals("")) sheetWebsite.setText("No Website");
+                else sheetWebsite.setText(sheetWebsiteValue);
+
+                // end looking
+                break;
+            }
+        }
+
+        // construct bottom dialog
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
         sosBottomDialog = bottomSheetDialog;
         bottomSheetDialog.setContentView(viewDialog);
@@ -318,6 +397,9 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
         client.requestLocationUpdates(mLocationRequest, new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
+                // log to keep track
+                System.out.println("LOCATION UPDATE LISTENER!");
+
                 // read location of locationResult
                 Location location = locationResult.getLastLocation();
 
