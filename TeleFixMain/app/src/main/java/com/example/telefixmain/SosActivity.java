@@ -138,9 +138,12 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                     );
 
                                     // construct a marker
+                                    String finalTitle = vendor.getName().length() >= 30?
+                                            (vendor.getName().substring(0, 30) + " ...") :
+                                            (vendor.getName());
                                     MarkerOptions markerOptions = new MarkerOptions()
                                             .position(LatLng)
-                                            .title(vendor.getName())
+                                            .title(finalTitle)
                                             .icon(BitmapDescriptorFactory
                                                     .fromResource(R.drawable.map_marker));
 
