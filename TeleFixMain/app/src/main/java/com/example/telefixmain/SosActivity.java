@@ -40,6 +40,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -138,7 +139,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                     );
 
                                     // construct a marker
-                                    String finalTitle = vendor.getName().length() >= 30?
+                                    String finalTitle = vendor.getName().length() >= 30 ?
                                             (vendor.getName().substring(0, 30) + " ...") :
                                             (vendor.getName());
                                     MarkerOptions markerOptions = new MarkerOptions()
@@ -288,6 +289,8 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                 sheetContact = viewDialog.findViewById(R.id.phone_content);
                 sheetWebsite = viewDialog.findViewById(R.id.website_content);
                 sheetOpenCloseTime = viewDialog.findViewById(R.id.open_close_content);
+                Picasso.get().load(vd.getImg())
+                        .into((ImageView) viewDialog.findViewById(R.id.iv_vendor_image_1));
 
                 // update sheet display info
                 // always available values

@@ -139,6 +139,7 @@
                 app:cardCornerRadius="5dp">
 
                 <ImageView
+                    android:id="@+id/iv_vendor_image_1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
@@ -153,20 +154,7 @@
                 app:cardCornerRadius="5dp">
 
                 <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/dummy_motorcycle"
-                    tools:ignore="ContentDescription" />
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="250dp"
-                android:layout_height="160dp"
-                android:layout_marginEnd="15dp"
-                app:cardCornerRadius="5dp">
-
-                <ImageView
+                    android:id="@+id/iv_vendor_image_2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
