@@ -10,7 +10,7 @@
     <RelativeLayout
         android:id="@+id/rl_close_rating"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:gravity="center_vertical">
 
@@ -18,22 +18,20 @@
             android:id="@+id/sheet_close_icon"
             android:layout_width="25dp"
             android:layout_height="25dp"
+            android:layout_marginTop="14dp"
             android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentBottom="true"
             android:layout_marginStart="15dp"
-            android:layout_marginTop="0dp"
-            android:layout_marginBottom="0dp"
             android:src="@drawable/ic_close"
             tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/sheet_location_info"
             android:layout_width="245dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="95dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="97dp"
+            android:layout_marginTop="12dp"
             android:layout_toEndOf="@+id/sheet_close_icon"
             android:gravity="center_vertical"
             android:paddingLeft="10dp"
@@ -48,9 +46,7 @@
             android:id="@+id/ll_star_rating"
             android:layout_width="68dp"
             android:layout_height="30dp"
-            android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
             android:layout_marginTop="11dp"
             android:layout_marginEnd="12dp"
             android:layout_marginBottom="11dp"
@@ -143,6 +139,7 @@
                 app:cardCornerRadius="5dp">
 
                 <ImageView
+                    android:id="@+id/iv_vendor_image_1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
@@ -157,20 +154,7 @@
                 app:cardCornerRadius="5dp">
 
                 <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/dummy_motorcycle"
-                    tools:ignore="ContentDescription" />
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="250dp"
-                android:layout_height="160dp"
-                android:layout_marginEnd="15dp"
-                app:cardCornerRadius="5dp">
-
-                <ImageView
+                    android:id="@+id/iv_vendor_image_2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"

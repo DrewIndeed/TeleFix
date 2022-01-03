@@ -49,6 +49,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -157,9 +158,13 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                     );
 
                                     // construct a marker
+                                    String finalTitle = vendor.getName().length() >= 30 ?
+                                            (vendor.getName().substring(0, 30) + " ...") :
+                                            (vendor.getName());
                                     MarkerOptions markerOptions = new MarkerOptions()
                                             .position(LatLng)
-                                            .title(vendor.getId())  // Get the ID for tracing (disable marker title later on)
+                                            .title(finalTitle)
+                                            .snippet(vendor.getId())  // Get the ID for tracing (disable marker title later on)
                                             .icon(BitmapDescriptorFactory
                                                     .fromResource(R.drawable.map_marker));
 
@@ -202,7 +207,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // on markers clicked listener
         mMap.setOnMarkerClickListener(clickedMarker -> {
-            String clickedMarkerId = clickedMarker.getTitle();  // Get the vendors ID through marker title
+            String clickedMarkerId = clickedMarker.getSnippet();  // Get the vendors ID through marker title
             clickedMarker.hideInfoWindow(); // Not showing the non-sense ID string
 
             // get marker location info
@@ -335,6 +340,8 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                 sheetContact = viewDialog.findViewById(R.id.phone_content);
                 sheetWebsite = viewDialog.findViewById(R.id.website_content);
                 sheetOpenCloseTime = viewDialog.findViewById(R.id.open_close_content);
+                Picasso.get().load(vd.getImg())
+                        .into((ImageView) viewDialog.findViewById(R.id.iv_vendor_image_1));
 
                 // update sheet display info
                 // always available values
