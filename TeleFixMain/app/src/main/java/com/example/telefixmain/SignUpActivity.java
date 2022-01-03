@@ -192,6 +192,11 @@ public class SignUpActivity extends AppCompatActivity {
                         // sign up success, create user on Firestore database
                         String id = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
                         String email1 = mAuth.getCurrentUser().getEmail();
+
+                        // TODO: Check valid vendor ID on database
+
+
+                        // Create user on database
                         DatabaseHandler.createUserOnDatabase(db, SignUpActivity.this,
                                 id.trim(),
                                 nameSignup.getText().toString().trim(),

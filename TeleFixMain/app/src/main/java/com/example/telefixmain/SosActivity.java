@@ -116,27 +116,27 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
         // Fetch vendors
-        Button fetchBtn = findViewById(R.id.fetch_vendors);
-        fetchBtn.setOnClickListener(view ->
-                DatabaseHandler.getAllVendors(db, SosActivity.this, resultContainer,
-                        () -> {
-                            // render on ui
-                            if (resultContainer.size() > 0) {
-                                for (Vendor vendor : resultContainer) {
-                                    LatLng LatLng = new LatLng(
-                                            Double.parseDouble(vendor.getLat()),
-                                            Double.parseDouble(vendor.getLng())
-                                    );
-                                    MarkerOptions markerOptions = new MarkerOptions()
-                                            .position(LatLng)
-                                            .title(vendor.getName())
-                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker));
-                                    mMap.addMarker(markerOptions);
-                                }
-
-                                System.out.println("FETCH MARKER ON MAPS SUCCESSFULLY");
-                            }
-                        }));
+//        Button fetchBtn = findViewById(R.id.fetch_vendors);
+//        fetchBtn.setOnClickListener(view ->
+//                DatabaseHandler.getAllVendors(db, SosActivity.this, resultContainer,
+//                        () -> {
+//                            // render on ui
+//                            if (resultContainer.size() > 0) {
+//                                for (Vendor vendor : resultContainer) {
+//                                    LatLng LatLng = new LatLng(
+//                                            Double.parseDouble(vendor.getLat()),
+//                                            Double.parseDouble(vendor.getLng())
+//                                    );
+//                                    MarkerOptions markerOptions = new MarkerOptions()
+//                                            .position(LatLng)
+//                                            .title(vendor.getName())
+//                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker));
+//                                    mMap.addMarker(markerOptions);
+//                                }
+//
+//                                System.out.println("FETCH MARKER ON MAPS SUCCESSFULLY");
+//                            }
+//                        }));
 
 
         // back to home fragment
