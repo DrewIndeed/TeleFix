@@ -16,7 +16,8 @@ public class MarkerHandler {
      */
     public static void generateInvisibleMarkersByVendors(GoogleMap googleMap,
                                                          ArrayList<Vendor> vendorsResultContainer,
-                                                         ArrayList<Marker> vendorsMarkersContainer) {
+                                                         ArrayList<Marker> vendorsMarkersContainer,
+                                                         Runnable callback) {
         for (Vendor vendor : vendorsResultContainer) {
             // get marker position
             LatLng LatLng = new LatLng(
@@ -43,6 +44,56 @@ public class MarkerHandler {
 
             // add marker to array list to keep track and get info
             vendorsMarkersContainer.add(currentMaker);
+        }
+
+        // run callback
+        callback.run();
+    }
+
+    /**
+     * Method to adjust visibility of markers from container based on defined amount
+     */
+    public static void enableMarkersByAmount(int amountOfMarker,
+                                             ArrayList<Marker> vendorsMarkersContainer) {
+        // enable visible amount
+        for (int i = 0; i < amountOfMarker; i++) {
+            vendorsMarkersContainer.get(i).setVisible(true);
+        }
+
+        // disable invisible amount
+        for (int i = amountOfMarker; i < vendorsMarkersContainer.size(); i++) {
+            vendorsMarkersContainer.get(i).setVisible(false);
+        }
+    }
+
+    /**
+     * Method to change amount of visible markers depending on map zoom level
+     */
+    public static void toggleMarkersByZoomLevel(int zoomLevel,
+                                                ArrayList<Marker> vendorsMarkersContainer) {
+        if (zoomLevel <= 9) {
+            enableMarkersByAmount(1, vendorsMarkersContainer);
+        } else if (zoomLevel <= 10) {
+            enableMarkersByAmount(3, vendorsMarkersContainer);
+        } else if (zoomLevel <= 14) {
+            switch (zoomLevel) {
+                case 11:
+                    enableMarkersByAmount(5, vendorsMarkersContainer);
+                    break;
+                case 12:
+                    enableMarkersByAmount(8, vendorsMarkersContainer);
+                    break;
+                case 13:
+                    enableMarkersByAmount(16, vendorsMarkersContainer);
+                    break;
+                case 14:
+                    enableMarkersByAmount(20, vendorsMarkersContainer);
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            enableMarkersByAmount(vendorsMarkersContainer.size(), vendorsMarkersContainer);
         }
     }
 }

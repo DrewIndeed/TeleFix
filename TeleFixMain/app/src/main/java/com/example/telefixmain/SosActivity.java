@@ -35,10 +35,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -146,15 +144,8 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // Fetch vendors
         refreshBtn = findViewById(R.id.refresh_btn_at_sos);
-        refreshBtn.setOnClickListener(view ->
-                DatabaseHandler.getAllVendors(db, SosActivity.this, vendorsResultContainer,
-                        () -> {
-                            // render on ui
-                            if (vendorsResultContainer.size() > 0) {
-                                MarkerHandler.generateInvisibleMarkersByVendors(mMap,
-                                        vendorsResultContainer, vendorsMarkersContainer);
-                            }
-                        }));
+        refreshBtn.setOnClickListener(view -> {
+        });
 
         // back to home fragment
         findViewById(R.id.back_home_at_sos).setOnClickListener(view -> {
@@ -176,6 +167,27 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // enable the abilities to adjust zoom level
         mMap.getUiSettings().setZoomControlsEnabled(true);
+
+        // generate invisible markers from fetched vendors
+        DatabaseHandler.getAllVendors(db, SosActivity.this, vendorsResultContainer,
+                () -> {
+                    // render on ui
+                    if (vendorsResultContainer.size() > 0) {
+                        MarkerHandler.generateInvisibleMarkersByVendors(mMap,
+                                vendorsResultContainer, vendorsMarkersContainer,
+                                () -> mMap.setOnCameraIdleListener(() -> {
+                                    // get current zoom level
+                                    int zoomLevel = (int) mMap.getCameraPosition().zoom;
+
+                                    // use method to toggle markers display
+                                    if (vendorsMarkersContainer != null &&
+                                            vendorsMarkersContainer.size() > 0) {
+                                        // enable / disable markers based on zoom level
+                                        MarkerHandler.toggleMarkersByZoomLevel(zoomLevel, vendorsMarkersContainer);
+                                    }
+                                }));
+                    }
+                });
 
         // on map clicked listener (for testing to see if connection is fine)
         mMap.setOnMapClickListener(location -> Toast.makeText(this,
@@ -240,7 +252,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                 SOSMetadata sosRequest = dataSnapshot.getValue(SOSMetadata.class);
                                 // animate when found mechanic
                                 // hide dialog dismiss ability
-                                if (!Objects.requireNonNull(sosRequest).mechanicId.equals("")) {
+                                if (!Objects.requireNonNull(sosRequest).getMechanicId().equals("")) {
                                     closeDialogBtn.setEnabled(false);
                                     closeDialogBtn.setVisibility(View.INVISIBLE);
                                     sosBottomDialog.setCancelable(false);
