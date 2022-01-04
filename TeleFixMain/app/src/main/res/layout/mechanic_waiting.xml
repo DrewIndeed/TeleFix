@@ -1,59 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="wrap_content"
+    app:cardBackgroundColor="@color/bmw_extreme_transparent"
+    app:cardCornerRadius="5dp"
+    app:cardElevation="0dp"
+    app:contentPadding="0dp"
+    android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/mechanic_wait_close_icon"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="0dp"
-        android:src="@drawable/ic_close"
-        tools:ignore="ContentDescription" />
+    <RelativeLayout
+        android:background="@drawable/custom_btn_bg_11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/mechanic_wait_gif"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="100dp"
-        android:layout_marginEnd="0dp"
-        android:src="@drawable/mechanic_waiting" />
+        <ImageView
+            android:id="@+id/mechanic_wait_close_icon"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="0dp"
+            android:src="@drawable/ic_close"
+            tools:ignore="ContentDescription" />
 
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/done_waiting_anim"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="100dp"
-        android:visibility="invisible"
-        app:lottie_autoPlay="true"
-        app:lottie_rawRes="@raw/done_waiting" />
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/mechanic_wait_gif"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="100dp"
+            android:layout_marginEnd="0dp"
+            android:src="@drawable/mechanic_waiting" />
 
-    <TextView
-        android:id="@+id/mechanic_wait_msg"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/mechanic_wait_gif"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="25dp"
-        android:layout_marginBottom="100dp"
-        android:gravity="center"
-        android:letterSpacing="0.05"
-        android:text="Your request is being processed ..."
-        android:textColor="@color/bmw_dark_blue"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        tools:ignore="HardcodedText" />
-</RelativeLayout>
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/done_waiting_anim"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="100dp"
+            android:visibility="invisible"
+            app:lottie_autoPlay="true"
+            app:lottie_rawRes="@raw/done_waiting" />
+
+        <TextView
+            android:id="@+id/mechanic_wait_msg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/mechanic_wait_gif"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="100dp"
+            android:gravity="center"
+            android:letterSpacing="0.05"
+            android:text="Your request is being processed ..."
+            android:textColor="@color/bmw_dark_blue"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>
