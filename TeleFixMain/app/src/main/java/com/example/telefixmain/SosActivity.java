@@ -116,6 +116,9 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
     ArrayList<Vendor> vendorsResultContainer = new ArrayList<>();
     ArrayList<Marker> vendorsMarkersContainer = new ArrayList<>();
 
+    // pending post delay tracker
+    private Handler handlerTracker;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -332,26 +335,20 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
                         // Add listener to vendor with timeout
                         currentVendorRef.addValueEventListener(sosRequestListener);
-                        Timer timer = new Timer();
-                        TimerTask timerTask = new TimerTask() {
-                            @Override
-                            public void run() {
-                                timer.cancel();
-                                if (!gotResult[0]) { //  Timeout
-                                    currentVendorRef.removeEventListener(sosRequestListener);
-                                    // Your timeout code goes here
-                                    BookingHandler.removeSOSRequest(
-                                            vendorsBookings,
-                                            SosActivity.this,
-                                            currentVendorId,
-                                            currentRequestId);
-                                    currentVendorId = "";
-                                    sosBottomDialog.dismiss();
-                                }
+                        handlerTracker = new Handler();
+                        handlerTracker.postDelayed(() -> {
+                            if (!gotResult[0]) { //  Timeout
+                                currentVendorRef.removeEventListener(sosRequestListener);
+                                // Your timeout code goes here
+                                BookingHandler.removeSOSRequest(
+                                        vendorsBookings,
+                                        SosActivity.this,
+                                        currentVendorId,
+                                        currentRequestId);
+                                currentVendorId = "";
+                                sosBottomDialog.dismiss();
                             }
-                        };
-                        // Setting timeout of 10 sec to the request
-                        timer.schedule(timerTask, 10000L);
+                        }, 10000);
                     });
             return false;
         });
@@ -391,6 +388,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                     currentVendorId, currentRequestId);
             currentVendorId = "";
             bottomSheetDialog.dismiss();
+            if (handlerTracker != null) handlerTracker.removeCallbacksAndMessages(null);
         });
 
         return viewDialog;
