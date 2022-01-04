@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 
 import com.shuhart.stepview.StepView;
 
@@ -28,6 +29,15 @@ public class RequestProcessingActivity extends AppCompatActivity {
         // binding with xml
         stepView = findViewById(R.id.step_view_on_way);
         stepView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
+
+        // get intent
+        Intent i = getIntent();
+        String bookingId = (String) i.getExtras().get("currentRequestId");
+        String vendorId = (String) i.getExtras().get("currentVendorId");
+
+        // mock button
+        Button btnNextStep = findViewById(R.id.btn_mock_next_step);
+        Button btnForceReload = findViewById(R.id.btn_force_refresh);
 
         // add steps for step view
         List<String> steps = new ArrayList<>();

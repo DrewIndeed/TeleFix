@@ -35,7 +35,6 @@ public class MarkerHandler {
 //                    .visible(false)
 
                     // Get the ID for tracing (disable marker title later on)
-                    .snippet(vendor.getId())
                     .icon(BitmapDescriptorFactory
                             .fromResource(R.drawable.map_marker));
 
