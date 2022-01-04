@@ -141,11 +141,11 @@ public class DatabaseHandler {
                 callback.run();
 
                 // success msg
-                System.out.println("QUERY VENDORS SUCCESSFULLY!");
+                System.out.println("FETCH VENDORS SUCCESSFULLY!");
             })
             .addOnFailureListener(e -> {
                 // fail msg
-                System.out.println("QUERY VENDORS FAILED!");
+                System.out.println("FETCH VENDORS FAILED!");
             });
     }
 }

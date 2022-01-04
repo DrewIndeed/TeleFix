@@ -25,6 +25,7 @@ import com.example.telefixmain.Model.Booking.SOSMetadata;
 import com.example.telefixmain.Model.Vendor;
 import com.example.telefixmain.Util.BookingHandler;
 import com.example.telefixmain.Util.DatabaseHandler;
+import com.example.telefixmain.Util.MarkerHandler;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -150,33 +151,8 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                         () -> {
                             // render on ui
                             if (vendorsResultContainer.size() > 0) {
-                                for (Vendor vendor : vendorsResultContainer) {
-                                    // get marker position
-                                    LatLng LatLng = new LatLng(
-                                            Double.parseDouble(vendor.getLat()),
-                                            Double.parseDouble(vendor.getLng())
-                                    );
-
-                                    // construct a marker
-                                    String finalTitle = vendor.getName().length() >= 30 ?
-                                            (vendor.getName().substring(0, 30) + " ...") :
-                                            (vendor.getName());
-                                    MarkerOptions markerOptions = new MarkerOptions()
-                                            .position(LatLng)
-                                            .title(finalTitle)
-                                            .snippet(vendor.getId())  // Get the ID for tracing (disable marker title later on)
-                                            .icon(BitmapDescriptorFactory
-                                                    .fromResource(R.drawable.map_marker));
-
-                                    // add marker to map
-                                    Marker currentMaker = mMap.addMarker(markerOptions);
-
-                                    // add marker to array list to keep track and get info
-                                    vendorsMarkersContainer.add(currentMaker);
-                                }
-
-                                // log to keep track
-                                System.out.println("FETCH VENDORS SUCCESSFULLY!");
+                                MarkerHandler.generateInvisibleMarkersByVendors(mMap,
+                                        vendorsResultContainer, vendorsMarkersContainer);
                             }
                         }));
 
@@ -192,7 +168,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
         // make it empty to prevent going back using the device's "Back" button
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n"})
     @Override
     public void onMapReady(GoogleMap googleMap) {
         // initialize mMap
@@ -207,8 +183,9 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // on markers clicked listener
         mMap.setOnMarkerClickListener(clickedMarker -> {
-            String clickedMarkerId = clickedMarker.getSnippet();  // Get the vendors ID through marker title
-            clickedMarker.hideInfoWindow(); // Not showing the non-sense ID string
+            // Get the vendors ID through marker title
+            String clickedMarkerId = clickedMarker.getSnippet();
+            clickedMarker.setSnippet(null);
 
             // get marker location info
             LatLng clickedMarkerLocation = clickedMarker.getPosition();
@@ -236,9 +213,11 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                 0.0, 0.0);
                         TextView dialogMsg = waitDialog.findViewById(R.id.mechanic_wait_msg);
                         ImageView closeDialogBtn = waitDialog.findViewById(R.id.mechanic_wait_close_icon);
+
                         // init waiting anim
                         lotteAboveMsg = waitDialog.findViewById(R.id.done_waiting_anim);
                         waitGif = waitDialog.findViewById(R.id.mechanic_wait_gif);
+
                         // Create sos booking request on Realtime Database
                         BookingHandler.sendSOSRequest(vendorsBookings, SosActivity.this,
                                 clickedMarkerId, mUser.getUid(), requestId, createdTimestamp,
@@ -246,11 +225,12 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                     // animate msg
                                     dialogMsg.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
                                     // Update current requested vendor
-                                    currentVendorRef = vendorsBookings.getReference(clickedMarkerId).child("sos").child("metadata").child(requestId);
+                                    currentVendorRef = vendorsBookings.getReference(clickedMarkerId)
+                                            .child("sos").child("metadata").child(requestId);
                                     System.out.println("Current Vendor DatabaseReference has been updated!");
                                 });
 
-                        // TODO: Set time out for mechanic waiting:
+                        // TODO: Set time out for mechanic waiting
 
                         // TODO: Set ValueEventListener that delay the onDataChange
                         ValueEventListener sosRequestListener = new ValueEventListener() {
@@ -260,7 +240,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                 SOSMetadata sosRequest = dataSnapshot.getValue(SOSMetadata.class);
                                 // animate when found mechanic
                                 // hide dialog dismiss ability
-                                if (!sosRequest.mechanicId.equals("")) {
+                                if (!Objects.requireNonNull(sosRequest).mechanicId.equals("")) {
                                     closeDialogBtn.setEnabled(false);
                                     closeDialogBtn.setVisibility(View.INVISIBLE);
                                     sosBottomDialog.setCancelable(false);
@@ -330,8 +310,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                 .setState(BottomSheetBehavior.STATE_EXPANDED);
 
         // click close icon to dismiss dialog
-        viewDialog.findViewById(closeIcon)
-                .setOnClickListener(view -> bottomSheetDialog.dismiss());
+        viewDialog.findViewById(closeIcon).setOnClickListener(view -> bottomSheetDialog.dismiss());
 
         return viewDialog;
     }
