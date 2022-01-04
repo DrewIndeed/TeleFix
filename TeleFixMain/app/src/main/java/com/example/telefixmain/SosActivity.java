@@ -52,6 +52,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 import pl.droidsonroids.gif.GifImageView;
@@ -92,6 +94,9 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
     // Realtime Database
     private final FirebaseDatabase vendorsBookings = FirebaseDatabase.getInstance();
     private DatabaseReference currentVendorRef;
+    private String currentVendorId;
+    private String currentRequestId;
+    private ValueEventListener sosRequestListener;
 
     // xml
     RelativeLayout rlSos;
@@ -195,14 +200,20 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // on markers clicked listener
         mMap.setOnMarkerClickListener(clickedMarker -> {
-            // Get the vendors ID through marker title
-            String clickedMarkerId = clickedMarker.getSnippet();
-            clickedMarker.setSnippet(null);
 
             // get marker location info
             LatLng clickedMarkerLocation = clickedMarker.getPosition();
             Double clickedMarkerLat = clickedMarkerLocation.latitude;
             Double clickedMarkerLng = clickedMarkerLocation.longitude;
+
+            // Get the vendors ID through marker title
+            for (Marker m : vendorsMarkersContainer
+            ) {
+                if (clickedMarkerLat == m.getPosition().latitude && clickedMarkerLng == m.getPosition().longitude) {
+                    currentVendorId = vendorsResultContainer.get((vendorsMarkersContainer.indexOf(m))).getId();
+                    break;
+                }
+            }
 
             // open bottom sheet dialog
             View bottomDialogView = openBottomSheetDialog(
@@ -216,7 +227,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                         sosBottomDialog.dismiss();
 
                         // Create request metadata
-                        String requestId = UUID.randomUUID().toString();
+                        currentRequestId = UUID.randomUUID().toString();
                         long createdTimestamp = System.currentTimeMillis() / 1000L;
 
                         // waiting bottom dialog
@@ -232,27 +243,30 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
                         // Create sos booking request on Realtime Database
                         BookingHandler.sendSOSRequest(vendorsBookings, SosActivity.this,
-                                clickedMarkerId, mUser.getUid(), requestId, createdTimestamp,
+                                currentVendorId, mUser.getUid(), currentRequestId, createdTimestamp,
                                 () -> {
                                     // animate msg
                                     dialogMsg.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
                                     // Update current requested vendor
-                                    currentVendorRef = vendorsBookings.getReference(clickedMarkerId)
-                                            .child("sos").child("metadata").child(requestId);
+                                    currentVendorRef = vendorsBookings.getReference(currentVendorId)
+                                            .child("sos").child("metadata").child(currentRequestId);
                                     System.out.println("Current Vendor DatabaseReference has been updated!");
                                 });
 
-                        // TODO: Set time out for mechanic waiting
+                        // set timeout handle variable
+                        final boolean[] gotResult = new boolean[1];
+                        gotResult[0] = false;
 
-                        // TODO: Set ValueEventListener that delay the onDataChange
-                        ValueEventListener sosRequestListener = new ValueEventListener() {
+                        // set ValueEventListener that delay the onDataChange
+                        sosRequestListener = new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 // Get Post object and use the values to update the UI
                                 SOSMetadata sosRequest = dataSnapshot.getValue(SOSMetadata.class);
                                 // animate when found mechanic
                                 // hide dialog dismiss ability
-                                if (!Objects.requireNonNull(sosRequest).getMechanicId().equals("")) {
+                                if (!Objects.requireNonNull(sosRequest).getMechanicId().equals("")){
+                                    gotResult[0] = true;
                                     closeDialogBtn.setEnabled(false);
                                     closeDialogBtn.setVisibility(View.INVISIBLE);
                                     sosBottomDialog.setCancelable(false);
@@ -274,8 +288,15 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                         // dismiss dialog before open a new one to avoid window leak
                                         sosBottomDialog.dismiss();
 
+                                        // initialize progress tracking
+                                        long startProgressTracking = System.currentTimeMillis()/1000L;
+                                        BookingHandler.createProgressTracking(vendorsBookings, SosActivity.this, currentVendorId, currentRequestId, startProgressTracking);
+
                                         // start intent
-                                        startActivity(new Intent(SosActivity.this, RequestProcessingActivity.class));
+                                        Intent i = new Intent(SosActivity.this, RequestProcessingActivity.class);
+                                        i.putExtra("currentVendorId", currentVendorId);
+                                        i.putExtra("currentRequestId", currentRequestId);
+                                        startActivity(i);
                                         finish();
                                     }, 4000);
                                 }
@@ -284,11 +305,30 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                             @Override
                             public void onCancelled(DatabaseError databaseError) {
                                 // Getting Post failed, log a message
+                                gotResult[0] = true;
                                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
                             }
                         };
                         System.out.println("Done setting up ValueEventListener");
+
+                        // Add listener to vendor with timeout
                         currentVendorRef.addValueEventListener(sosRequestListener);
+                        Timer timer = new Timer();
+                        TimerTask timerTask = new TimerTask() {
+                            @Override
+                            public void run() {
+                                timer.cancel();
+                                if (gotResult[0] == false) { //  Timeout
+                                    currentVendorRef.removeEventListener(sosRequestListener);
+                                    // Your timeout code goes here
+                                    BookingHandler.removeSOSRequest(vendorsBookings,SosActivity.this, currentVendorId,currentRequestId);
+                                    currentVendorId = "";
+                                    sosBottomDialog.dismiss();
+                                }
+                            }
+                        };
+                        // Setting timeout of 10 sec to the request
+                        timer.schedule(timerTask, 10000L);
                     });
             return false;
         });
@@ -322,7 +362,12 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                 .setState(BottomSheetBehavior.STATE_EXPANDED);
 
         // click close icon to dismiss dialog
-        viewDialog.findViewById(closeIcon).setOnClickListener(view -> bottomSheetDialog.dismiss());
+        viewDialog.findViewById(closeIcon).setOnClickListener(view -> {
+            currentVendorRef.removeEventListener(sosRequestListener);
+            BookingHandler.removeSOSRequest(vendorsBookings,SosActivity.this, currentVendorId,currentRequestId);
+            currentVendorId = "";
+            bottomSheetDialog.dismiss();
+        });
 
         return viewDialog;
     }
