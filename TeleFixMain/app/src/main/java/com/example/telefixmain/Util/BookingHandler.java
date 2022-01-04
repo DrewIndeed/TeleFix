@@ -24,7 +24,7 @@ public class BookingHandler {
 
         vendorRef.child("sos").child("metadata").child(requestId).setValue(sosRequest)
                 .addOnCompleteListener(task -> Toast.makeText(context,
-                        "Request has been sent successfully!", Toast.LENGTH_SHORT).show())
+                        "Request sent!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
                         e.getMessage(), Toast.LENGTH_SHORT).show());
         callback.run();
@@ -55,7 +55,7 @@ public class BookingHandler {
 
         vendorRef.child("sos").child("metadata").child(requestId).removeValue()
                 .addOnCompleteListener(task -> Toast.makeText(context,
-                        "Request has been cleared successfully!", Toast.LENGTH_SHORT).show())
+                        "Request cancelled!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
                         e.getMessage(), Toast.LENGTH_SHORT).show());
     }

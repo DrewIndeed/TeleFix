@@ -209,19 +209,6 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
             double clickedMarkerLat = clickedMarkerLocation.latitude;
             double clickedMarkerLng = clickedMarkerLocation.longitude;
 
-            // Get the vendors ID through marker title
-            for (Marker m : vendorsMarkersContainer
-            ) {
-                if (clickedMarkerLat == m.getPosition().latitude &&
-                        clickedMarkerLng == m.getPosition().longitude) {
-                    currentVendorId = vendorsResultContainer
-                            .get((vendorsMarkersContainer.indexOf(m)))
-                            .getId();
-                    break;
-                }
-            }
-
-            // open bottom sheet dialog
             View bottomDialogView = openBottomSheetDialog(
                     R.layout.map_bottom_sheet, R.id.sheet_close_icon,
                     clickedMarkerLat, clickedMarkerLng);
@@ -332,21 +319,35 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
                         // Add listener to vendor with timeout
                         currentVendorRef.addValueEventListener(sosRequestListener);
+
+                        // create expired time for sos request
                         handlerTracker = new Handler();
                         handlerTracker.postDelayed(() -> {
+
+                            System.out.println("<><><><><> IN TESTING DELAY <><><><><>");
+
                             if (!gotResult[0]) { //  Timeout
-                                currentVendorRef.removeEventListener(sosRequestListener);
-                                // Your timeout code goes here
-                                BookingHandler.removeSOSRequest(
-                                        vendorsBookings,
-                                        SosActivity.this,
-                                        currentVendorId,
-                                        currentRequestId);
-                                currentVendorId = "";
+
+                                // handle real-time database request cancellation
+                                if (currentVendorRef != null && currentRequestId != null) {
+                                    currentVendorRef.removeEventListener(sosRequestListener);
+                                    System.out.println("VENDOR ID IN DELAY: " + currentVendorId);
+                                    System.out.println("REQUEST ID IN DELAY: " + currentRequestId);
+                                    BookingHandler.removeSOSRequest(
+                                            vendorsBookings,
+                                            SosActivity.this,
+                                            currentVendorId,
+                                            currentRequestId);
+                                    currentVendorId = null;
+                                }
+
+                                // dismiss waiting dialog
                                 sosBottomDialog.dismiss();
                             }
-                        }, 20000);
+                        }, 10000);
                     });
+
+
             return false;
         });
 
@@ -365,6 +366,10 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
         // layout inflater
         View viewDialog = getLayoutInflater().inflate(inflatedLayout, null);
 
+        // Get the vendors ID through marker title
+        System.out.println("CURRENT VENDOR ID IN DIALOG METHOD:"
+                + updateCurrentVendorId(markerLat, markerLng));
+
         // update bottom sheet with found vendor's info
         updateVendorBottomSheetInfo(viewDialog, markerLat, markerLng);
 
@@ -372,6 +377,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this, R.style.SheetDialog);
         sosBottomDialog = bottomSheetDialog;
         bottomSheetDialog.setContentView(viewDialog);
+        bottomSheetDialog.setCancelable(false);
         bottomSheetDialog.show();
 
         // expand bottom dialog as default state
@@ -380,17 +386,48 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // click close icon to dismiss dialog
         viewDialog.findViewById(closeIcon).setOnClickListener(view -> {
+            // handle real-time database request cancellation
             if (currentVendorRef != null && currentRequestId != null) {
                 currentVendorRef.removeEventListener(sosRequestListener);
-                BookingHandler.removeSOSRequest(vendorsBookings, SosActivity.this,
-                        currentVendorId, currentRequestId);
+                System.out.println("VENDOR ID WHEN DISMISS ICON CLICKED: " + currentVendorId);
+                System.out.println("REQUEST ID WHEN DISMISS ICON CLICKED: " + currentRequestId);
+                BookingHandler.removeSOSRequest(
+                        vendorsBookings,
+                        SosActivity.this,
+                        currentVendorId,
+                        currentRequestId);
+                currentVendorId = null;
             }
-            currentVendorId = "";
-            bottomSheetDialog.dismiss();
+
+            // remove any pending delay process
             if (handlerTracker != null) handlerTracker.removeCallbacksAndMessages(null);
+
+            // dismiss waiting dialog
+            bottomSheetDialog.dismiss();
         });
 
         return viewDialog;
+    }
+
+    /**
+     * Method to update global current vendor id
+     */
+    private String updateCurrentVendorId(Double markerLat,
+                                         Double markerLng) {
+        for (Marker m : vendorsMarkersContainer) {
+            if (markerLat == m.getPosition().latitude &&
+                    markerLng == m.getPosition().longitude) {
+
+                // update global current vendor id
+                currentVendorId = vendorsResultContainer
+                        .get((vendorsMarkersContainer.indexOf(m)))
+                        .getId();
+
+                // stop finding
+                break;
+            }
+        }
+        return currentVendorId;
     }
 
     /**
