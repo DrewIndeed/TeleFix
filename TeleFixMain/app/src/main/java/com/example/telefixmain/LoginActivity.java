@@ -49,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
         // [END initialize_auth]
 
         // init progress dialog
-        cpd = new CustomProgressDialog(this);
+        cpd = new CustomProgressDialog(this, R.style.SheetDialog);
 
         // login contents fade in
         llLogin = findViewById(R.id.ll_login);

@@ -1,33 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="150dp"
-    android:layout_height="150dp"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/bmw_dark_blue"
-    android:orientation="vertical"
-    android:gravity="center">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="320dp"
+    android:layout_height="320dp"
+    app:cardBackgroundColor="@color/bmw_extreme_transparent"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="0dp"
+    app:contentPadding="0dp">
 
-    <com.github.ybq.android.spinkit.SpinKitView
-        android:id="@+id/spin_kit_of_dialog"
-        style="@style/SpinKitView.Large.CubeGrid"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"
-        android:layout_marginTop="35dp"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_gravity="center"
-        app:SpinKit_Color="@color/bmw_white" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bmw_dark_blue"
+        android:gravity="center"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/text_of_dialog"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"
-        android:layout_marginBottom="35dp"
-        android:text="Loading..."
-        android:textColor="@color/bmw_white"
-        tools:ignore="HardcodedText" />
-</LinearLayout>
+        <com.github.ybq.android.spinkit.SpinKitView
+            android:id="@+id/spin_kit_of_dialog"
+            style="@style/SpinKitView.Large.CubeGrid"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="40dp"
+            android:layout_marginTop="100dp"
+            android:layout_marginRight="40dp"
+            app:SpinKit_Color="@color/bmw_white" />
+
+        <TextView
+            android:id="@+id/text_of_dialog"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginBottom="100dp"
+            android:gravity="center"
+            android:text="Loading..."
+            android:textColor="@color/bmw_white"
+            android:textSize="18sp"
+            tools:ignore="HardcodedText" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

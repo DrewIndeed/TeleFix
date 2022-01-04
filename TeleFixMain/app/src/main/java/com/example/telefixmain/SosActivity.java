@@ -8,6 +8,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -312,7 +313,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
         updateVendorBottomSheetInfo(viewDialog, markerLat, markerLng);
 
         // construct bottom dialog
-        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this, R.style.SheetDialog);
         sosBottomDialog = bottomSheetDialog;
         bottomSheetDialog.setContentView(viewDialog);
         bottomSheetDialog.show();

@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StyleRes;
+import androidx.annotation.StyleableRes;
 
 import com.example.telefixmain.R;
 
@@ -16,8 +18,8 @@ public class CustomProgressDialog extends Dialog {
     View view;
 
     @SuppressLint("InflateParams")
-    public CustomProgressDialog(@NonNull Context context) {
-        super(context);
+    public CustomProgressDialog(@NonNull Context context, @StyleRes int theme) {
+        super(context, theme);
         getWindow().getAttributes().gravity = Gravity.CENTER;
         setTitle(null);
         view = LayoutInflater.from(context).inflate(R.layout.custom_progress_dialog, null);

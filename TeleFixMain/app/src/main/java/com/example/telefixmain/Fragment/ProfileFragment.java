@@ -75,7 +75,7 @@ public class ProfileFragment extends Fragment {
         fragmentActivity = getActivity();
 
         // init progress dialog
-        cpd = new CustomProgressDialog(Objects.requireNonNull(fragmentActivity));
+        cpd = new CustomProgressDialog(Objects.requireNonNull(fragmentActivity), R.style.SheetDialog);
 
         // root
         ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_profile,

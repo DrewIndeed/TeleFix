@@ -59,7 +59,7 @@ public class SignUpActivity extends AppCompatActivity {
         llSignup.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
 
         // init progress dialog
-        cpd = new CustomProgressDialog(this);
+        cpd = new CustomProgressDialog(this, R.style.SheetDialog);
 
         // toggle password
         pwdSignup = findViewById(R.id.pwd_signup);
