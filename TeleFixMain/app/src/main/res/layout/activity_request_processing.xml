@@ -8,6 +8,18 @@
     android:orientation="vertical"
     tools:context=".RequestProcessingActivity">
 
+    <Button
+        android:id="@+id/btn_mock_next_step"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Next step on DB" />
+
+    <Button
+        android:id="@+id/btn_force_refresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Force refresh" />
+
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/processing_request_gif"
         android:layout_width="250dp"

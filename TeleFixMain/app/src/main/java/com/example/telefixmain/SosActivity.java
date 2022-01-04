@@ -21,7 +21,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.example.telefixmain.Model.Booking.SOSMetadata;
 import com.example.telefixmain.Model.Vendor;
+import com.example.telefixmain.Util.BookingHandler;
 import com.example.telefixmain.Util.DatabaseHandler;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -39,11 +41,19 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.UUID;
 
 import pl.droidsonroids.gif.GifImageView;
 
@@ -72,8 +82,17 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
     // define location of Ho Chi Minh City, Vietnam
     private final LatLng HO_CHI_MINH = new LatLng(10.8231, 106.6297);
 
+    // Current user
+    // database objects
+    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private final FirebaseUser mUser = mAuth.getCurrentUser();
+
     // Firestore
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    // Realtime Database
+    private final FirebaseDatabase vendorsBookings = FirebaseDatabase.getInstance();
+    private DatabaseReference currentVendorRef;
 
     // xml
     RelativeLayout rlSos;
@@ -145,6 +164,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                     MarkerOptions markerOptions = new MarkerOptions()
                                             .position(LatLng)
                                             .title(finalTitle)
+                                            .snippet(vendor.getId())  // Get the ID for tracing (disable marker title later on)
                                             .icon(BitmapDescriptorFactory
                                                     .fromResource(R.drawable.map_marker));
 
@@ -187,6 +207,9 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // on markers clicked listener
         mMap.setOnMarkerClickListener(clickedMarker -> {
+            String clickedMarkerId = clickedMarker.getSnippet();  // Get the vendors ID through marker title
+            clickedMarker.hideInfoWindow(); // Not showing the non-sense ID string
+
             // get marker location info
             LatLng clickedMarkerLocation = clickedMarker.getPosition();
             Double clickedMarkerLat = clickedMarkerLocation.latitude;
@@ -203,49 +226,77 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                         // dismiss dialog before open a new one to avoid window leak
                         sosBottomDialog.dismiss();
 
+                        // Create request metadata
+                        String requestId = UUID.randomUUID().toString();
+                        long createdTimestamp = System.currentTimeMillis() / 1000L;
+
                         // waiting bottom dialog
                         View waitDialog = openBottomSheetDialog(
                                 R.layout.mechanic_waiting, R.id.mechanic_wait_close_icon,
                                 0.0, 0.0);
-
-                        // animate msg
                         TextView dialogMsg = waitDialog.findViewById(R.id.mechanic_wait_msg);
-                        dialogMsg.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
-
+                        ImageView closeDialogBtn = waitDialog.findViewById(R.id.mechanic_wait_close_icon);
                         // init waiting anim
                         lotteAboveMsg = waitDialog.findViewById(R.id.done_waiting_anim);
                         waitGif = waitDialog.findViewById(R.id.mechanic_wait_gif);
+                        // Create sos booking request on Realtime Database
+                        BookingHandler.sendSOSRequest(vendorsBookings, SosActivity.this,
+                                clickedMarkerId, mUser.getUid(), requestId, createdTimestamp,
+                                () -> {
+                                    // animate msg
+                                    dialogMsg.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
+                                    // Update current requested vendor
+                                    currentVendorRef = vendorsBookings.getReference(clickedMarkerId).child("sos").child("metadata").child(requestId);
+                                    System.out.println("Current Vendor DatabaseReference has been updated!");
+                                });
 
-                        // animate when found mechanic
-                        new Handler().postDelayed(() -> {
-                            // hide dialog dismiss ability
-                            ImageView closeDialogBtn = waitDialog.findViewById(R.id.mechanic_wait_close_icon);
-                            closeDialogBtn.setEnabled(false);
-                            closeDialogBtn.setVisibility(View.INVISIBLE);
-                            sosBottomDialog.setCancelable(false);
+                        // TODO: Set time out for mechanic waiting:
 
-                            // hide waiting gif
-                            waitGif.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out));
+                        // TODO: Set ValueEventListener that delay the onDataChange
+                        ValueEventListener sosRequestListener = new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                // Get Post object and use the values to update the UI
+                                SOSMetadata sosRequest = dataSnapshot.getValue(SOSMetadata.class);
+                                // animate when found mechanic
+                                // hide dialog dismiss ability
+                                if (!sosRequest.mechanicId.equals("")) {
+                                    closeDialogBtn.setEnabled(false);
+                                    closeDialogBtn.setVisibility(View.INVISIBLE);
+                                    sosBottomDialog.setCancelable(false);
 
-                            // lottie done anim
-                            lotteAboveMsg.setVisibility(View.VISIBLE);
-                            lotteAboveMsg.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
+                                    // hide waiting gif
+                                    waitGif.startAnimation(AnimationUtils.loadAnimation(SosActivity.this, R.anim.fade_out));
 
-                            // change msg
-                            dialogMsg.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out));
-                            dialogMsg.setText("Your mechanic is on his/her way!");
-                            dialogMsg.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
+                                    // lottie done anim
+                                    lotteAboveMsg.setVisibility(View.VISIBLE);
+                                    lotteAboveMsg.startAnimation(AnimationUtils.loadAnimation(SosActivity.this, R.anim.fade_in));
 
-                            // jump to mechanic arrival tracking activity
-                            new Handler().postDelayed(() -> {
-                                // dismiss dialog before open a new one to avoid window leak
-                                sosBottomDialog.dismiss();
+                                    // change msg
+                                    dialogMsg.startAnimation(AnimationUtils.loadAnimation(SosActivity.this, R.anim.fade_out));
+                                    dialogMsg.setText("Your mechanic is on his/her way!");
+                                    dialogMsg.startAnimation(AnimationUtils.loadAnimation(SosActivity.this, R.anim.fade_in));
 
-                                // start intent
-                                startActivity(new Intent(this, RequestProcessingActivity.class));
-                                finish();
-                            }, 4000);
-                        }, 3000);
+                                    // jump to mechanic arrival tracking activity
+                                    new Handler().postDelayed(() -> {
+                                        // dismiss dialog before open a new one to avoid window leak
+                                        sosBottomDialog.dismiss();
+
+                                        // start intent
+                                        startActivity(new Intent(SosActivity.this, RequestProcessingActivity.class));
+                                        finish();
+                                    }, 4000);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                // Getting Post failed, log a message
+                                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                            }
+                        };
+                        System.out.println("Done setting up ValueEventListener");
+                        currentVendorRef.addValueEventListener(sosRequestListener);
                     });
             return false;
         });
