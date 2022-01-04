@@ -8,7 +8,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -53,8 +52,6 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.UUID;
 
 import pl.droidsonroids.gif.GifImageView;
@@ -348,7 +345,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                 currentVendorId = "";
                                 sosBottomDialog.dismiss();
                             }
-                        }, 10000);
+                        }, 20000);
                     });
             return false;
         });
@@ -383,9 +380,11 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // click close icon to dismiss dialog
         viewDialog.findViewById(closeIcon).setOnClickListener(view -> {
-            currentVendorRef.removeEventListener(sosRequestListener);
-            BookingHandler.removeSOSRequest(vendorsBookings, SosActivity.this,
-                    currentVendorId, currentRequestId);
+            if (currentVendorRef != null && currentRequestId != null) {
+                currentVendorRef.removeEventListener(sosRequestListener);
+                BookingHandler.removeSOSRequest(vendorsBookings, SosActivity.this,
+                        currentVendorId, currentRequestId);
+            }
             currentVendorId = "";
             bottomSheetDialog.dismiss();
             if (handlerTracker != null) handlerTracker.removeCallbacksAndMessages(null);
