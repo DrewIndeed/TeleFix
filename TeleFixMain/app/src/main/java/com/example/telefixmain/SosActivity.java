@@ -265,6 +265,31 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
         // layout inflater
         View viewDialog = getLayoutInflater().inflate(inflatedLayout, null);
 
+        // update bottom sheet with found vendor's info
+        updateVendorBottomSheetInfo(viewDialog, markerLat, markerLng);
+
+        // construct bottom dialog
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        sosBottomDialog = bottomSheetDialog;
+        bottomSheetDialog.setContentView(viewDialog);
+        bottomSheetDialog.show();
+
+        // expand bottom dialog as default state
+        BottomSheetBehavior.from((View) viewDialog.getParent())
+                .setState(BottomSheetBehavior.STATE_EXPANDED);
+
+        // click close icon to dismiss dialog
+        viewDialog.findViewById(closeIcon)
+                .setOnClickListener(view -> bottomSheetDialog.dismiss());
+
+        return viewDialog;
+    }
+
+    /**
+     * Method to update bottom sheet content when a vendor marker is clicked
+     */
+    @SuppressLint("SetTextI18n")
+    private void updateVendorBottomSheetInfo(View view, Double markerLat, Double markerLng) {
         // change view inner content
         for (Vendor vd : vendorsResultContainer) {
             // compare lat lng to get the representative vendor
@@ -283,14 +308,14 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                 String closeTimeValue = vd.getCloseTime();
 
                 // binding text view for bottom sheet info updates
-                sheetLocation = viewDialog.findViewById(R.id.sheet_location_info);
-                sheetRating = viewDialog.findViewById(R.id.rating_value);
-                sheetAddress = viewDialog.findViewById(R.id.address_content);
-                sheetContact = viewDialog.findViewById(R.id.phone_content);
-                sheetWebsite = viewDialog.findViewById(R.id.website_content);
-                sheetOpenCloseTime = viewDialog.findViewById(R.id.open_close_content);
+                sheetLocation = view.findViewById(R.id.sheet_location_info);
+                sheetRating = view.findViewById(R.id.rating_value);
+                sheetAddress = view.findViewById(R.id.address_content);
+                sheetContact = view.findViewById(R.id.phone_content);
+                sheetWebsite = view.findViewById(R.id.website_content);
+                sheetOpenCloseTime = view.findViewById(R.id.open_close_content);
                 Picasso.get().load(vd.getImg())
-                        .into((ImageView) viewDialog.findViewById(R.id.iv_vendor_image_1));
+                        .into((ImageView) view.findViewById(R.id.iv_vendor_image_1));
 
                 // update sheet display info
                 // always available values
@@ -311,29 +336,14 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                 break;
             }
         }
-
-        // construct bottom dialog
-        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
-        sosBottomDialog = bottomSheetDialog;
-        bottomSheetDialog.setContentView(viewDialog);
-        bottomSheetDialog.show();
-
-        // expand bottom dialog as default state
-        BottomSheetBehavior.from((View) viewDialog.getParent())
-                .setState(BottomSheetBehavior.STATE_EXPANDED);
-
-        // click close icon to dismiss dialog
-        viewDialog.findViewById(closeIcon)
-                .setOnClickListener(view -> bottomSheetDialog.dismiss());
-
-        return viewDialog;
     }
 
     /**
      * Method to handle the permission request (asking from 'else' statement from above)
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         // if the request is as requested as above
