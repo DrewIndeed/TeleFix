@@ -109,7 +109,7 @@
                 tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/bnt_view_price_list"
+                android:id="@+id/btn_view_price_list"
                 android:layout_width="172dp"
                 android:layout_height="48dp"
                 android:layout_alignParentEnd="true"

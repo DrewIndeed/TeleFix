@@ -71,22 +71,22 @@ public class MarkerHandler {
     public static void toggleMarkersByZoomLevel(int zoomLevel,
                                                 ArrayList<Marker> vendorsMarkersContainer) {
         if (zoomLevel <= 9) {
-            enableMarkersByAmount(1, vendorsMarkersContainer);
+            enableMarkersByAmount(0, vendorsMarkersContainer);
         } else if (zoomLevel <= 10) {
-            enableMarkersByAmount(3, vendorsMarkersContainer);
+            enableMarkersByAmount(1, vendorsMarkersContainer);
         } else if (zoomLevel <= 14) {
             switch (zoomLevel) {
                 case 11:
-                    enableMarkersByAmount(5, vendorsMarkersContainer);
+                    enableMarkersByAmount(3, vendorsMarkersContainer);
                     break;
                 case 12:
-                    enableMarkersByAmount(8, vendorsMarkersContainer);
+                    enableMarkersByAmount(5, vendorsMarkersContainer);
                     break;
                 case 13:
-                    enableMarkersByAmount(16, vendorsMarkersContainer);
+                    enableMarkersByAmount(12, vendorsMarkersContainer);
                     break;
                 case 14:
-                    enableMarkersByAmount(20, vendorsMarkersContainer);
+                    enableMarkersByAmount(18, vendorsMarkersContainer);
                     break;
                 default:
                     break;
