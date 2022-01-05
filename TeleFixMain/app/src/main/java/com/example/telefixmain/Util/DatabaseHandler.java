@@ -121,31 +121,81 @@ public class DatabaseHandler {
                     Toast.makeText(context, "Updated user failed!", Toast.LENGTH_SHORT).show();
                 });
     }
+
     /**
-     * Method to update vendor's info
+     * Method to get vendors' info
      */
     public static void getAllVendors(FirebaseFirestore db, Context context,
                                      ArrayList<Vendor> resultContainer,
                                      Runnable callback) {
-        // Add a new document with a generated ID
+        // target "vendors" collection
         db.collection("vendors")
-            .get() // Get data from Firestore
-            .addOnCompleteListener(task -> {
+                .get() // Get data from Firestore
+                .addOnCompleteListener(task -> {
 
-                // Loop through document and add into zones container
-                for (DocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
-                    Vendor vendor = doc.toObject(Vendor.class);
-                    resultContainer.add(vendor);
-                }
-                // run call back function
-                callback.run();
+                    // Loop through document and add into vendors container
+                    for (DocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
+                        Vendor vendor = doc.toObject(Vendor.class);
+                        resultContainer.add(vendor);
+                    }
+                    // run call back function
+                    callback.run();
 
-                // success msg
-                System.out.println("FETCH VENDORS SUCCESSFULLY!");
-            })
-            .addOnFailureListener(e -> {
-                // fail msg
-                System.out.println("FETCH VENDORS FAILED!");
-            });
+                    // success msg
+                    System.out.println("FETCH VENDORS SUCCESSFULLY!");
+                })
+                .addOnFailureListener(e -> {
+                    // fail msg
+                    System.out.println("FETCH VENDORS FAILED!");
+                    System.out.println("FETCH VENDORS ERROR: " + e.getMessage());
+                });
+    }
+
+    /**
+     * Method to get vendors' info
+     */
+    @SuppressWarnings("unchecked")
+    public static void getVendorPriceListById(FirebaseFirestore db,
+                                              Context context,
+                                              String vendorId,
+                                              HashMap<String, String> inspectionPriceContainer,
+                                              HashMap<String, String> repairPriceContainer,
+                                              Runnable callback) {
+        // target "vendors" collection
+        db.collection("vendors")
+                .document(vendorId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // result document
+                        DocumentSnapshot document = task.getResult();
+
+                        // map of inspection prices
+                        HashMap<String, Object> inspectionPriceMap = (HashMap<String, Object>)
+                                Objects.requireNonNull(document.getData()).get("inspectionPrice");
+
+                        // map of repair prices
+                        HashMap<String, Object> repairPriceMap = (HashMap<String, Object>)
+                                Objects.requireNonNull(document.getData()).get("repairPrice");
+
+                        // inject data into containers
+                        for (String ip : Objects.requireNonNull(inspectionPriceMap).keySet())
+                            inspectionPriceContainer.put(ip, (String) inspectionPriceMap.get(ip));
+
+                        for (String rp : Objects.requireNonNull(repairPriceMap).keySet())
+                            repairPriceContainer.put(rp, (String) repairPriceMap.get(rp));
+
+                        // run callback function
+                        callback.run();
+
+                        // success msg
+                        System.out.println("FETCH VENDOR'S PRICE LIST SUCCESSFULLY!");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // fail msg
+                    System.out.println("FETCH VENDOR'S PRICE LIST FAILED!");
+                    System.out.println("FETCH VENDOR'S PRICE LIST ERROR: " + e.getMessage());
+                });
     }
 }
