@@ -53,7 +53,6 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -391,26 +390,29 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
         BottomSheetBehavior.from((View) viewDialog.getParent())
                 .setState(BottomSheetBehavior.STATE_EXPANDED);
 
-        // show price list button
-        HashMap<String, String> inspectionPriceContainer = new HashMap<>();
-        HashMap<String, String> repairPriceContainer = new HashMap<>();
-        viewDialog.findViewById(R.id.btn_view_price_list).setOnClickListener(view -> {
-            // get prices of target vendor
-            DatabaseHandler.getVendorPriceListById(
-                    db, this,
-                    currentVendorId,
-                    inspectionPriceContainer,
-                    repairPriceContainer, () -> {
-                        // log to keep track of data containers
-                        System.out.println(inspectionPriceContainer.toString());
-                        System.out.println(repairPriceContainer.toString());
+        // if it is the firsts bottom dialog of the marker
+        if (closeIcon != R.id.mechanic_wait_close_icon) {
+            // show price list button
+            HashMap<String, String> inspectionPriceContainer = new HashMap<>();
+            HashMap<String, String> repairPriceContainer = new HashMap<>();
+            viewDialog.findViewById(R.id.btn_view_price_list).setOnClickListener(view -> {
+                // get prices of target vendor
+                DatabaseHandler.getVendorPriceListById(
+                        db, this,
+                        currentVendorId,
+                        inspectionPriceContainer,
+                        repairPriceContainer, () -> {
+                            // log to keep track of data containers
+                            System.out.println(inspectionPriceContainer.toString());
+                            System.out.println(repairPriceContainer.toString());
 
-                        // open custom dialog to view prices
-                        cpd = new CustomProgressDialog(this, R.style.SheetDialog,
-                                R.layout.custom_pricelist_dialog);
-                        cpd.show();
-                    });
-        });
+                            // open custom dialog to view prices
+                            cpd = new CustomProgressDialog(this, R.style.SheetDialog,
+                                    R.layout.custom_pricelist_dialog);
+                            cpd.show();
+                        });
+            });
+        }
 
         // click close icon to dismiss dialog
         viewDialog.findViewById(closeIcon).setOnClickListener(view -> {
