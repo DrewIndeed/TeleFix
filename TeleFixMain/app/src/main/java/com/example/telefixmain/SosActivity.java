@@ -257,7 +257,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                         sosRequestListener = new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                // Get Post object and use the values to update the UI
+                                // get SOSRequest object and use the values to update the UI
                                 SOSMetadata sosRequest = dataSnapshot.getValue(SOSMetadata.class);
                                 // animate when found mechanic
                                 // hide dialog dismiss ability
@@ -295,15 +295,16 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                                 SosActivity.this,
                                                 currentVendorId,
                                                 currentRequestId,
-                                                startProgressTracking);
+                                                startProgressTracking, () -> {
+                                                    // start intent
+                                                    Intent i = new Intent(SosActivity.this,
+                                                            RequestProcessingActivity.class);
+                                                    i.putExtra("currentVendorId", currentVendorId);
+                                                    i.putExtra("currentRequestId", currentRequestId);
+                                                    startActivity(i);
+                                                    finish();
+                                                });
 
-                                        // start intent
-                                        Intent i = new Intent(SosActivity.this,
-                                                RequestProcessingActivity.class);
-                                        i.putExtra("currentVendorId", currentVendorId);
-                                        i.putExtra("currentRequestId", currentRequestId);
-                                        startActivity(i);
-                                        finish();
                                     }, 4000);
                                 }
                             }

@@ -50,14 +50,18 @@ public class BookingHandler {
                                                Context context,
                                                String vendorId,
                                                String requestId,
-                                               long timeAccepted) {
+                                               long timeAccepted,
+                                               Runnable callback) {
         DatabaseReference vendorRef = rootNode.getReference(vendorId);
 
         SOSProgress sosProgress = new SOSProgress(timeAccepted);
 
         vendorRef.child("sos").child("progress").child(requestId).setValue(sosProgress)
-                .addOnCompleteListener(task -> Toast.makeText(context,
-                        "Progress tracking has been initialized successfully!", Toast.LENGTH_SHORT).show())
+                .addOnCompleteListener(task -> {
+                    Toast.makeText(context,
+                            "Progress tracking has been initialized successfully!", Toast.LENGTH_SHORT).show();
+                    callback.run();
+                })
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
                         e.getMessage(), Toast.LENGTH_SHORT).show());
     }
@@ -71,12 +75,14 @@ public class BookingHandler {
         DatabaseReference progressRef = rootNode.getReference(vendorId).child("sos").child("progress").child(requestId);
 
         switch (type) {
-            case "abort":
+            case "aborted":
                 progressRef.child("isAborted").setValue(true)
                     .addOnCompleteListener(task -> Toast.makeText(context,
                             "Unexpected problem from Mechanic. Please try another one.", Toast.LENGTH_SHORT).show())
                     .addOnFailureListener(e -> Toast.makeText(context, "" +
                             e.getMessage(), Toast.LENGTH_SHORT).show());
+
+//                addToEventFireStore();
                 break;
             case "arrived":
                 progressRef.child("startFixingTimestamp").setValue(timeStamp)
@@ -91,7 +97,12 @@ public class BookingHandler {
                             "Mechanic has finished fixing. Start issue billing.", Toast.LENGTH_SHORT).show())
                     .addOnFailureListener(e -> Toast.makeText(context, "" +
                             e.getMessage(), Toast.LENGTH_SHORT).show());
+
+                // init billing
+//                intibilling()
                 break;
         }
     }
+
+//    initBilling()
 }

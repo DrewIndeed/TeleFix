@@ -9,16 +9,22 @@
     tools:context=".RequestProcessingActivity">
 
     <Button
-        android:id="@+id/btn_mock_next_step"
+        android:id="@+id/btn_mock_arrived"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Next step on DB" />
+        android:text="Arrived" />
 
     <Button
-        android:id="@+id/btn_force_refresh"
+        android:id="@+id/btn_mock_fixed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Force refresh" />
+        android:text="Fixed" />
+
+    <Button
+        android:id="@+id/btn_abort"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Aborted" />
 
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/processing_request_gif"
