@@ -5,14 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.telefixmain.Model.Booking.SOSMetadata;
 import com.example.telefixmain.Model.Booking.SOSProgress;
 import com.example.telefixmain.Util.BookingHandler;
 import com.google.firebase.database.DataSnapshot;
@@ -53,9 +50,10 @@ public class RequestProcessingActivity extends AppCompatActivity {
         System.out.println("RequestID: " + requestId + " ------------------ " + "VendorID: " + vendorId);
 
         // mock button
-        Button btnArrived = findViewById(R.id.btn_mock_arrived);
-        Button btnFixed = findViewById(R.id.btn_mock_fixed);
-        Button btnAborted = findViewById(R.id.btn_abort);
+        Button MechanicBtnArrived = findViewById(R.id.btn_mock_arrived);
+        Button MechanicBtnFixed = findViewById(R.id.btn_mock_fixed);
+        Button UserBtnCancel = findViewById(R.id.btn_abort);
+        Button UserBtnProceedPayment = findViewById(R.id.btn_accept_billing);
 
         // add steps for step view
         List<String> steps = new ArrayList<>();
@@ -65,22 +63,20 @@ public class RequestProcessingActivity extends AppCompatActivity {
         steps.add("Proceed Payment");
         stepView.setSteps(steps);
 
-        stepView.go(currentStep, true);
+        stepView.go(1, true);
         // animate going from step 1 to step 2
 //        autoGo();
-        btnArrived.setOnClickListener(view -> {
+        MechanicBtnArrived.setOnClickListener(view -> {
             BookingHandler.updateProgressFromMechanic(vendorBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "arrived");
         });
 
-        btnFixed.setOnClickListener(view -> {
+        MechanicBtnFixed.setOnClickListener(view -> {
             BookingHandler.updateProgressFromMechanic(vendorBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "fixed");
         });
 
-        btnAborted.setOnClickListener(view -> {
+        UserBtnCancel.setOnClickListener(view -> {
             BookingHandler.updateProgressFromMechanic(vendorBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "aborted");
         });
-
-        //
 
         DatabaseReference currentProgress = vendorBookings.getReference(vendorId).child("sos").child("progress").child(requestId);
         // set ValueEventListener that delay the onDataChange
@@ -91,24 +87,14 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
                 if (Objects.requireNonNull(sosProgress).getAbortedTime() == 0) {
                     if (sosProgress.getStartFixingTimestamp() != 0) {
-                        currentStep = 1;
-                        stepView.go(currentStep, true);
-                    }
-                    else if (sosProgress.getStartBillingTimestamp() != 0) {
                         currentStep = 2;
                         stepView.go(currentStep, true);
+                        UserBtnCancel.setVisibility(View.VISIBLE);
                     }
-                    else if (sosProgress.getStartBillingTimestamp() != 0 && sosProgress.getStartFixingTimestamp() != 0){
-                        stepView.done(true);
-                        findViewById(R.id.to_payment_button).setVisibility(View.VISIBLE);
-                        findViewById(R.id.to_payment_button).startAnimation(
-                                AnimationUtils.loadAnimation(RequestProcessingActivity.this, R.anim.fade_in));
-
-                        // DUMMY
-                        findViewById(R.id.to_payment_button).setOnClickListener(view -> {
-                            startActivity(new Intent(RequestProcessingActivity.this, MainActivity.class));
-                            finish();
-                        });
+                    if (sosProgress.getStartFixingTimestamp() != 0 && sosProgress.getStartBillingTimestamp() != 0) {
+                        currentStep = 3;
+                        stepView.go(currentStep, true);
+                        UserBtnProceedPayment.setVisibility(View.VISIBLE);
                     }
                 }
                 else {
@@ -123,6 +109,19 @@ public class RequestProcessingActivity extends AppCompatActivity {
         };
 
         currentProgress.addValueEventListener(sosProgressListener);
+        UserBtnProceedPayment.setOnClickListener(view -> {
+            stepView.done(true);
+
+            findViewById(R.id.to_payment_button).setVisibility(View.VISIBLE);
+            findViewById(R.id.to_payment_button).startAnimation(
+                    AnimationUtils.loadAnimation(RequestProcessingActivity.this, R.anim.fade_in));
+
+            // DUMMY
+            findViewById(R.id.to_payment_button).setOnClickListener(view1 -> {
+                startActivity(new Intent(RequestProcessingActivity.this, MainActivity.class));
+                finish();
+            });
+        });
 
     }
 

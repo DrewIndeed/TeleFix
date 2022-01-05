@@ -204,33 +204,5 @@ public class DatabaseHandler {
                 });
     }
 
-    /**
-     * Method to get single vendor's price list
-     */
-    public static void getVendorPriceList (FirebaseFirestore db, Context context,
-                                           String vendorId,
-                                           HashMap<String, String> priceList,
-                                           Runnable callback) {
-        DocumentReference docRef= db.collection("vendors").document(vendorId);
 
-        docRef.get()
-                .addOnCompleteListener(task -> {
-
-                })
-
-//                new OnCompleteListener<DocumentSnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//
-//                    }
-//                }
-//
-//
-//    })
-                .addOnFailureListener(e -> {
-
-
-                });
-
-    }
 }

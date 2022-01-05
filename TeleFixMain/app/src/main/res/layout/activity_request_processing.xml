@@ -24,7 +24,16 @@
         android:id="@+id/btn_abort"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Aborted" />
+        android:backgroundTint="@color/bmw_dark_gray"
+        android:visibility="invisible"
+        android:text="Cancel" />
+    <Button
+        android:id="@+id/btn_accept_billing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/bmw_red"
+        android:visibility="invisible"
+        android:text="View Bill " />
 
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/processing_request_gif"
