@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.example.telefixmain.Dialog.CustomProgressDialog;
 import com.example.telefixmain.Model.Booking.SOSMetadata;
 import com.example.telefixmain.Model.Vendor;
 import com.example.telefixmain.Util.BookingHandler;
@@ -51,6 +52,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -115,6 +118,9 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
     // pending post delay tracker
     private Handler handlerTracker;
+
+    // custom progress dialog
+    CustomProgressDialog cpd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -384,6 +390,27 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
         // expand bottom dialog as default state
         BottomSheetBehavior.from((View) viewDialog.getParent())
                 .setState(BottomSheetBehavior.STATE_EXPANDED);
+
+        // show price list button
+        HashMap<String, String> inspectionPriceContainer = new HashMap<>();
+        HashMap<String, String> repairPriceContainer = new HashMap<>();
+        viewDialog.findViewById(R.id.btn_view_price_list).setOnClickListener(view -> {
+            // get prices of target vendor
+            DatabaseHandler.getVendorPriceListById(
+                    db, this,
+                    currentVendorId,
+                    inspectionPriceContainer,
+                    repairPriceContainer, () -> {
+                        // log to keep track of data containers
+                        System.out.println(inspectionPriceContainer.toString());
+                        System.out.println(repairPriceContainer.toString());
+
+                        // open custom dialog to view prices
+                        cpd = new CustomProgressDialog(this, R.style.SheetDialog,
+                                R.layout.custom_pricelist_dialog);
+                        cpd.show();
+                    });
+        });
 
         // click close icon to dismiss dialog
         viewDialog.findViewById(closeIcon).setOnClickListener(view -> {
