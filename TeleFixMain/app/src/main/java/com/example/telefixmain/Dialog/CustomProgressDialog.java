@@ -26,6 +26,15 @@ public class CustomProgressDialog extends Dialog {
         setContentView(view);
     }
 
+    @SuppressLint("InflateParams")
+    public CustomProgressDialog(@NonNull Context context, @StyleRes int theme, int layoutSrc) {
+        super(context, theme);
+        getWindow().getAttributes().gravity = Gravity.CENTER;
+        setTitle(null);
+        view = LayoutInflater.from(context).inflate(layoutSrc, null);
+        setContentView(view);
+    }
+
     @Override
     public void setOnDismissListener(OnDismissListener listener) {
         super.setOnDismissListener(listener);
