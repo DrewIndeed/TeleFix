@@ -30,22 +30,6 @@ public class BookingHandler {
         callback.run();
     }
 
-    public static void createProgressTracking (FirebaseDatabase rootNode,
-                                               Context context,
-                                               String vendorId,
-                                               String requestId,
-                                               long timeAccepted) {
-        DatabaseReference vendorRef = rootNode.getReference(vendorId);
-
-        SOSProgress sosProgress = new SOSProgress(timeAccepted);
-
-        vendorRef.child("sos").child("metadata").child(requestId).setValue(sosProgress)
-                .addOnCompleteListener(task -> Toast.makeText(context,
-                        "Progress tracking has been initialized successfully!", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(context, "" +
-                        e.getMessage(), Toast.LENGTH_SHORT).show());
-    }
-
     public static void removeSOSRequest(FirebaseDatabase rootNode,
                                         Context context,
                                         String vendorId,
@@ -58,5 +42,54 @@ public class BookingHandler {
                         "Request cancelled!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
                         e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    public static void createProgressTracking (FirebaseDatabase rootNode,
+                                               Context context,
+                                               String vendorId,
+                                               String requestId,
+                                               long timeAccepted) {
+        DatabaseReference vendorRef = rootNode.getReference(vendorId);
+
+        SOSProgress sosProgress = new SOSProgress(timeAccepted);
+
+        vendorRef.child("sos").child("progress").child(requestId).setValue(sosProgress)
+                .addOnCompleteListener(task -> Toast.makeText(context,
+                        "Progress tracking has been initialized successfully!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(context, "" +
+                        e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    public static void updateProgressFromMechanic (FirebaseDatabase rootNode,
+                                       Context context,
+                                       String vendorId,
+                                       String requestId,
+                                       long timeStamp,
+                                       String type) {
+        DatabaseReference progressRef = rootNode.getReference(vendorId).child("sos").child("progress").child(requestId);
+
+        switch (type) {
+            case "abort":
+                progressRef.child("isAborted").setValue(true)
+                    .addOnCompleteListener(task -> Toast.makeText(context,
+                            "Unexpected problem from Mechanic. Please try another one.", Toast.LENGTH_SHORT).show())
+                    .addOnFailureListener(e -> Toast.makeText(context, "" +
+                            e.getMessage(), Toast.LENGTH_SHORT).show());
+                break;
+            case "arrived":
+                progressRef.child("startFixingTimestamp").setValue(timeStamp)
+                    .addOnCompleteListener(task -> Toast.makeText(context,
+                            "Mechanic has arrived. Start fixing.", Toast.LENGTH_SHORT).show())
+                    .addOnFailureListener(e -> Toast.makeText(context, "" +
+                            e.getMessage(), Toast.LENGTH_SHORT).show());
+                break;
+            case "fixed":
+                progressRef.child("startBillingTimestamp").setValue(timeStamp)
+                    .addOnCompleteListener(task -> Toast.makeText(context,
+                            "Mechanic has finished fixing. Start issue billing.", Toast.LENGTH_SHORT).show())
+                    .addOnFailureListener(e -> Toast.makeText(context, "" +
+                            e.getMessage(), Toast.LENGTH_SHORT).show());
+                break;
+        }
     }
 }
