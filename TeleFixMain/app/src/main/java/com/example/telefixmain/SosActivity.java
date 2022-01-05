@@ -399,7 +399,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                             currentRequestId);
                     currentVendorId = null;
                 }
-            
+
             // remove any pending delay process
             if (handlerTracker != null) handlerTracker.removeCallbacksAndMessages(null);
 

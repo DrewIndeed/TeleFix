@@ -8,6 +8,8 @@ import com.example.telefixmain.Model.Booking.SOSProgress;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.HashMap;
+
 public class BookingHandler {
     public static void sendSOSRequest(FirebaseDatabase rootNode,
                                       Context context,

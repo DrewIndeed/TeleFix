@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.shuhart.stepview.StepView;
 
 import java.util.ArrayList;
@@ -17,6 +19,9 @@ import java.util.List;
 public class RequestProcessingActivity extends AppCompatActivity {
     // xml
     StepView stepView;
+
+    // database reference for progress tracking
+    private FirebaseDatabase vendorBookings = FirebaseDatabase.getInstance();
 
     // keep track of currentStep
     private int currentStep = 0;

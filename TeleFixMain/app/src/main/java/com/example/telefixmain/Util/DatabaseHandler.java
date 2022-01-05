@@ -6,8 +6,13 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vendor;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -147,5 +152,35 @@ public class DatabaseHandler {
                 // fail msg
                 System.out.println("FETCH VENDORS FAILED!");
             });
+    }
+
+    /**
+     * Method to get single vendor's price list
+     */
+    public static void getVendorPriceList (FirebaseFirestore db, Context context,
+                                           String vendorId,
+                                           HashMap<String, String> priceList,
+                                           Runnable callback) {
+        DocumentReference docRef= db.collection("vendors").document(vendorId);
+
+        docRef.get()
+                .addOnCompleteListener(task -> {
+
+                })
+
+//                new OnCompleteListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//
+//                    }
+//                }
+//
+//
+//    })
+                .addOnFailureListener(e -> {
+
+
+                });
+
     }
 }
