@@ -387,18 +387,19 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
         // click close icon to dismiss dialog
         viewDialog.findViewById(closeIcon).setOnClickListener(view -> {
             // handle real-time database request cancellation
-            if (currentVendorRef != null && currentRequestId != null) {
-                currentVendorRef.removeEventListener(sosRequestListener);
-                System.out.println("VENDOR ID WHEN DISMISS ICON CLICKED: " + currentVendorId);
-                System.out.println("REQUEST ID WHEN DISMISS ICON CLICKED: " + currentRequestId);
-                BookingHandler.removeSOSRequest(
-                        vendorsBookings,
-                        SosActivity.this,
-                        currentVendorId,
-                        currentRequestId);
-                currentVendorId = null;
-            }
-
+            if (closeIcon == R.id.mechanic_wait_close_icon) // Check whether in view or wait or mode {
+                if (currentVendorRef != null && currentRequestId != null) {
+                    currentVendorRef.removeEventListener(sosRequestListener);
+                    System.out.println("VENDOR ID WHEN DISMISS ICON CLICKED: " + currentVendorId);
+                    System.out.println("REQUEST ID WHEN DISMISS ICON CLICKED: " + currentRequestId);
+                    BookingHandler.removeSOSRequest(
+                            vendorsBookings,
+                            SosActivity.this,
+                            currentVendorId,
+                            currentRequestId);
+                    currentVendorId = null;
+                }
+            
             // remove any pending delay process
             if (handlerTracker != null) handlerTracker.removeCallbacksAndMessages(null);
 
