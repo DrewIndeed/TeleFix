@@ -3,9 +3,11 @@ package com.example.telefixmain;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentContainerView;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -22,6 +24,8 @@ import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.telefixmain.Dialog.CustomProgressDialog;
+import com.example.telefixmain.Fragment.HomeFragment;
+import com.example.telefixmain.Fragment.PriceListFragment;
 import com.example.telefixmain.Model.Booking.SOSMetadata;
 import com.example.telefixmain.Model.Vendor;
 import com.example.telefixmain.Util.BookingHandler;
@@ -117,9 +121,6 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
     // pending post delay tracker
     private Handler handlerTracker;
-
-    // custom progress dialog
-    CustomProgressDialog cpd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -405,11 +406,21 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                             System.out.println(inspectionPriceContainer.toString());
                             System.out.println(repairPriceContainer.toString());
 
-                            // open custom dialog to view prices
-                            cpd = new CustomProgressDialog(this, R.style.SheetDialog,
-                                    R.layout.custom_pricelist_dialog);
-                            cpd.show();
+                            // disable map interactions when price list is on
+                            mMap.getUiSettings().setAllGesturesEnabled(false);
+
+                            // create instance of price list fragment
+                            PriceListFragment temp = new PriceListFragment(sosBottomDialog, mMap);
+
+                            // show price list fragment
+                            getSupportFragmentManager().beginTransaction().setCustomAnimations(
+                                    R.anim.enter_from_right,
+                                    R.anim.exit_to_left,
+                                    R.anim.enter_from_left,
+                                    R.anim.exit_to_right
+                            ).replace(R.id.rl_sos, temp).commit();
                         });
+                sosBottomDialog.dismiss();
             });
         }
 
