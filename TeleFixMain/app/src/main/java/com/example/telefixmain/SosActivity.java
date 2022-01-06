@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentContainerView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.example.telefixmain.Adapter.PriceListAdapter;
 import com.example.telefixmain.Dialog.CustomProgressDialog;
 import com.example.telefixmain.Fragment.HomeFragment;
 import com.example.telefixmain.Fragment.PriceListFragment;
@@ -118,6 +120,10 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
     // results containers
     ArrayList<Vendor> vendorsResultContainer = new ArrayList<>();
     ArrayList<Marker> vendorsMarkersContainer = new ArrayList<>();
+
+    // array list to contain hash maps of prices information
+    ArrayList<HashMap<String, String>> inspectionPricesHashMapList;
+    ArrayList<HashMap<String, String>> repairPricesHashMapList;
 
     // pending post delay tracker
     private Handler handlerTracker;
@@ -406,11 +412,28 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                             System.out.println(inspectionPriceContainer.toString());
                             System.out.println(repairPriceContainer.toString());
 
+                            // inject data
+                            inspectionPricesHashMapList = new ArrayList<>();
+                            repairPricesHashMapList = new ArrayList<>();
+                            for (String key : inspectionPriceContainer.keySet()) {
+                                HashMap<String, String> tempContainer = new HashMap<>();
+                                tempContainer.put("serviceName", key);
+                                tempContainer.put("servicePrice", inspectionPriceContainer.get(key) + ".000 VND");
+                                inspectionPricesHashMapList.add(tempContainer);
+                            }
+                            for (String key : repairPriceContainer.keySet()) {
+                                HashMap<String, String> tempContainer = new HashMap<>();
+                                tempContainer.put("serviceName", key);
+                                tempContainer.put("servicePrice", repairPriceContainer.get(key) + ".000 VND");
+                                repairPricesHashMapList.add(tempContainer);
+                            }
+
                             // disable map interactions when price list is on
                             mMap.getUiSettings().setAllGesturesEnabled(false);
 
                             // create instance of price list fragment
-                            PriceListFragment temp = new PriceListFragment(sosBottomDialog, mMap);
+                            PriceListFragment temp = new PriceListFragment(sosBottomDialog, mMap,
+                                    inspectionPricesHashMapList, repairPricesHashMapList);
 
                             // show price list fragment
                             getSupportFragmentManager().beginTransaction().setCustomAnimations(
