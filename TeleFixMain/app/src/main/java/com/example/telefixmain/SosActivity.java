@@ -436,9 +436,9 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                 String formattedPrice;
                                 String currentPrice = Objects.requireNonNull(inspectionPriceContainer.get(key));
                                 if (Integer.parseInt(currentPrice) >= 1000) {
-                                    formattedPrice = currentPrice.charAt(0) + ".000.000 VND";
+                                    formattedPrice = currentPrice.charAt(0) + ",000,000 VND";
                                 } else {
-                                    formattedPrice = currentPrice + ".000 VND";
+                                    formattedPrice = currentPrice + ",000 VND";
                                 }
                                 tempContainer.put("servicePrice", formattedPrice);
                                 inspectionPricesHashMapList.add(tempContainer);

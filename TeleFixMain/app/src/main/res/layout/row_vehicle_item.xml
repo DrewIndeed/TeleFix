@@ -2,12 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="70dp"
+    android:layout_height="90dp"
     android:layout_marginTop="15dp"
     android:layout_marginBottom="15dp"
     android:background="@drawable/custom_btn_bg_15"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
 
     <TextView
         android:id="@+id/tv_vehicle_title_in_vehicle_list"
@@ -15,9 +17,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="25dp"
         android:layout_marginEnd="25dp"
+        android:gravity="center"
         android:text="Brand Model Year"
         android:textColor="@color/bmw_dark_blue"
-        android:textSize="18sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         tools:ignore="HardcodedText" />
 
@@ -27,8 +30,21 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="25dp"
         android:layout_marginEnd="25dp"
-        android:text="Color: Neptune Blue"
+        android:gravity="center"
+        android:text="Neptune Blue"
         android:textColor="@color/bmw_light_blue"
-        android:textSize="16sp"
+        android:textSize="18sp"
+        tools:ignore="HardcodedText,TextContrastCheck" />
+
+    <TextView
+        android:id="@+id/tv_number_plate_in_vehicle_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        android:gravity="center"
+        android:text="56S - 4575"
+        android:textColor="@color/bmw_red"
+        android:textSize="18sp"
         tools:ignore="HardcodedText,TextContrastCheck" />
 </LinearLayout>

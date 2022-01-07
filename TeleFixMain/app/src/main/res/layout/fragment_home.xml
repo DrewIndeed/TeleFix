@@ -32,8 +32,8 @@
             android:id="@+id/tv_name_home"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:letterSpacing="0.03"
             android:gravity="center_vertical"
+            android:letterSpacing="0.03"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
             android:text="User's name"
@@ -59,15 +59,15 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="170dp"
+            android:layout_height="180dp"
             android:gravity="center"
             android:orientation="horizontal">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cv_sos_home"
-                android:layout_width="160dp"
-                android:layout_height="160dp"
-                android:layout_marginEnd="30dp"
+                android:layout_width="170dp"
+                android:layout_height="170dp"
+                android:layout_marginEnd="35dp"
                 android:clickable="true"
                 android:elevation="5dp"
                 android:focusable="true"
@@ -101,8 +101,8 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cv_maintain_home"
-                android:layout_width="160dp"
-                android:layout_height="160dp"
+                android:layout_width="170dp"
+                android:layout_height="170dp"
                 android:clickable="true"
                 android:elevation="5dp"
                 android:focusable="true"
@@ -152,14 +152,19 @@
             tools:ignore="HardcodedText,TextContrastCheck" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_inspection_prices"
-            android:layout_margin="15dp"
+            android:id="@+id/rv_vehicle_list"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="20dp"
             android:background="@drawable/custom_btn_bg_14"
             android:padding="15dp"
-            android:layout_width="match_parent"
-            android:layout_height="300dp" />
+            android:visibility="gone" />
 
         <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_register_vehicle"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginStart="15dp"
@@ -174,8 +179,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:gravity="center"
             android:layout_marginBottom="150dp"
+            android:gravity="center"
             android:letterSpacing="0.08"
             android:text='Click "+" to register a vehicle'
             android:textColor="@color/bmw_white"

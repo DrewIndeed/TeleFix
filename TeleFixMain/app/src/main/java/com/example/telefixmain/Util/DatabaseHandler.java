@@ -15,11 +15,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.UUID;
 
 public class
 DatabaseHandler {
@@ -158,7 +160,7 @@ DatabaseHandler {
     }
 
     /**
-     * Method to get vendors' info
+     * Method to get vendors' price list
      */
     @SuppressWarnings("unchecked")
     public static void getVendorPriceListById(FirebaseFirestore db,
@@ -205,5 +207,64 @@ DatabaseHandler {
                 });
     }
 
+    /**
+     * Method to register a new vehicle
+     */
+    public static void createVehicle(FirebaseFirestore db, Context context,
+                                     String userId,
+                                     String vehicleBrand,
+                                     String vehicleModel,
+                                     String vehicleYear,
+                                     String vehicleColor,
+                                     String vehicleNumberPlate) {
+        // Create a new user
+        HashMap<String, Object> data = new HashMap<>();
 
+        // inject new vehicle data
+        String vehicleId = UUID.randomUUID().toString();
+        data.put("userId", userId);
+        data.put("vehicleId", vehicleId);
+        data.put("vehicleBrand", vehicleBrand);
+        data.put("vehicleModel", vehicleModel);
+        data.put("vehicleYear", vehicleYear);
+        data.put("vehicleColor", vehicleColor);
+        data.put("vehicleNumberPlate", vehicleNumberPlate);
+
+        // add new vehicle data to database
+        db.collection("vehicles")
+                .document(vehicleId)
+                .set(data)
+                // run callback function if success
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        updateUserVehicleList(db, context, userId, vehicleId);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // this will be called when data updated unsuccessfully
+                    System.out.println(e.getMessage());
+                    Toast.makeText(context, "Register vehicle failed!", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    /**
+     * Method to update register vehicle array of user based on user's id
+     */
+    public static void updateUserVehicleList(FirebaseFirestore db, Context context,
+                                             String userId, String vehicleId) {
+        // find user and update vehicle list
+        db.collection("users")
+                .document(userId)
+                .update("registerVehicles", FieldValue.arrayUnion((Object) new String[]{vehicleId}))
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(context, "Register vehicle successfully!!", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // this will be called when data updated unsuccessfully
+                    System.out.println(e.getMessage());
+                    Toast.makeText(context, "Register vehicle failed!", Toast.LENGTH_SHORT).show();
+                });
+    }
 }

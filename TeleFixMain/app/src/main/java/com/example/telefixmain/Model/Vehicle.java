@@ -4,14 +4,24 @@ import androidx.annotation.NonNull;
 
 public class Vehicle {
     private String vehicleBrand, vehicleModel, vehicleYear, vehicleColor;
-    private String vehicleNumberPlate;
+    private String vehicleNumberPlate, vehicleId;
 
-    public Vehicle(String brand, String model, String year, String color, String vehicleNumberPlate) {
-        this.vehicleBrand = brand;
-        this.vehicleModel = model;
-        this.vehicleYear = year;
-        this.vehicleColor = color;
+    public Vehicle(String vehicleBrand, String vehicleModel, String vehicleYear,
+                   String vehicleColor, String vehicleNumberPlate, String vehicleId) {
+        this.vehicleBrand = vehicleBrand;
+        this.vehicleModel = vehicleModel;
+        this.vehicleYear = vehicleYear;
+        this.vehicleColor = vehicleColor;
         this.vehicleNumberPlate = vehicleNumberPlate;
+        this.vehicleId = vehicleId;
+    }
+
+    public String getVehicleId() {
+        return vehicleId;
+    }
+
+    public void setVehicleId(String vehicleId) {
+        this.vehicleId = vehicleId;
     }
 
     public String getVehicleBrand() {
@@ -63,6 +73,7 @@ public class Vehicle {
                 ", vehicleYear='" + vehicleYear + '\'' +
                 ", vehicleColor='" + vehicleColor + '\'' +
                 ", vehicleNumberPlate='" + vehicleNumberPlate + '\'' +
+                ", vehicleId='" + vehicleId + '\'' +
                 '}';
     }
 }

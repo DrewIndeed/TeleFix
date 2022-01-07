@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/bmw_extreme_transparent"
+    app:cardCornerRadius="5dp"
+    app:cardElevation="0dp"
+    app:contentPadding="10dp">
+
+    <ScrollView
+        android:id="@+id/sv_vehicle_register"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/ll_register_vehicle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/custom_btn_bg_13"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/vehicle_register_close_icon"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="start"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="25dp"
+                android:src="@drawable/ic_close"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:src="@drawable/logo_dark"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="5dp"
+                android:paddingLeft="60dp"
+                android:paddingRight="60dp"
+                android:text="Brand"
+                android:textColor="@color/bmw_dark_blue"
+                android:textSize="18sp"
+                android:textStyle="bold"
+
+                tools:ignore="HardcodedText,TextContrastCheck" />
+
+            <EditText
+                android:id="@+id/et_brand"
+                android:layout_width="280dp"
+                android:layout_height="55dp"
+                android:layout_marginBottom="25dp"
+                android:background="@drawable/custom_btn_bg_10"
+                android:hint="Enter vehicle brand"
+                android:importantForAutofill="no"
+                android:inputType="textPersonName"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:textColor="@color/bmw_dark_blue"
+                android:textStyle="italic"
+                tools:ignore="HardcodedText,TextContrastCheck" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:paddingLeft="60dp"
+                android:paddingRight="60dp"
+                android:text="Model"
+                android:textColor="@color/bmw_dark_blue"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:ignore="HardcodedText,TextContrastCheck" />
+
+            <EditText
+                android:id="@+id/et_model"
+                android:layout_width="280dp"
+                android:layout_height="55dp"
+                android:layout_marginBottom="25dp"
+                android:background="@drawable/custom_btn_bg_10"
+                android:hint="Enter vehicle model"
+                android:importantForAutofill="no"
+                android:inputType="textPersonName"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:textColor="@color/bmw_dark_blue"
+                android:textStyle="italic"
+                tools:ignore="HardcodedText,TextContrastCheck" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:paddingLeft="60dp"
+                android:paddingRight="60dp"
+                android:text="Year"
+                android:textColor="@color/bmw_dark_blue"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:ignore="HardcodedText,TextContrastCheck" />
+
+            <EditText
+                android:id="@+id/et_year"
+                android:layout_width="280dp"
+                android:layout_height="55dp"
+                android:layout_marginBottom="25dp"
+                android:background="@drawable/custom_btn_bg_10"
+                android:hint="Enter vehicle year"
+                android:importantForAutofill="no"
+                android:inputType="textPersonName"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:textColor="@color/bmw_dark_blue"
+                android:textStyle="italic"
+                tools:ignore="HardcodedText,TextContrastCheck" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:paddingLeft="60dp"
+                android:paddingRight="60dp"
+                android:text="Color"
+                android:textColor="@color/bmw_dark_blue"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:ignore="HardcodedText,TextContrastCheck" />
+
+            <EditText
+                android:id="@+id/et_color"
+                android:layout_width="280dp"
+                android:layout_height="55dp"
+                android:layout_marginBottom="25dp"
+                android:background="@drawable/custom_btn_bg_10"
+                android:hint="Enter vehicle color"
+                android:importantForAutofill="no"
+                android:inputType="textPersonName"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:textColor="@color/bmw_dark_blue"
+                android:textStyle="italic"
+                tools:ignore="HardcodedText,TextContrastCheck,DuplicateSpeakableTextCheck" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:paddingLeft="60dp"
+                android:paddingRight="60dp"
+                android:text="Number Plate"
+                android:textColor="@color/bmw_dark_blue"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:ignore="HardcodedText,TextContrastCheck" />
+
+            <EditText
+                android:id="@+id/et_number_plate"
+                android:layout_width="280dp"
+                android:layout_height="55dp"
+                android:background="@drawable/custom_btn_bg_10"
+                android:hint="Enter vehicle number plate"
+                android:importantForAutofill="no"
+                android:inputType="textPersonName"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:textColor="@color/bmw_dark_blue"
+                android:textStyle="italic"
+                android:visibility="visible"
+                tools:ignore="HardcodedText,TextContrastCheck,TextFields" />
+
+            <Button
+                android:id="@+id/btn_register_vehicle"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginStart="80dp"
+                android:layout_marginTop="60dp"
+                android:layout_marginEnd="80dp"
+                android:layout_marginBottom="60dp"
+                android:background="@drawable/custom_btn_bg_7"
+                android:text="Register Vehicle"
+                android:visibility="visible"
+                tools:ignore="HardcodedText,TextContrastCheck" />
+        </LinearLayout>
+    </ScrollView>
+</androidx.cardview.widget.CardView>
