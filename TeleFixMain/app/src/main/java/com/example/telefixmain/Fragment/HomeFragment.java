@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 
@@ -14,9 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.telefixmain.BillingActivities.IssueBillingActivity;
 import com.example.telefixmain.Dialog.CustomProgressDialog;
@@ -97,6 +97,63 @@ public class HomeFragment extends Fragment {
                         }
                     }
             );
+
+            // open register vehicle dialog
+            openVehicleRegister = root.findViewById(R.id.btn_register_vehicle);
+            openVehicleRegister.setOnClickListener(view -> {
+                // layout inflater
+                @SuppressLint("InflateParams")
+                View viewDialog = getLayoutInflater().inflate(R.layout.bottom_dialog_vehicle_register, null);
+
+                // construct bottom dialog
+                BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(fragmentActivity, R.style.SheetDialog);
+                bottomSheetDialog.setContentView(viewDialog);
+                bottomSheetDialog.show();
+
+                // expand bottom dialog as default state
+                BottomSheetBehavior.from((View) viewDialog.getParent())
+                        .setState(BottomSheetBehavior.STATE_EXPANDED);
+                BottomSheetBehavior.from((View) viewDialog.getParent()).setDraggable(false);
+
+                // when the close button is clicked
+                viewDialog.findViewById(R.id.vehicle_register_close_icon)
+                        .setOnClickListener(innerView -> bottomSheetDialog.dismiss());
+
+                // handle register input and logic
+                viewDialog.findViewById(R.id.btn_register_vehicle).setOnClickListener(innerView -> {
+                    // xml bindings
+                    EditText vBrand, vModel, vYear, vColor, vNumberPlate;
+                    vBrand = viewDialog.findViewById(R.id.et_brand);
+                    vModel = viewDialog.findViewById(R.id.et_model);
+                    vYear = viewDialog.findViewById(R.id.et_year);
+                    vColor = viewDialog.findViewById(R.id.et_color);
+                    vNumberPlate = viewDialog.findViewById(R.id.et_number_plate);
+
+                    if (vBrand.getText().toString().equals("")
+                            || vModel.getText().toString().equals("")
+                            || vYear.getText().toString().equals("")
+                            || vColor.getText().toString().equals("")
+                            || vNumberPlate.getText().toString().equals("")) {
+                        Toast.makeText(fragmentActivity, "Please fill in all information!",
+                                Toast.LENGTH_SHORT).show();
+                    } else {
+                        // progress dialog
+                        cpd.changeText("Registering vehicle ...");
+                        cpd.show();
+
+                        new Handler().postDelayed(() -> {
+                            cpd.dismiss();
+                            DatabaseHandler.createVehicle(db,
+                                    fragmentActivity, mUser.getUid(),
+                                    vBrand.getText().toString(),
+                                    vModel.getText().toString(),
+                                    vYear.getText().toString(),
+                                    vColor.getText().toString(),
+                                    vNumberPlate.getText().toString(), bottomSheetDialog::dismiss);
+                        }, 1000);
+                    }
+                });
+            });
         }
 
         // jump to sos activity
@@ -139,29 +196,6 @@ public class HomeFragment extends Fragment {
                 }, 500);
             }, 1500);
         });
-
-        // open register vehicle dialog
-        openVehicleRegister = root.findViewById(R.id.btn_register_vehicle);
-        openVehicleRegister.setOnClickListener(view -> {
-            // layout inflater
-            @SuppressLint("InflateParams")
-            View viewDialog = getLayoutInflater().inflate(R.layout.bottom_dialog_vehicle_register, null);
-
-            // construct bottom dialog
-            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(fragmentActivity, R.style.SheetDialog);
-            bottomSheetDialog.setContentView(viewDialog);
-            bottomSheetDialog.show();
-
-            // expand bottom dialog as default state
-            BottomSheetBehavior.from((View) viewDialog.getParent())
-                    .setState(BottomSheetBehavior.STATE_EXPANDED);
-            BottomSheetBehavior.from((View) viewDialog.getParent()).setDraggable(false);
-
-            // when the close button is clicked
-            viewDialog.findViewById(R.id.vehicle_register_close_icon)
-                    .setOnClickListener(innerView -> bottomSheetDialog.dismiss());
-        });
-
 
         // Inflate the layout for this fragment
         return root;

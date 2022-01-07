@@ -6,13 +6,8 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vendor;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -20,6 +15,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -216,7 +212,8 @@ DatabaseHandler {
                                      String vehicleModel,
                                      String vehicleYear,
                                      String vehicleColor,
-                                     String vehicleNumberPlate) {
+                                     String vehicleNumberPlate,
+                                     Runnable callback) {
         // Create a new user
         HashMap<String, Object> data = new HashMap<>();
 
@@ -237,7 +234,7 @@ DatabaseHandler {
                 // run callback function if success
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        updateUserVehicleList(db, context, userId, vehicleId);
+                        updateUserVehicleList(db, context, userId, vehicleId, callback);
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -251,14 +248,18 @@ DatabaseHandler {
      * Method to update register vehicle array of user based on user's id
      */
     public static void updateUserVehicleList(FirebaseFirestore db, Context context,
-                                             String userId, String vehicleId) {
+                                             String userId, String vehicleId,
+                                             Runnable callback) {
         // find user and update vehicle list
         db.collection("users")
                 .document(userId)
-                .update("registerVehicles", FieldValue.arrayUnion((Object) new String[]{vehicleId}))
+                .update("registerVehicles", FieldValue.arrayUnion(vehicleId))
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(context, "Register vehicle successfully!!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Register vehicle successfully!", Toast.LENGTH_SHORT).show();
+
+                        // run callback
+                        callback.run();
                     }
                 })
                 .addOnFailureListener(e -> {
