@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.telefixmain.Adapter.BillingAdapter;
@@ -25,6 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class IssueBillingActivity extends AppCompatActivity {
     // firestore
@@ -38,15 +40,20 @@ public class IssueBillingActivity extends AppCompatActivity {
     // xml
     private RecyclerView recyclerView;
     private BillingAdapter billingAdapter;
-
+    private TextView currentPrice;
 
     private AutoCompleteTextView billingItem;
     private EditText billingQuantity;
     private Button addBillingButton;
     private Button issueBillingButton;
 
+    // init pricelist
+    private HashMap<String, String> inspectionPriceContainer = new HashMap<>();
+    private HashMap<String, String> repairPriceContainer = new HashMap<>();
+
     //current billing
     private ArrayList<SOSBilling> billings = new ArrayList<>();
+    private int currentTotal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +69,10 @@ public class IssueBillingActivity extends AppCompatActivity {
 
         String requestId = "abc"; // Mock requestID
         String vendorId = "01"; // Mock vendorID
+
+        // Check total price:
+        currentPrice = findViewById(R.id.tv_current_total);
+        currentPrice.setText("Total: " + String.format("%,d",currentTotal) + ",000 VND");
 
         // recycleview settings
         recyclerView = findViewById(R.id.issue_billing_recyclerview);
@@ -102,21 +113,20 @@ public class IssueBillingActivity extends AppCompatActivity {
                     }
                     else {
                         for (int i = 0; i < billings.size(); i++) {
-                            System.out.println("Current index: " + i);
                             index = i;
                             if (billingItem.getText().toString().equals(billings.get(i).getItem())) {
-                                System.out.println(billingItem.getText().toString());
                                 billings.set(i, new SOSBilling(billingItem.getText().toString(), Integer.parseInt(billingQuantity.getText().toString())));
                                 Toast.makeText(this, "Update the quantity existed service", Toast.LENGTH_SHORT).show();
                                 break;
                             }
                             if (i == billings.size()-1) {
-                                System.out.println("Adding new item");
                                 billings.add(new SOSBilling(billingItem.getText().toString(), Integer.parseInt(billingQuantity.getText().toString())));
                             }
                         }
                     }
                     billingAdapter.notifyItemChanged(index);
+                    calculateTotal();
+                    currentPrice.setText("Total: " + String.format("%,d",currentTotal) + ",000 VND");
                     billingItem.getText().clear();
                     billingQuantity.getText().clear();
                 }
@@ -153,10 +163,6 @@ public class IssueBillingActivity extends AppCompatActivity {
     }
 
     private void getPriceList() {
-        // init pricelist
-        HashMap<String, String> inspectionPriceContainer = new HashMap<>();
-        HashMap<String, String> repairPriceContainer = new HashMap<>();
-
         // Mock default one
         String currentVendorId = "01";
 
@@ -171,4 +177,15 @@ public class IssueBillingActivity extends AppCompatActivity {
                 });
     }
 
+    private void calculateTotal() {
+        currentTotal = 0;
+        for (SOSBilling bill: billings) {
+            String currentItem = bill.getItem();
+            if (inspectionPriceContainer.containsKey(bill.getItem())) {
+                currentTotal += bill.getQuantity() * Integer.parseInt(Objects.requireNonNull(inspectionPriceContainer.get(currentItem)));
+            } else {
+                currentTotal += bill.getQuantity() * Integer.parseInt(Objects.requireNonNull(repairPriceContainer.get(currentItem)));
+            }
+        }
+    }
 }

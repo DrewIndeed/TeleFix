@@ -13,35 +13,46 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Currently having no item"
-            android:gravity="center"
-            android:visibility="visible" />
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/issue_billing_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tv_current_total"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Total: "
+            android:gravity="center"
+            android:visibility="visible" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Service Name:" />
 
         <AutoCompleteTextView
             android:id="@+id/add_billing_item"
-            android:layout_width="150dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Item" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Quantity:" />
 
         <EditText
             android:inputType="number"
             android:id="@+id/add_billing_quantity"
-            android:layout_width="50dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="1" />
 
