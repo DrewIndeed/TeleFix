@@ -14,6 +14,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.telefixmain.BillingActivities.IssueBillingActivity;
 import com.example.telefixmain.Dialog.CustomProgressDialog;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.R;
@@ -27,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class HomeFragment extends Fragment {
-    LinearLayout homeContent, jumpToSos;
+    LinearLayout homeContent, jumpToSos, jumpToMaintenance;
     Activity fragmentActivity;
     TextView userName;
 
@@ -103,6 +104,27 @@ public class HomeFragment extends Fragment {
                 // jump to sos activity
                 new Handler().postDelayed(() -> {
                     startActivity(new Intent(fragmentActivity, SosActivity.class));
+                    if (fragmentActivity != null) {
+                        fragmentActivity.finish();
+                    }
+                }, 500);
+            }, 1500);
+        });
+
+
+        // MOCK: JUMP TO BILLING ACTIVITY BY CLICKING MAINTENANCE
+        jumpToMaintenance = root.findViewById(R.id.ll_maintain_home);
+        jumpToMaintenance.setOnClickListener(view -> {
+            // show progress dialog
+            cpd.show();
+
+            // hide progress dialog
+            new Handler().postDelayed(() -> {
+                cpd.dismiss();
+
+                // jump to sos activity
+                new Handler().postDelayed(() -> {
+                    startActivity(new Intent(fragmentActivity, IssueBillingActivity.class));
                     if (fragmentActivity != null) {
                         fragmentActivity.finish();
                     }

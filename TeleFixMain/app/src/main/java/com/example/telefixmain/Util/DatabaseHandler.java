@@ -21,7 +21,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class DatabaseHandler {
+public class
+DatabaseHandler {
     /**
      * Method to create new user on database
      */
