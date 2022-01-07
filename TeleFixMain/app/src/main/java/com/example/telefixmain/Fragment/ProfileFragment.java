@@ -325,7 +325,8 @@ public class ProfileFragment extends Fragment {
     private View openPwdChangeBottomSheetDialog(int inflatedLayout, int closeIcon) {
         // layout inflater
         View viewDialog = getLayoutInflater().inflate(inflatedLayout, null);
-        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(fragmentActivity);
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(
+                fragmentActivity, R.style.SheetDialog);
         pwdChangeBottomDialog = bottomSheetDialog;
         bottomSheetDialog.setContentView(viewDialog);
         bottomSheetDialog.show();
