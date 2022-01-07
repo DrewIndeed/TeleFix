@@ -58,8 +58,7 @@ public class BillingAdapter extends RecyclerView.Adapter<BillingViewHolder> {
 
         holder.item.setText(currentItem);
         holder.quantity.setText(Integer.toString(currentQuantity));
-        holder.total.setText(Integer.toString(currentPrice) + ".000 VND");
-
+        holder.total.setText(String.format("%,d",currentPrice) + ",000 VND");
     }
 
     @Override

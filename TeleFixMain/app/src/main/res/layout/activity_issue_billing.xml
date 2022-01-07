@@ -39,13 +39,14 @@
             android:text="Item" />
 
         <EditText
+            android:inputType="number"
             android:id="@+id/add_billing_quantity"
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:text="1" />
 
         <Button
-            android:id="@+id/btn_add_item_issue_billing"
+            android:id="@+id/btn_add_item_billing"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Add Item" />
@@ -53,6 +54,7 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/btn_issue_billing"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Issue Billing" />
