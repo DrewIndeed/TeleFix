@@ -414,13 +414,31 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                             for (String key : inspectionPriceContainer.keySet()) {
                                 HashMap<String, String> tempContainer = new HashMap<>();
                                 tempContainer.put("serviceName", key);
-                                tempContainer.put("servicePrice", inspectionPriceContainer.get(key) + ".000 VND");
+
+                                // handle price format
+                                String formattedPrice;
+                                String currentPrice = Objects.requireNonNull(inspectionPriceContainer.get(key));
+                                if (Integer.parseInt(currentPrice) >= 1000) {
+                                    formattedPrice = currentPrice.charAt(0) + ".000.000 VND";
+                                } else {
+                                    formattedPrice = currentPrice + ".000 VND";
+                                }
+                                tempContainer.put("servicePrice", formattedPrice);
                                 inspectionPricesHashMapList.add(tempContainer);
                             }
                             for (String key : repairPriceContainer.keySet()) {
                                 HashMap<String, String> tempContainer = new HashMap<>();
                                 tempContainer.put("serviceName", key);
-                                tempContainer.put("servicePrice", repairPriceContainer.get(key) + ".000 VND");
+
+                                // handle price format
+                                String formattedPrice;
+                                String currentPrice = Objects.requireNonNull(repairPriceContainer.get(key));
+                                if (Integer.parseInt(currentPrice) >= 1000) {
+                                    formattedPrice = currentPrice.charAt(0) + ".000.000 VND";
+                                } else {
+                                    formattedPrice = currentPrice + ".000 VND";
+                                }
+                                tempContainer.put("servicePrice", formattedPrice);
                                 repairPricesHashMapList.add(tempContainer);
                             }
 
