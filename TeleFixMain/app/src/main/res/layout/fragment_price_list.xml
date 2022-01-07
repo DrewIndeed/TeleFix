@@ -103,9 +103,9 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_repair_prices"
-            android:layout_marginBottom="120dp"
             android:layout_width="match_parent"
-            android:layout_height="300dp" />
+            android:layout_height="400dp"
+            android:layout_marginBottom="65dp" />
 
     </LinearLayout>
 </ScrollView>

@@ -39,6 +39,7 @@
         <entry key="app/src/main/res/layout/activity_sos.xml" value="0.2554054054054054" />
         <entry key="app/src/main/res/layout/activity_splash_screen.xml" value="0.25" />
         <entry key="app/src/main/res/layout/bottom_dialog_change_password.xml" value="0.375" />
+        <entry key="app/src/main/res/layout/bottom_dialog_mechanic_waiting.xml" value="0.5765625" />
         <entry key="app/src/main/res/layout/bottom_dialog_vendor_details.xml" value="0.5765625" />
         <entry key="app/src/main/res/layout/change_password_dialog.xml" value="0.45" />
         <entry key="app/src/main/res/layout/custom_pricelist_dialog.xml" value="0.45" />

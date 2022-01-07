@@ -69,6 +69,9 @@ public class PriceListFragment extends Fragment {
             // enable map interactions
             mMap.getUiSettings().setAllGesturesEnabled(true);
 
+            //  enable my location button (which gives closer focus on the location)
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+
             // show vendor dialog
             currentBottomSheetDialog.show();
         });

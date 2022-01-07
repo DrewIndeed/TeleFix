@@ -462,6 +462,9 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                             // disable map interactions when price list is on
                             mMap.getUiSettings().setAllGesturesEnabled(false);
 
+                            // disable my location button (which gives closer focus on the location)
+                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+
                             // create instance of price list fragment
                             PriceListFragment temp = new PriceListFragment(sosBottomDialog, mMap,
                                     inspectionPricesHashMapList, repairPricesHashMapList);
