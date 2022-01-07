@@ -9,6 +9,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -219,6 +220,22 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
             View bottomDialogView = openBottomSheetDialog(
                     R.layout.bottom_dialog_vendor_details, R.id.sheet_close_icon,
                     clickedMarkerLat, clickedMarkerLng);
+
+            // get to vendor support
+            bottomDialogView.findViewById(R.id.btn_get_there).setOnClickListener(view -> {
+                // create URI with current location and destination vendor latitude and longitude
+                String uri = "http://maps.google.com/maps?saddr=" +
+                        currentLocation.latitude + "," + currentLocation.longitude + "&daddr=" +
+                        clickedMarkerLat + "," + clickedMarkerLng;
+
+                // create intent
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                intent.setPackage("com.google.android.apps.maps");
+
+                // start intent to jump to google map app
+                startActivity(intent);
+            });
+
 
             // get on site support
             bottomDialogView.findViewById(R.id.btn_on_site_support)
