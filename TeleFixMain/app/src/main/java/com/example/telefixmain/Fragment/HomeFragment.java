@@ -1,9 +1,12 @@
 package com.example.telefixmain.Fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
@@ -12,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.telefixmain.BillingActivities.IssueBillingActivity;
@@ -20,6 +24,8 @@ import com.example.telefixmain.Model.User;
 import com.example.telefixmain.R;
 import com.example.telefixmain.SosActivity;
 import com.example.telefixmain.Util.DatabaseHandler;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -31,6 +37,7 @@ public class HomeFragment extends Fragment {
     LinearLayout homeContent, jumpToSos, jumpToMaintenance;
     Activity fragmentActivity;
     TextView userName;
+    AppCompatButton openVehicleRegister;
 
     // progress dialog
     CustomProgressDialog cpd;
@@ -47,6 +54,7 @@ public class HomeFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @SuppressLint("ResourceType")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -131,6 +139,29 @@ public class HomeFragment extends Fragment {
                 }, 500);
             }, 1500);
         });
+
+        // open register vehicle dialog
+        openVehicleRegister = root.findViewById(R.id.btn_register_vehicle);
+        openVehicleRegister.setOnClickListener(view -> {
+            // layout inflater
+            @SuppressLint("InflateParams")
+            View viewDialog = getLayoutInflater().inflate(R.layout.bottom_dialog_vehicle_register, null);
+
+            // construct bottom dialog
+            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(fragmentActivity, R.style.SheetDialog);
+            bottomSheetDialog.setContentView(viewDialog);
+            bottomSheetDialog.show();
+
+            // expand bottom dialog as default state
+            BottomSheetBehavior.from((View) viewDialog.getParent())
+                    .setState(BottomSheetBehavior.STATE_EXPANDED);
+            BottomSheetBehavior.from((View) viewDialog.getParent()).setDraggable(false);
+
+            // when the close button is clicked
+            viewDialog.findViewById(R.id.vehicle_register_close_icon)
+                    .setOnClickListener(innerView -> bottomSheetDialog.dismiss());
+        });
+
 
         // Inflate the layout for this fragment
         return root;
