@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StyleRes;
-import androidx.annotation.StyleableRes;
 
 import com.example.telefixmain.R;
 
@@ -22,7 +21,7 @@ public class CustomProgressDialog extends Dialog {
         super(context, theme);
         getWindow().getAttributes().gravity = Gravity.CENTER;
         setTitle(null);
-        view = LayoutInflater.from(context).inflate(R.layout.custom_progress_dialog, null);
+        view = LayoutInflater.from(context).inflate(R.layout.progress_dialog_custom, null);
         setContentView(view);
     }
 

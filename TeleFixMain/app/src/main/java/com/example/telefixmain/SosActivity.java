@@ -3,12 +3,9 @@ package com.example.telefixmain;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentContainerView;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -24,9 +21,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.example.telefixmain.Adapter.PriceListAdapter;
-import com.example.telefixmain.Dialog.CustomProgressDialog;
-import com.example.telefixmain.Fragment.HomeFragment;
 import com.example.telefixmain.Fragment.PriceListFragment;
 import com.example.telefixmain.Model.Booking.SOSMetadata;
 import com.example.telefixmain.Model.Vendor;
@@ -222,7 +216,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
             double clickedMarkerLng = clickedMarkerLocation.longitude;
 
             View bottomDialogView = openBottomSheetDialog(
-                    R.layout.map_bottom_sheet, R.id.sheet_close_icon,
+                    R.layout.bottom_dialog_vendor_details, R.id.sheet_close_icon,
                     clickedMarkerLat, clickedMarkerLng);
 
             // get on site support
@@ -237,7 +231,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
                         // waiting bottom dialog
                         View waitDialog = openBottomSheetDialog(
-                                R.layout.mechanic_waiting, R.id.mechanic_wait_close_icon,
+                                R.layout.bottom_dialog_mechanic_waiting, R.id.mechanic_wait_close_icon,
                                 0.0, 0.0);
                         TextView dialogMsg = waitDialog.findViewById(R.id.mechanic_wait_msg);
                         ImageView closeDialogBtn = waitDialog.findViewById(R.id.mechanic_wait_close_icon);

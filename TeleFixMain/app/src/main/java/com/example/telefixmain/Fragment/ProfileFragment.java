@@ -256,7 +256,7 @@ public class ProfileFragment extends Fragment {
         changePwdBtn.setOnClickListener(view -> {
             // show bottom sheet dialog to change password
             View changePwdDialog = openPwdChangeBottomSheetDialog(
-                    R.layout.change_password_dialog, R.id.pwd_change_close_icon);
+                    R.layout.bottom_dialog_change_password, R.id.pwd_change_close_icon);
 
             // password edit texts
             EditText currentPwdInput = changePwdDialog.findViewById(R.id.et_enter_current_pwd);

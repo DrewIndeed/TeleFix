@@ -27,7 +27,7 @@ public class PriceListAdapter extends RecyclerView.Adapter<PriceItemViewHolder> 
     public PriceItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // inflate layout
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.price_item_slot, parent, false);
+                .inflate(R.layout.row_price_item, parent, false);
         return new PriceItemViewHolder(itemView);
     }
 
