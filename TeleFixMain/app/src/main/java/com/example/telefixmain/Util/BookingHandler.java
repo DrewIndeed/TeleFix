@@ -35,6 +35,20 @@ public class BookingHandler {
         callback.run();
     }
 
+    public static void acceptSOSRequest(FirebaseDatabase rootNode,
+                                        Context context,
+                                        String vendorId,
+                                        String requestId,
+                                        String mechanicId) {
+        DatabaseReference vendorRef = rootNode.getReference(vendorId);
+
+        vendorRef.child("sos").child("metadata").child(requestId).child("mechanicId").setValue(mechanicId)
+                .addOnCompleteListener(task -> Toast.makeText(context,
+                        "REQUEST ACCEPTED BY MECHANIC ID " + mechanicId, Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(context, "" +
+                        e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
     public static void removeSOSRequest(FirebaseDatabase rootNode,
                                         Context context,
                                         String vendorId,
@@ -113,6 +127,7 @@ public class BookingHandler {
                                          String vendorId,
                                          String requestId,
                                          ArrayList<SOSBilling> currentBilling,
+                                         int total,
                                          Runnable callback) {
         DatabaseReference billingRef = rootNode.getReference(vendorId).child("sos").child("billing").child(requestId);
 
@@ -124,6 +139,7 @@ public class BookingHandler {
         }
 
         billingRef.child("timestamp").setValue(System.currentTimeMillis()/1000L);
+        billingRef.child("total").setValue(total);
         billingRef.child("data").setValue(billingData)
                 .addOnCompleteListener(task -> {
                     Toast.makeText(context,

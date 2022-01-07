@@ -15,10 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TeleFixMain">
         <activity
-            android:name=".BillingActivities.ReadBillingActivity"
-            android:exported="false" />
-        <activity
-            android:name=".BillingActivities.IssueBillingActivity"
+            android:name=".MechanicProgressTracking.MechanicSOSActivity"
             android:exported="false" />
         <activity
             android:name=".RequestProcessingActivity"

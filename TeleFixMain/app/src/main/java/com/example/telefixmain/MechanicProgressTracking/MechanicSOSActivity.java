@@ -1,5 +1,6 @@
-package com.example.telefixmain.BillingActivities;
+package com.example.telefixmain.MechanicProgressTracking;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -7,8 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -18,17 +19,24 @@ import android.widget.Toast;
 
 import com.example.telefixmain.Adapter.BillingAdapter;
 import com.example.telefixmain.Model.Booking.SOSBilling;
+import com.example.telefixmain.Model.Booking.SOSMetadata;
+import com.example.telefixmain.Model.Booking.SOSProgress;
 import com.example.telefixmain.R;
+import com.example.telefixmain.RequestProcessingActivity;
 import com.example.telefixmain.Util.BookingHandler;
 import com.example.telefixmain.Util.DatabaseHandler;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class IssueBillingActivity extends AppCompatActivity {
+public class MechanicSOSActivity extends AppCompatActivity {
     // firestore
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseDatabase vendorBookings = FirebaseDatabase.getInstance();
@@ -47,6 +55,8 @@ public class IssueBillingActivity extends AppCompatActivity {
     private Button addBillingButton;
     private Button issueBillingButton;
 
+    private Button acceptSOSRequest;
+
     // init pricelist
     private HashMap<String, String> inspectionPriceContainer = new HashMap<>();
     private HashMap<String, String> repairPriceContainer = new HashMap<>();
@@ -58,28 +68,64 @@ public class IssueBillingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_issue_billing);
+        setContentView(R.layout.activity_mechanic_sos);
 
         getPriceList();
+
+        String mechanicId = "mockMechanicId"; // Mock mechanicID
+        String requestId = "mockRequestId"; // Mock requestID
+        String vendorId = "01"; // Mock vendorID
 
         // get intent
 //        Intent i = getIntent();
 //        String requestId = (String) i.getExtras().get("currentRequestId");
 //        String vendorId = (String) i.getExtras().get("currentVendorId");
+        acceptSOSRequest = findViewById(R.id.btn_accept_sos_request);
 
-        String requestId = "abc"; // Mock requestID
-        String vendorId = "01"; // Mock vendorID
+        // listen for db reference
+        DatabaseReference openSOSRequest = vendorBookings.getReference().child(vendorId).child("sos").child("metadata");
+        // set ValueEventListener that delay the onDataChange
+        ValueEventListener openSOSRequestListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
 
+                    SOSMetadata sosRequest = ds.getValue(SOSMetadata.class);
+
+                    // Todo: test on single request update (scale on arraylist later
+                    if (Objects.requireNonNull(sosRequest).getMechanicId().equals("$")) {
+                        acceptSOSRequest.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };
+
+        openSOSRequest.addValueEventListener(openSOSRequestListener);
+
+        acceptSOSRequest.setOnClickListener(view -> {
+            BookingHandler.acceptSOSRequest(vendorBookings,this,vendorId,requestId,mechanicId);
+
+            // Mocking purpose
+            BookingHandler.createProgressTracking(vendorBookings,this,vendorId,requestId,System.currentTimeMillis()/1000,() -> {});
+            acceptSOSRequest.setVisibility(View.GONE);
+        });
+
+        //--------------Billing section--------------------
         // Check total price:
         currentPrice = findViewById(R.id.tv_current_total);
         currentPrice.setText("Total: " + String.format("%,d",currentTotal) + ",000 VND");
 
-        // recycleview settings
+        // recyclerview settings
         recyclerView = findViewById(R.id.issue_billing_recyclerview);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        billingAdapter = new BillingAdapter(IssueBillingActivity.this,billings);
+        billingAdapter = new BillingAdapter(MechanicSOSActivity.this,billings);
         recyclerView.setAdapter(billingAdapter);
 
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
@@ -94,7 +140,7 @@ public class IssueBillingActivity extends AppCompatActivity {
         billingItem.setAdapter(servicesAdapter);
         billingItem.setThreshold(1);
 
-
+        // update current billing (local)
         addBillingButton.setOnClickListener(view -> {
             // TODO: Handle invalid input
             if (billingItem.getText().toString().equals("") || billingQuantity.getText().toString().equals("")) {
@@ -105,7 +151,6 @@ public class IssueBillingActivity extends AppCompatActivity {
                     Toast.makeText(this, "Please select the registered services!", Toast.LENGTH_SHORT).show();
                 } else {
                     // Check existed in current billing --> Show the current quantity to avoid duplicated
-                    boolean isUpdate = false;
                     int index = 0;
 
                     if (billings.size() == 0) {
@@ -115,7 +160,13 @@ public class IssueBillingActivity extends AppCompatActivity {
                         for (int i = 0; i < billings.size(); i++) {
                             index = i;
                             if (billingItem.getText().toString().equals(billings.get(i).getItem())) {
-                                billings.set(i, new SOSBilling(billingItem.getText().toString(), Integer.parseInt(billingQuantity.getText().toString())));
+                                // TODO: If mechanic want to delete an item --> Set quantity to 0 --> Delete on list
+                                if (Integer.parseInt(billingQuantity.getText().toString()) == 0) {
+                                    billings.remove(i);
+                                }
+                                else {
+                                    billings.set(i, new SOSBilling(billingItem.getText().toString(), Integer.parseInt(billingQuantity.getText().toString())));
+                                }
                                 Toast.makeText(this, "Update the quantity existed service", Toast.LENGTH_SHORT).show();
                                 break;
                             }
@@ -137,12 +188,12 @@ public class IssueBillingActivity extends AppCompatActivity {
         issueBillingButton = findViewById(R.id.btn_issue_billing);
         issueBillingButton.setOnClickListener(view -> {
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(IssueBillingActivity.this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(MechanicSOSActivity.this);
             builder.setTitle("Confirm upload billing");
             builder.setMessage("Do you want to upload this bill to user ?");
             builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    BookingHandler.uploadSOSBilling(vendorBookings, IssueBillingActivity.this, vendorId, requestId, billings, () -> {
+                    BookingHandler.uploadSOSBilling(vendorBookings, MechanicSOSActivity.this, vendorId, requestId, billings, currentTotal,() -> {
                         System.out.println("ACTION AFTER SUCCESSFULLY RECEIVED BILLING!!!!--------------");
 
                         // TODO: ADD BILLING TO DATABASE & NOTIFY USER
@@ -159,6 +210,18 @@ public class IssueBillingActivity extends AppCompatActivity {
 
         });
 
+        //-------------------------Update progress------------------
+        // mock button
+        Button MechanicBtnArrived = findViewById(R.id.btn_mock_arrived);
+        Button MechanicBtnFixed = findViewById(R.id.btn_mock_fixed);
+
+        MechanicBtnArrived.setOnClickListener(view -> {
+            BookingHandler.updateProgressFromMechanic(vendorBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "arrived");
+        });
+
+        MechanicBtnFixed.setOnClickListener(view -> {
+            BookingHandler.updateProgressFromMechanic(vendorBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "fixed");
+        });
 
     }
 

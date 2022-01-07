@@ -8,17 +8,36 @@
     android:orientation="vertical"
     tools:context=".RequestProcessingActivity">
 
-    <Button
-        android:id="@+id/btn_mock_arrived"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/layout_billing_user"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Arrived" />
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:paddingBottom="10dp">
 
-    <Button
-        android:id="@+id/btn_mock_fixed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Fixed" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Current billing"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/read_billing_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tv_current_total_user"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Total: "
+            android:gravity="center"
+            android:visibility="visible" />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/btn_abort"

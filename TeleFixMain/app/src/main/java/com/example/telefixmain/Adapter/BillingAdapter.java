@@ -28,7 +28,6 @@ public class BillingAdapter extends RecyclerView.Adapter<BillingViewHolder> {
     private HashMap<String, String> inspectionPriceContainer = new HashMap<>();
     private HashMap<String, String> repairPriceContainer = new HashMap<>();
 
-
     public BillingAdapter(Context issueBillingActivity, ArrayList<SOSBilling> currentBilling) {
         this.issueBillingActivity = issueBillingActivity;
         this.currentBilling = currentBilling;
