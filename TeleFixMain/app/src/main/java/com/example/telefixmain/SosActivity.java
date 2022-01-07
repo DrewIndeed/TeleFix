@@ -102,7 +102,8 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
     RelativeLayout rlSos;
     Button refreshBtn;
     TextView sheetLocation, sheetRating, sheetAddress,
-            sheetWebsite, sheetContact, sheetOpenCloseTime;
+            sheetWebsite, sheetContact, sheetOpenCloseTime,
+            sheetDistanceAway;
 
     // bottom dialog tracking
     BottomSheetDialog sosBottomDialog;
@@ -518,6 +519,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                 sheetContact = view.findViewById(R.id.phone_content);
                 sheetWebsite = view.findViewById(R.id.website_content);
                 sheetOpenCloseTime = view.findViewById(R.id.open_close_content);
+                sheetDistanceAway = view.findViewById(R.id.reach_site_distance);
                 Picasso.get().load(vd.getImg())
                         .into((ImageView) view.findViewById(R.id.iv_vendor_image_1));
 
@@ -526,6 +528,11 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                 sheetLocation.setText(sheetLocationInfoValue);
                 sheetAddress.setText(sheetAddressValue);
                 sheetOpenCloseTime.setText("Open: " + openTimeValue + " - Close: " + closeTimeValue);
+                String distanceAwayValue = Double.toString(
+                        Math.round(getDistanceFromCurrentLocation(
+                                markerLat, currentLocation.latitude,
+                                markerLng, currentLocation.longitude) * 100.0) / 100.0);
+                sheetDistanceAway.setText(distanceAwayValue + " km away");
                 // might be missing values
                 if (sheetRatingValue.equals("")) sheetRating.setText("_");
                 else sheetRating.setText(sheetRatingValue);
@@ -627,5 +634,35 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                 currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
             }
         }, null);
+    }
+
+    /**
+     * Method to calculate distance between 2 locations based on latitude and longitude
+     */
+    public static double getDistanceFromCurrentLocation(double lat1, double lat2,
+                                                        double lng1, double lng2) {
+        // The math module contains a function
+        // named toRadians which converts from
+        // degrees to radians.
+        lng1 = Math.toRadians(lng1);
+        lng2 = Math.toRadians(lng2);
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);
+
+        // Haversine formula
+        double dLong = lng2 - lng1;
+        double dLat = lat2 - lat1;
+        double a = Math.pow(Math.sin(dLat / 2), 2)
+                + Math.cos(lat1) * Math.cos(lat2)
+                * Math.pow(Math.sin(dLong / 2), 2);
+
+        double c = 2 * Math.asin(Math.sqrt(a));
+
+        // Radius of earth in kilometers. Use 3956
+        // for miles
+        double r = 6371;
+
+        // calculate the result
+        return (c * r);
     }
 }
