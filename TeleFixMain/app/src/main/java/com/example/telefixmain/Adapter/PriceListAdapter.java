@@ -14,12 +14,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class PriceListAdapter extends RecyclerView.Adapter<PriceItemViewHolder> {
-    Context siteInfoActivity;
-    ArrayList<HashMap<String, String>> infoHashMapList;
+    Context priceInfoActivity;
+    ArrayList<HashMap<String, String>> priceHashMapList;
 
-    public PriceListAdapter(Context siteInfoActivity, ArrayList<HashMap<String, String>> infoHashMapList) {
-        this.siteInfoActivity = siteInfoActivity;
-        this.infoHashMapList = infoHashMapList;
+    public PriceListAdapter(Context priceInfoActivity, ArrayList<HashMap<String, String>> priceHashMapList) {
+        this.priceInfoActivity = priceInfoActivity;
+        this.priceHashMapList = priceHashMapList;
     }
 
     @NonNull
@@ -34,13 +34,13 @@ public class PriceListAdapter extends RecyclerView.Adapter<PriceItemViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull PriceItemViewHolder holder, int position) {
         // binding views and set data
-        holder.serviceName.setText(infoHashMapList.get(position).get("serviceName"));
-        holder.servicePrice.setText(infoHashMapList.get(position).get("servicePrice"));
+        holder.serviceName.setText(priceHashMapList.get(position).get("serviceName"));
+        holder.servicePrice.setText(priceHashMapList.get(position).get("servicePrice"));
     }
 
     @Override
     public int getItemCount() {
-        return infoHashMapList.size();
+        return priceHashMapList.size();
     }
 }
 

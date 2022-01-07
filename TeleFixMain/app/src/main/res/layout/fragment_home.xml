@@ -151,9 +151,17 @@
             android:textStyle="bold"
             tools:ignore="HardcodedText,TextContrastCheck" />
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_inspection_prices"
+            android:layout_margin="15dp"
+            android:background="@drawable/custom_btn_bg_14"
+            android:padding="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="300dp" />
+
         <androidx.appcompat.widget.AppCompatButton
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="55dp"
             android:layout_marginStart="15dp"
             android:layout_marginEnd="15dp"
             android:background="@drawable/custom_btn_bg_12"
@@ -167,23 +175,13 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:gravity="center"
+            android:layout_marginBottom="150dp"
             android:letterSpacing="0.08"
             android:text='Click "+" to register a vehicle'
             android:textColor="@color/bmw_white"
             android:textSize="16sp"
             android:textStyle="bold"
             tools:ignore="HardcodedText" />
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:visibility="gone"
-            app:cardBackgroundColor="@color/bmw_default_transparent"
-            app:cardCornerRadius="20dp"
-            tools:ignore="SpeakableTextPresentCheck">
-
-        </androidx.cardview.widget.CardView>
     </LinearLayout>
 
 </ScrollView>
