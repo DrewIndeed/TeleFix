@@ -76,7 +76,7 @@ public class BookingHandler {
 
         switch (type) {
             case "aborted":
-                progressRef.child("isAborted").setValue(true)
+                progressRef.child("abortedTime").setValue(timeStamp)
                     .addOnCompleteListener(task -> Toast.makeText(context,
                             "Unexpected problem from Mechanic. Please try another one.", Toast.LENGTH_SHORT).show())
                     .addOnFailureListener(e -> Toast.makeText(context, "" +
