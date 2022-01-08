@@ -25,6 +25,7 @@ import com.example.telefixmain.Adapter.VehicleListAdapter;
 
 import com.example.telefixmain.Dialog.CustomProgressDialog;
 import com.example.telefixmain.Model.User;
+import com.example.telefixmain.Model.Vehicle;
 import com.example.telefixmain.R;
 import com.example.telefixmain.SosActivity;
 import com.example.telefixmain.Util.DatabaseHandler;
@@ -65,6 +66,10 @@ public class HomeFragment extends Fragment {
     User userTracker;
     ArrayList<HashMap<String, String>> vehiclesHashMapList;
 
+    // declare vehicles data containers
+    ArrayList<String> vehiclesIdResult;
+    ArrayList<Vehicle> vehiclesResult;
+
     public HomeFragment(User userTracker, ArrayList<HashMap<String, String>> vehiclesHashMapList) {
         this.userTracker = userTracker;
         this.vehiclesHashMapList = vehiclesHashMapList;
@@ -101,24 +106,28 @@ public class HomeFragment extends Fragment {
 
             // if the last vehicle has been added to hash map list
             // render to recycler view
-            vehicleListRV = root.findViewById(R.id.rv_vehicle_list);
-            vehicleListRV.setVisibility(View.VISIBLE);
-            vehicleListRV.setHasFixedSize(true);
-            vehicleListLayoutManager = new LinearLayoutManager(fragmentActivity);
-            vehicleListRV.setLayoutManager(vehicleListLayoutManager);
-            vehicleListAdapter = new VehicleListAdapter(
-                    fragmentActivity, vehiclesHashMapList);
-            vehicleListRV.setAdapter(vehicleListAdapter);
+            if (vehiclesHashMapList.size() > 0) {
+                vehicleListRV = root.findViewById(R.id.rv_vehicle_list);
+                vehicleListRV.setVisibility(View.VISIBLE);
+                vehicleListRV.setHasFixedSize(true);
+                vehicleListLayoutManager = new LinearLayoutManager(fragmentActivity);
+                vehicleListRV.setLayoutManager(vehicleListLayoutManager);
+                vehicleListAdapter = new VehicleListAdapter(
+                        fragmentActivity, vehiclesHashMapList);
+                vehicleListRV.setAdapter(vehicleListAdapter);
+            }
 
             // open register vehicle dialog
             openVehicleRegister = root.findViewById(R.id.btn_register_vehicle);
             openVehicleRegister.setOnClickListener(view -> {
                 // layout inflater
                 @SuppressLint("InflateParams")
-                View viewDialog = getLayoutInflater().inflate(R.layout.bottom_dialog_vehicle_register, null);
+                View viewDialog = getLayoutInflater().inflate(
+                        R.layout.bottom_dialog_vehicle_register, null);
 
                 // construct bottom dialog
-                BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(fragmentActivity, R.style.SheetDialog);
+                BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(
+                        fragmentActivity, R.style.SheetDialog);
                 bottomSheetDialog.setContentView(viewDialog);
                 bottomSheetDialog.show();
 
@@ -163,6 +172,49 @@ public class HomeFragment extends Fragment {
                                 vNumberPlate.getText().toString(), () -> {
                                     cpd.dismiss();
                                     bottomSheetDialog.dismiss();
+
+                                    // init vehicles data containers
+                                    vehiclesIdResult = new ArrayList<>();
+                                    vehiclesResult = new ArrayList<>();
+                                    vehiclesHashMapList = new ArrayList<>();
+
+                                    // progress dialog
+                                    cpd.changeText("Refreshing ...");
+                                    cpd.show();
+
+                                    // get user's vehicle list
+                                    DatabaseHandler.getUserVehicleList(db, fragmentActivity, mUser.getUid(),
+                                            vehiclesIdResult, vehiclesResult, () -> {
+                                                // do only if there is any vehicle id, otherwise cut short the process
+                                                if (vehiclesResult.size() > 0) {
+                                                    // populate here
+                                                    for (Vehicle currentVehicle : vehiclesResult) {
+                                                        // single vehicle hash map
+                                                        HashMap<String, String> tempContainer = new HashMap<>();
+
+                                                        // inject vehicle data
+                                                        tempContainer.put("vehicleTitle",
+                                                                currentVehicle.getVehicleBrand() + " "
+                                                                        + currentVehicle.getVehicleModel() + " "
+                                                                        + currentVehicle.getVehicleYear());
+                                                        tempContainer.put("vehicleColor",
+                                                                currentVehicle.getVehicleColor());
+                                                        tempContainer.put("vehicleNumberPlate",
+                                                                currentVehicle.getVehicleNumberPlate());
+
+                                                        // add to vehicle hash map list
+                                                        vehiclesHashMapList.add(tempContainer);
+                                                    }
+                                                }
+
+                                                // progress dialog
+                                                new Handler().postDelayed(() -> {
+                                                    cpd.dismiss();
+                                                    vehicleListAdapter = new VehicleListAdapter(
+                                                            fragmentActivity, vehiclesHashMapList);
+                                                    vehicleListRV.setAdapter(vehicleListAdapter);
+                                                }, 750);
+                                            });
                                 });
 
                     }
