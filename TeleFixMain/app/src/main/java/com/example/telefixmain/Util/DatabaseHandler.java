@@ -27,7 +27,7 @@ DatabaseHandler {
                                   String name,
                                   String phone,
                                   String email,
-                                  boolean isMechanic,
+                                  String isMechanic,
                                   String vendorId) {
 
         // Create a new user
@@ -94,9 +94,8 @@ DatabaseHandler {
                                   String name,
                                   String phone,
                                   String email,
-                                  boolean isMechanic,
+                                  String isMechanic,
                                   String vendorId,
-                                  ArrayList<String> registeredVehicles,
                                   Runnable callback) {
 
         // Updated data container
@@ -109,7 +108,6 @@ DatabaseHandler {
         updatedData.put("email", email);
         updatedData.put("isMechanic", isMechanic);
         updatedData.put("vendorId", vendorId);
-        updatedData.put("registerVehicles", registeredVehicles);
 
         // search from database
         db.collection("users")

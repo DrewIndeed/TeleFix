@@ -1,4 +1,4 @@
-package com.example.telefixmain;
+package com.example.telefixmain.Activity.Customer;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -13,6 +13,7 @@ import com.example.telefixmain.Fragment.HistoryFragment;
 import com.example.telefixmain.Fragment.HomeFragment;
 import com.example.telefixmain.Fragment.ProfileFragment;
 import com.example.telefixmain.Model.User;
+import com.example.telefixmain.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.example.telefixmain;
+package com.example.telefixmain.Activity.Common;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.telefixmain.Dialog.CustomProgressDialog;
+import com.example.telefixmain.R;
 import com.example.telefixmain.Util.DatabaseHandler;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -202,7 +203,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 nameSignup.getText().toString().trim(),
                                 phoneSignup.getText().toString().trim(),
                                 Objects.requireNonNull(signedUpEmail).trim(),
-                                isMechanic,
+                                Boolean.toString(isMechanic),
                                 vendorIdSignup.getText().toString().trim());
 
                         // show msg and hide progress dialog

@@ -27,7 +27,7 @@ import com.example.telefixmain.Dialog.CustomProgressDialog;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vehicle;
 import com.example.telefixmain.R;
-import com.example.telefixmain.SosActivity;
+import com.example.telefixmain.Activity.Customer.SosActivity;
 import com.example.telefixmain.Util.DatabaseHandler;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;

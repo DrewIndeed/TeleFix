@@ -1,4 +1,4 @@
-package com.example.telefixmain;
+package com.example.telefixmain.Activity.Customer;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +26,7 @@ import com.example.telefixmain.Fragment.PriceListFragment;
 import com.example.telefixmain.Model.Booking.SOSMetadata;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vendor;
+import com.example.telefixmain.R;
 import com.example.telefixmain.Util.BookingHandler;
 import com.example.telefixmain.Util.DatabaseHandler;
 import com.example.telefixmain.Util.MarkerHandler;

@@ -1,4 +1,4 @@
-package com.example.telefixmain;
+package com.example.telefixmain.Activity.Common;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -17,9 +17,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.telefixmain.Dialog.CustomProgressDialog;
+import com.example.telefixmain.Activity.Customer.MainActivity;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vehicle;
+import com.example.telefixmain.R;
 import com.example.telefixmain.Util.DatabaseHandler;
+import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -137,48 +140,78 @@ public class LoginActivity extends AppCompatActivity {
                                         db,
                                         mUser.getUid(),
                                         userResult, () -> {
-                                            // intent to jump to main activity
-                                            Intent toMainActivity = new Intent(this, MainActivity.class);
-                                            toMainActivity.putExtra("loggedInUser", userResult.get(0));
+                                            if (!Boolean.parseBoolean(userResult.get(0).getIsMechanic())) {
+                                                // intent to jump to main activity
+                                                Intent toMainActivity = new Intent(this, MainActivity.class);
+                                                toMainActivity.putExtra("loggedInUser", userResult.get(0));
 
-                                            // init vehicles data containers
-                                            vehiclesIdResult = new ArrayList<>();
-                                            vehiclesResult = new ArrayList<>();
-                                            vehiclesHashMapList = new ArrayList<>();
+                                                // init vehicles data containers
+                                                vehiclesIdResult = new ArrayList<>();
+                                                vehiclesResult = new ArrayList<>();
+                                                vehiclesHashMapList = new ArrayList<>();
 
-                                            // get user's vehicle list
-                                            DatabaseHandler.getUserVehicleList(db, this, mUser.getUid(),
-                                                    vehiclesIdResult, vehiclesResult, () -> {
-                                                        // do only if there is any vehicle id, otherwise cut short the process
-                                                        if (vehiclesResult.size() > 0) {
-                                                            // populate here
-                                                            for (Vehicle currentVehicle : vehiclesResult) {
-                                                                // single vehicle hash map
-                                                                HashMap<String, String> tempContainer = new HashMap<>();
+                                                // get user's vehicle list
+                                                DatabaseHandler.getUserVehicleList(db, this, mUser.getUid(),
+                                                        vehiclesIdResult, vehiclesResult, () -> {
+                                                            // do only if there is any vehicle id, otherwise cut short the process
+                                                            if (vehiclesResult.size() > 0) {
+                                                                // populate here
+                                                                for (Vehicle currentVehicle : vehiclesResult) {
+                                                                    // single vehicle hash map
+                                                                    HashMap<String, String> tempContainer = new HashMap<>();
 
-                                                                // inject vehicle data
-                                                                tempContainer.put("vehicleTitle",
-                                                                        currentVehicle.getVehicleBrand() + " "
-                                                                                + currentVehicle.getVehicleModel() + " "
-                                                                                + currentVehicle.getVehicleYear());
-                                                                tempContainer.put("vehicleColor",
-                                                                        currentVehicle.getVehicleColor());
-                                                                tempContainer.put("vehicleNumberPlate",
-                                                                        currentVehicle.getVehicleNumberPlate());
+                                                                    // inject vehicle data
+                                                                    tempContainer.put("vehicleTitle",
+                                                                            currentVehicle.getVehicleBrand() + " "
+                                                                                    + currentVehicle.getVehicleModel() + " "
+                                                                                    + currentVehicle.getVehicleYear());
+                                                                    tempContainer.put("vehicleColor",
+                                                                            currentVehicle.getVehicleColor());
+                                                                    tempContainer.put("vehicleNumberPlate",
+                                                                            currentVehicle.getVehicleNumberPlate());
 
-                                                                // add to vehicle hash map list
-                                                                vehiclesHashMapList.add(tempContainer);
+                                                                    // add to vehicle hash map list
+                                                                    vehiclesHashMapList.add(tempContainer);
+                                                                }
                                                             }
-                                                        }
-                                                        // show msg and hide progress dialog
+                                                            // show msg and hide progress dialog
+                                                            cpd.dismiss();
+                                                            Toast.makeText(this,
+                                                                    "Logged in successfully!", Toast.LENGTH_SHORT).show();
+                                                            // jump into main activity
+                                                            toMainActivity.putExtra("vehiclesHashMapList", vehiclesHashMapList);
+                                                            startActivity(toMainActivity);
+                                                            finish();
+                                                        });
+                                            } else {
+                                                // THIS IS JUST FOR MOCKING
+                                                cpd.dismiss();
+                                                Toast.makeText(this,
+                                                        "Logged in AS MECHANIC!", Toast.LENGTH_SHORT).show();
+                                                new Handler().postDelayed(() -> {
+                                                    AuthUI.getInstance()
+                                                            .signOut(this)
+                                                            .addOnCompleteListener(task -> {
+                                                                // dialog to show signing out
+                                                                cpd.changeText("Signing out ...");
+                                                                cpd.show();
+                                                            });
+
+                                                    new Handler().postDelayed(() -> {
+                                                        // dismiss dialog
                                                         cpd.dismiss();
-                                                        Toast.makeText(this,
-                                                                "Logged in successfully!", Toast.LENGTH_SHORT).show();
-                                                        // jump into main activity
-                                                        toMainActivity.putExtra("vehiclesHashMapList", vehiclesHashMapList);
-                                                        startActivity(toMainActivity);
-                                                        finish();
-                                                    });
+
+                                                        // jump to log in activity
+                                                        new Handler().postDelayed(() -> {
+                                                            // user is now signed out
+                                                            Toast.makeText(this, "Singed out successfully!",
+                                                                    Toast.LENGTH_SHORT).show();
+                                                            startActivity(new Intent(this, LoginActivity.class));
+                                                            finish();
+                                                        }, 500);
+                                                    }, 1000);
+                                                }, 1000);
+                                            }
                                         }
                                 );
                             }
