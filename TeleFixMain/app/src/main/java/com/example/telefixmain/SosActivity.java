@@ -23,7 +23,7 @@ import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.telefixmain.Fragment.PriceListFragment;
-import com.example.telefixmain.Model.Booking.SOSMetadata;
+import com.example.telefixmain.Model.Booking.SOSRequest;
 import com.example.telefixmain.Model.Vendor;
 import com.example.telefixmain.Util.BookingHandler;
 import com.example.telefixmain.Util.DatabaseHandler;
@@ -247,6 +247,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                         currentRequestId = UUID.randomUUID().toString();
                         long createdTimestamp = System.currentTimeMillis() / 1000L;
 
+
                         // waiting bottom dialog
                         View waitDialog = openBottomSheetDialog(
                                 R.layout.bottom_dialog_mechanic_waiting, R.id.mechanic_wait_close_icon,
@@ -261,6 +262,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                         // Create sos booking request on Realtime Database
                         BookingHandler.sendSOSRequest(vendorsBookings, SosActivity.this,
                                 currentVendorId, mUser.getUid(), currentRequestId, createdTimestamp,
+                                currentLocation.latitude, currentLocation.longitude,
                                 () -> {
                                     // animate msg
                                     dialogMsg.startAnimation(AnimationUtils
@@ -282,7 +284,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 // get SOSRequest object and use the values to update the UI
-                                SOSMetadata sosRequest = dataSnapshot.getValue(SOSMetadata.class);
+                                SOSRequest sosRequest = dataSnapshot.getValue(SOSRequest.class);
                                 // animate when found mechanic
                                 // hide dialog dismiss ability
                                 if (!Objects.requireNonNull(sosRequest).getMechanicId().equals("")) {

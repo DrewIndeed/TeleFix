@@ -19,10 +19,8 @@ import android.widget.Toast;
 
 import com.example.telefixmain.Adapter.BillingAdapter;
 import com.example.telefixmain.Model.Booking.SOSBilling;
-import com.example.telefixmain.Model.Booking.SOSMetadata;
-import com.example.telefixmain.Model.Booking.SOSProgress;
+import com.example.telefixmain.Model.Booking.SOSRequest;
 import com.example.telefixmain.R;
-import com.example.telefixmain.RequestProcessingActivity;
 import com.example.telefixmain.Util.BookingHandler;
 import com.example.telefixmain.Util.DatabaseHandler;
 import com.google.firebase.database.DataSnapshot;
@@ -80,7 +78,7 @@ public class MechanicSOSActivity extends AppCompatActivity {
 //        Intent i = getIntent();
 //        String requestId = (String) i.getExtras().get("currentRequestId");
 //        String vendorId = (String) i.getExtras().get("currentVendorId");
-        acceptSOSRequest = findViewById(R.id.btn_accept_sos_request);
+//        acceptSOSRequest = findViewById(R.id.btn_accept_sos_request);
 
         // listen for db reference
         DatabaseReference openSOSRequest = vendorBookings.getReference().child(vendorId).child("sos").child("metadata");
@@ -90,7 +88,7 @@ public class MechanicSOSActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot ds : snapshot.getChildren()) {
 
-                    SOSMetadata sosRequest = ds.getValue(SOSMetadata.class);
+                    SOSRequest sosRequest = ds.getValue(SOSRequest.class);
 
                     // Todo: test on single request update (scale on arraylist later
                     if (Objects.requireNonNull(sosRequest).getMechanicId().equals("$")) {
@@ -107,13 +105,13 @@ public class MechanicSOSActivity extends AppCompatActivity {
 
         openSOSRequest.addValueEventListener(openSOSRequestListener);
 
-        acceptSOSRequest.setOnClickListener(view -> {
-            BookingHandler.acceptSOSRequest(vendorBookings,this,vendorId,requestId,mechanicId);
-
-            // Mocking purpose
-            BookingHandler.createProgressTracking(vendorBookings,this,vendorId,requestId,System.currentTimeMillis()/1000,() -> {});
-            acceptSOSRequest.setVisibility(View.GONE);
-        });
+//        acceptSOSRequest.setOnClickListener(view -> {
+//            BookingHandler.acceptSOSRequest(vendorBookings,this,vendorId,requestId,mechanicId);
+//
+//            // Mocking purpose
+//            BookingHandler.createProgressTracking(vendorBookings,this,vendorId,requestId,System.currentTimeMillis()/1000,() -> {});
+//            acceptSOSRequest.setVisibility(View.GONE);
+//        });
 
         //--------------Billing section--------------------
         // Check total price:
@@ -238,7 +236,7 @@ public class MechanicSOSActivity extends AppCompatActivity {
         String currentVendorId = "01";
 
         DatabaseHandler.getVendorPriceListById(
-                db, this,
+                db,
                 currentVendorId,
                 inspectionPriceContainer,
                 repairPriceContainer, () -> {

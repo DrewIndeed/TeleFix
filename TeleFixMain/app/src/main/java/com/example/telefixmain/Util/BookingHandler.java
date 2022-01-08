@@ -4,7 +4,7 @@ import android.content.Context;
 import android.widget.Toast;
 
 import com.example.telefixmain.Model.Booking.SOSBilling;
-import com.example.telefixmain.Model.Booking.SOSMetadata;
+import com.example.telefixmain.Model.Booking.SOSRequest;
 import com.example.telefixmain.Model.Booking.SOSProgress;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -20,12 +20,14 @@ public class BookingHandler {
                                       String userId,
                                       String requestId,
                                       long timeCreated,
+                                      double currentLat,
+                                      double currentLng,
                                       Runnable callback) {
 
         System.out.println(vendorId + " " + userId);
         DatabaseReference vendorRef = rootNode.getReference(vendorId);
 
-        SOSMetadata sosRequest = new SOSMetadata(userId, timeCreated);
+        SOSRequest sosRequest = new SOSRequest(userId, timeCreated, currentLat, currentLng);
 
         vendorRef.child("sos").child("metadata").child(requestId).setValue(sosRequest)
                 .addOnCompleteListener(task -> Toast.makeText(context,
