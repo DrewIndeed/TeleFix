@@ -145,7 +145,7 @@
             android:letterSpacing="0.05"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
-            android:text="Vehicle Stats"
+            android:text="Vehicles"
             android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold"
