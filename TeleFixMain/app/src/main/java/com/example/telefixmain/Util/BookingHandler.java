@@ -3,12 +3,15 @@ package com.example.telefixmain.Util;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.example.telefixmain.Model.Booking.SOSBilling;
 import com.example.telefixmain.Model.Booking.SOSMetadata;
 import com.example.telefixmain.Model.Booking.SOSProgress;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class BookingHandler {
     public static void sendSOSRequest(FirebaseDatabase rootNode,
@@ -30,6 +33,20 @@ public class BookingHandler {
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
                         e.getMessage(), Toast.LENGTH_SHORT).show());
         callback.run();
+    }
+
+    public static void acceptSOSRequest(FirebaseDatabase rootNode,
+                                        Context context,
+                                        String vendorId,
+                                        String requestId,
+                                        String mechanicId) {
+        DatabaseReference vendorRef = rootNode.getReference(vendorId);
+
+        vendorRef.child("sos").child("metadata").child(requestId).child("mechanicId").setValue(mechanicId)
+                .addOnCompleteListener(task -> Toast.makeText(context,
+                        "REQUEST ACCEPTED BY MECHANIC ID " + mechanicId, Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(context, "" +
+                        e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     public static void removeSOSRequest(FirebaseDatabase rootNode,
@@ -105,4 +122,32 @@ public class BookingHandler {
     }
 
 //    initBilling()
+    public static void uploadSOSBilling(FirebaseDatabase rootNode,
+                                         Context context,
+                                         String vendorId,
+                                         String requestId,
+                                         ArrayList<SOSBilling> currentBilling,
+                                         int total,
+                                         Runnable callback) {
+        DatabaseReference billingRef = rootNode.getReference(vendorId).child("sos").child("billing").child(requestId);
+
+        Map<String, Integer> billingData = new HashMap<>();
+
+        for (SOSBilling bill :
+                currentBilling) {
+            billingData.put(bill.getItem(), bill.getQuantity());
+        }
+
+        billingRef.child("timestamp").setValue(System.currentTimeMillis()/1000L);
+        billingRef.child("total").setValue(total);
+        billingRef.child("data").setValue(billingData)
+                .addOnCompleteListener(task -> {
+                    Toast.makeText(context,
+                            "CURRENT BILL UPLOADED", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> Toast.makeText(context, "" +
+                        e.getMessage(), Toast.LENGTH_SHORT).show());
+
+        callback.run();
+    }
 }

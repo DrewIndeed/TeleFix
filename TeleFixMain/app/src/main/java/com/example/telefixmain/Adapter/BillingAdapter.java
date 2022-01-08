@@ -28,7 +28,6 @@ public class BillingAdapter extends RecyclerView.Adapter<BillingViewHolder> {
     private HashMap<String, String> inspectionPriceContainer = new HashMap<>();
     private HashMap<String, String> repairPriceContainer = new HashMap<>();
 
-
     public BillingAdapter(Context issueBillingActivity, ArrayList<SOSBilling> currentBilling) {
         this.issueBillingActivity = issueBillingActivity;
         this.currentBilling = currentBilling;
@@ -58,8 +57,7 @@ public class BillingAdapter extends RecyclerView.Adapter<BillingViewHolder> {
 
         holder.item.setText(currentItem);
         holder.quantity.setText(Integer.toString(currentQuantity));
-        holder.total.setText(Integer.toString(currentPrice) + ".000 VND");
-
+        holder.total.setText(String.format("%,d",currentPrice) + ",000 VND");
     }
 
     @Override

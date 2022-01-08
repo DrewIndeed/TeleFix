@@ -2,41 +2,88 @@ package com.example.telefixmain;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.widget.Adapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.telefixmain.Adapter.BillingAdapter;
+import com.example.telefixmain.MechanicProgressTracking.MechanicSOSActivity;
+import com.example.telefixmain.Model.Booking.SOSBilling;
 import com.example.telefixmain.Model.Booking.SOSProgress;
 import com.example.telefixmain.Util.BookingHandler;
+import com.google.api.Billing;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.shuhart.stepview.StepView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class RequestProcessingActivity extends AppCompatActivity {
     // xml
     StepView stepView;
 
-    // database reference for progress tracking
-    private FirebaseDatabase vendorBookings = FirebaseDatabase.getInstance();
+    // Realtime Database
+    private final FirebaseDatabase vendorsBookings = FirebaseDatabase.getInstance();
+    private DatabaseReference currentProgress;
+    private DatabaseReference currentBilling;
+    private String currentVendorId;
+    private String currentRequestId;
+    private ValueEventListener sosRequestListener;
+    private ValueEventListener sosBillingListener;
 
     // keep track of currentStep
     private int currentStep = 0;
+
+    // xml
+    private LinearLayout billingLayout;
+    private RecyclerView recyclerView;
+    private BillingAdapter billingAdapter;
+    private TextView currentPrice;
+
+    // billing
+    private ArrayList<SOSBilling> billings = new ArrayList<>();
+    private int currentTotal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_processing);
+
+        // Set database listener
+
+        // Check total price:
+        currentPrice = findViewById(R.id.tv_current_total_user);
+        currentPrice.setText("Total: " + String.format("%,d",currentTotal) + ",000 VND");
+
+        // recyclerview settings
+        recyclerView = findViewById(R.id.read_billing_recyclerview);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        billingAdapter = new BillingAdapter(RequestProcessingActivity.this,billings);
+        recyclerView.setAdapter(billingAdapter);
+
+        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(itemDecoration);
+
 
         // binding with xml
         stepView = findViewById(R.id.step_view_on_way);
@@ -49,9 +96,6 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
         System.out.println("RequestID: " + requestId + " ------------------ " + "VendorID: " + vendorId);
 
-        // mock button
-        Button MechanicBtnArrived = findViewById(R.id.btn_mock_arrived);
-        Button MechanicBtnFixed = findViewById(R.id.btn_mock_fixed);
         Button UserBtnCancel = findViewById(R.id.btn_abort);
         Button UserBtnProceedPayment = findViewById(R.id.btn_accept_billing);
 
@@ -64,21 +108,13 @@ public class RequestProcessingActivity extends AppCompatActivity {
         stepView.setSteps(steps);
 
         stepView.go(1, true);
-        // animate going from step 1 to step 2
-//        autoGo();
-        MechanicBtnArrived.setOnClickListener(view -> {
-            BookingHandler.updateProgressFromMechanic(vendorBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "arrived");
-        });
 
-        MechanicBtnFixed.setOnClickListener(view -> {
-            BookingHandler.updateProgressFromMechanic(vendorBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "fixed");
-        });
 
-        UserBtnCancel.setOnClickListener(view -> {
-            BookingHandler.updateProgressFromMechanic(vendorBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "aborted");
-        });
+//        UserBtnCancel.setOnClickListener(view -> {
+//            BookingHandler.updateProgressFromMechanic(vendorsBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "aborted");
+//        });
 
-        DatabaseReference currentProgress = vendorBookings.getReference(vendorId).child("sos").child("progress").child(requestId);
+        DatabaseReference currentProgress = vendorsBookings.getReference(vendorId).child("sos").child("progress").child(requestId);
         // set ValueEventListener that delay the onDataChange
         ValueEventListener sosProgressListener = new ValueEventListener() {
             @Override
@@ -109,8 +145,51 @@ public class RequestProcessingActivity extends AppCompatActivity {
         };
 
         currentProgress.addValueEventListener(sosProgressListener);
+
+
+        // Fetch billing from db
+        currentBilling = vendorsBookings.getReference().child("01").child("sos").child("billing").child("mockRequestId");
+
+        sosBillingListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                billings = snapshot.child("data").getValue(ArrayList.class);price
+                // Get billing data
+                GenericTypeIndicator<Map<String, Integer>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Integer>>() {};
+                Map<String, Integer> data = snapshot.child("data").getValue(genericTypeIndicator);
+
+                ArrayList<SOSBilling> tmpBillList = new ArrayList<>();
+                for (Map.Entry<String,Integer> entry : data.entrySet()) {
+                    SOSBilling tmpBilling = new SOSBilling(entry.getKey(), entry.getValue());
+                    tmpBillList.add(tmpBilling);
+                }
+
+                billings.clear();
+                billings.addAll(tmpBillList);
+                billingAdapter.notifyDataSetChanged();
+
+                // Get total
+                currentTotal = snapshot.child("total").getValue(Integer.class);
+                currentPrice.setText("Total: " + String.format("%,d",currentTotal) + ",000 VND");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };
+        currentBilling.addValueEventListener(sosBillingListener);
+
+
+
+        billingLayout = findViewById(R.id.layout_billing_user);
+
         UserBtnProceedPayment.setOnClickListener(view -> {
             stepView.done(true);
+
+            // Set billing visible
+
+            billingLayout.setVisibility(View.VISIBLE);
 
             findViewById(R.id.to_payment_button).setVisibility(View.VISIBLE);
             findViewById(R.id.to_payment_button).startAnimation(
