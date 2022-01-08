@@ -17,7 +17,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.telefixmain.Dialog.CustomProgressDialog;
+import com.example.telefixmain.Model.User;
+import com.example.telefixmain.Model.Vehicle;
+import com.example.telefixmain.Util.DatabaseHandler;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 @SuppressLint("ClickableViewAccessibility")
 public class LoginActivity extends AppCompatActivity {
@@ -35,8 +43,15 @@ public class LoginActivity extends AppCompatActivity {
     CustomProgressDialog cpd;
 
     // [START declare_auth]
-    private FirebaseAuth mAuth;
+    FirebaseAuth mAuth;
+    FirebaseUser mUser;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     // [END declare_auth]
+
+    ArrayList<User> userResult = new ArrayList<>();
+    ArrayList<String> vehiclesIdResult = new ArrayList<>();
+    ArrayList<Vehicle> vehiclesResult = new ArrayList<>();
+    ArrayList<HashMap<String, String>> vehiclesHashMapList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +62,9 @@ public class LoginActivity extends AppCompatActivity {
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
         // [END initialize_auth]
+
+        // get current user from Firebase Auth
+        mUser = mAuth.getCurrentUser();
 
         // init progress dialog
         cpd = new CustomProgressDialog(this, R.style.SheetDialog);
@@ -109,7 +127,56 @@ public class LoginActivity extends AppCompatActivity {
         btnLogIn.setOnClickListener(view -> {
             try {
                 // call verifying log on method
-                signIn(inputEmail.getText().toString(), inputPwd.getText().toString());
+                signIn(inputEmail.getText().toString(), inputPwd.getText().toString(),
+                        () -> {
+                            // if there is a logged in user
+                            if (mUser != null) {
+                                DatabaseHandler.getSingleUser(
+                                        db,
+                                        mUser.getUid(),
+                                        userResult, () -> {
+                                            // intent to jump to main activity
+                                            Intent toMainActivity = new Intent(this, MainActivity.class);
+                                            toMainActivity.putExtra("loggedInUser", userResult.get(0));
+
+                                            // get user's vehicle list
+                                            DatabaseHandler.getUserVehicleList(db, this, mUser.getUid(),
+                                                    vehiclesIdResult, vehiclesResult, () -> {
+                                                        // do only if there is any vehicle id, otherwise cut short the process
+                                                        if (vehiclesResult.size() > 0) {
+                                                            // populate here
+                                                            for (Vehicle currentVehicle : vehiclesResult) {
+                                                                // single vehicle hash map
+                                                                HashMap<String, String> tempContainer = new HashMap<>();
+
+                                                                // inject vehicle data
+                                                                tempContainer.put("vehicleTitle",
+                                                                        currentVehicle.getVehicleBrand() + " "
+                                                                                + currentVehicle.getVehicleModel() + " "
+                                                                                + currentVehicle.getVehicleYear());
+                                                                tempContainer.put("vehicleColor",
+                                                                        currentVehicle.getVehicleColor());
+                                                                tempContainer.put("vehicleNumberPlate",
+                                                                        currentVehicle.getVehicleNumberPlate());
+
+                                                                // add to vehicle hash map list
+                                                                vehiclesHashMapList.add(tempContainer);
+                                                            }
+                                                            // show msg and hide progress dialog
+                                                            cpd.dismiss();
+                                                            Toast.makeText(this,
+                                                                    "Logged in successfully!", Toast.LENGTH_SHORT).show();
+
+                                                            // jump into main activity
+                                                            toMainActivity.putExtra("vehiclesHashMapList", vehiclesHashMapList);
+                                                        }
+                                                        startActivity(toMainActivity);
+                                                        finish();
+                                                    });
+                                        }
+                                );
+                            }
+                        });
             } catch (IllegalArgumentException | NullPointerException e) {
                 // hide progress dialog
                 cpd.dismiss();
@@ -141,8 +208,8 @@ public class LoginActivity extends AppCompatActivity {
      * @param email    : string from email text input
      * @param password : string from password text input
      */
-    private void signIn(String email, String password) throws IllegalArgumentException,
-            NullPointerException {
+    private void signIn(String email, String password, Runnable callback)
+            throws IllegalArgumentException, NullPointerException {
         // [START sign_in_with_email]
 
         // show progress dialog
@@ -154,18 +221,8 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     System.out.println("LOGIN VERIFIED COMPLETED!");
                     if (task.isSuccessful()) {
-                        // show msg and hide progress dialog
-                        new Handler().postDelayed(() -> {
-                            cpd.dismiss();
-                            Toast.makeText(this,
-                                    "Logged in successfully!", Toast.LENGTH_SHORT).show();
-
-                            // jump into main activity
-                            new Handler().postDelayed(() -> {
-                                startActivity(new Intent(this, MainActivity.class));
-                                finish();
-                            }, 500);
-                        }, 1000);
+                        // run callback when done
+                        callback.run();
                     } else {
                         // show msg and hide progress dialog
                         new Handler().postDelayed(() -> {

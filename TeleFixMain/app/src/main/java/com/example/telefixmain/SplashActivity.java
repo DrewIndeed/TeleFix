@@ -45,7 +45,7 @@ public class SplashActivity extends AppCompatActivity {
             // make the start button appear
             startBtn.setVisibility(View.VISIBLE);
             startBtn.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
-        }, 3000);
+        }, 2000);
 
         // animation when start button is clicked
         startBtn = findViewById(R.id.start_btn);
