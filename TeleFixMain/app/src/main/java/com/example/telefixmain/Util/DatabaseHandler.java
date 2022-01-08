@@ -294,14 +294,17 @@ DatabaseHandler {
                         // populate vehicle id array list
                         vehiclesIdResult.addAll(Objects.requireNonNull(vehicleTempList));
 
-                        // populate vehicles object list
-                        for (String vId : vehiclesIdResult) {
-                            if (vehiclesIdResult.indexOf(vId) == vehiclesIdResult.size() - 1) {
-                                // run callback if it is the last id
-                                getSingleVehicle(db, vId, vehiclesResult, callback);
-                            } else {
-                                getSingleVehicle(db, vId, vehiclesResult, () -> {
-                                });
+                        // do only if there is any vehicle id, otherwise cut short the process
+                        if (vehiclesIdResult.size() > 0) {
+                            // populate vehicles object list
+                            for (String vId : vehiclesIdResult) {
+                                if (vehiclesIdResult.indexOf(vId) == vehiclesIdResult.size() - 1) {
+                                    // run callback if it is the last id
+                                    getSingleVehicle(db, vId, vehiclesResult, callback);
+                                } else {
+                                    getSingleVehicle(db, vId, vehiclesResult, () -> {
+                                    });
+                                }
                             }
                         }
                     }

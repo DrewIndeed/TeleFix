@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
@@ -11,8 +12,11 @@ import android.widget.RelativeLayout;
 import com.example.telefixmain.Fragment.HistoryFragment;
 import com.example.telefixmain.Fragment.HomeFragment;
 import com.example.telefixmain.Fragment.ProfileFragment;
+import com.example.telefixmain.Model.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,11 +27,22 @@ public class MainActivity extends AppCompatActivity {
     int prevFragment = 1;
     int currentFragment;
 
+    // intent data receivers
+    User userTracker;
+    ArrayList<HashMap<String, String>> vehiclesHashMapList = new ArrayList<>();
+
     @SuppressLint("NonConstantResourceId")
+    @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // get data from intent sent from Login Activity
+        Intent intent = getIntent();
+        userTracker = (User) intent.getSerializableExtra("loggedInUser");
+        vehiclesHashMapList = (ArrayList<HashMap<String, String>>)
+                intent.getSerializableExtra("vehiclesHashMapList");
 
         // main content fade in
         rlMain = findViewById(R.id.rl_main);
@@ -38,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         // set default fragment
         getSupportFragmentManager().beginTransaction().replace(R.id.rl_main,
-                new HomeFragment()).commit();
+                new HomeFragment(userTracker, vehiclesHashMapList)).commit();
         botNav.setSelectedItemId(R.id.nav_home);
 
         // on nav bar item selected listener
@@ -50,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             // return fragment instances according to item's id
             switch (item.getItemId()) {
                 case R.id.nav_home:
-                    fragmentContainer = new HomeFragment();
+                    fragmentContainer = new HomeFragment(userTracker, vehiclesHashMapList);
                     break;
 
                 case R.id.nav_history:

@@ -25,7 +25,6 @@ import com.example.telefixmain.Adapter.VehicleListAdapter;
 
 import com.example.telefixmain.Dialog.CustomProgressDialog;
 import com.example.telefixmain.Model.User;
-import com.example.telefixmain.Model.Vehicle;
 import com.example.telefixmain.R;
 import com.example.telefixmain.SosActivity;
 import com.example.telefixmain.Util.DatabaseHandler;
@@ -53,12 +52,6 @@ public class HomeFragment extends Fragment {
     FirebaseUser mUser = mAuth.getCurrentUser();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    // Global Arraylist to store result
-    ArrayList<User> userResult = new ArrayList<>();
-    ArrayList<String> vehiclesIdResult = new ArrayList<>();
-    ArrayList<Vehicle> vehiclesResult = new ArrayList<>();
-    ArrayList<HashMap<String, String>> vehiclesHashMapList = new ArrayList<>();
-
     // custom adapter
     VehicleListAdapter vehicleListAdapter;
 
@@ -68,8 +61,13 @@ public class HomeFragment extends Fragment {
     // layout manager for recycler view
     RecyclerView.LayoutManager vehicleListLayoutManager;
 
-    public HomeFragment() {
-        // Required empty public constructor
+    // data receivers from constructor call
+    User userTracker;
+    ArrayList<HashMap<String, String>> vehiclesHashMapList;
+
+    public HomeFragment(User userTracker, ArrayList<HashMap<String, String>> vehiclesHashMapList) {
+        this.userTracker = userTracker;
+        this.vehiclesHashMapList = vehiclesHashMapList;
     }
 
     @SuppressLint("ResourceType")
@@ -97,57 +95,20 @@ public class HomeFragment extends Fragment {
         userName = root.findViewById(R.id.tv_name_home);
 
         // if there is a logged in user
-        if (mUser != null) {
-            DatabaseHandler.getSingleUser(
-                    db,
-                    mUser.getUid(),
-                    userResult, () -> {
-                        // render on ui
-                        if (userResult.size() > 0) {
-                            // log to keep track
-                            System.out.println(userResult.toString());
+        if (userTracker != null) {
+            // render user name on UI
+            userName.setText(userTracker.getName());
 
-                            // render user name on UI
-                            userName.setText(userResult.get(0).getName());
-                            userName.startAnimation(AnimationUtils.loadAnimation(fragmentActivity,
-                                    R.anim.fade_in));
-
-                            DatabaseHandler.getUserVehicleList(db, fragmentActivity, mUser.getUid(),
-                                    vehiclesIdResult, vehiclesResult, () -> {
-                                        // populate here
-                                        for (Vehicle currentVehicle : vehiclesResult) {
-                                            // single vehicle hash map
-                                            HashMap<String, String> tempContainer = new HashMap<>();
-
-                                            // inject vehicle data
-                                            tempContainer.put("vehicleTitle",
-                                                    currentVehicle.getVehicleBrand() + " "
-                                                            + currentVehicle.getVehicleModel() + " "
-                                                            + currentVehicle.getVehicleYear());
-                                            tempContainer.put("vehicleColor",
-                                                    currentVehicle.getVehicleColor());
-                                            tempContainer.put("vehicleNumberPlate",
-                                                    currentVehicle.getVehicleNumberPlate());
-
-                                            // add to vehicle hash map list
-                                            vehiclesHashMapList.add(tempContainer);
-
-                                            if (vehiclesResult.indexOf(currentVehicle) == vehiclesResult.size() - 1) {
-                                                // recycler usage
-                                                vehicleListRV = root.findViewById(R.id.rv_vehicle_list);
-                                                vehicleListRV.setVisibility(View.VISIBLE);
-                                                vehicleListRV.setHasFixedSize(true);
-                                                vehicleListLayoutManager = new LinearLayoutManager(fragmentActivity);
-                                                vehicleListRV.setLayoutManager(vehicleListLayoutManager);
-                                                vehicleListAdapter = new VehicleListAdapter(
-                                                        fragmentActivity, vehiclesHashMapList);
-                                                vehicleListRV.setAdapter(vehicleListAdapter);
-                                            }
-                                        }
-                                    });
-                        }
-                    }
-            );
+            // if the last vehicle has been added to hash map list
+            // render to recycler view
+            vehicleListRV = root.findViewById(R.id.rv_vehicle_list);
+            vehicleListRV.setVisibility(View.VISIBLE);
+            vehicleListRV.setHasFixedSize(true);
+            vehicleListLayoutManager = new LinearLayoutManager(fragmentActivity);
+            vehicleListRV.setLayoutManager(vehicleListLayoutManager);
+            vehicleListAdapter = new VehicleListAdapter(
+                    fragmentActivity, vehiclesHashMapList);
+            vehicleListRV.setAdapter(vehicleListAdapter);
 
             // open register vehicle dialog
             openVehicleRegister = root.findViewById(R.id.btn_register_vehicle);
