@@ -129,6 +129,7 @@ public class LoginActivity extends AppCompatActivity {
                         () -> {
                             // get new instance of mUser
                             mUser = mAuth.getCurrentUser();
+                            userResult = new ArrayList<>();
 
                             // if there is a logged in user
                             if (mUser != null) {
@@ -138,7 +139,7 @@ public class LoginActivity extends AppCompatActivity {
                                         userResult, () -> {
                                             // intent to jump to main activity
                                             Intent toMainActivity = new Intent(this, MainActivity.class);
-                                            toMainActivity.putExtra("loggedInUser", mUser.getUid());
+                                            toMainActivity.putExtra("loggedInUser", userResult.get(0));
 
                                             // init vehicles data containers
                                             vehiclesIdResult = new ArrayList<>();

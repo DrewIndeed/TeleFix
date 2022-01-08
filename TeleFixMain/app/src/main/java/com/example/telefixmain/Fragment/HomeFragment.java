@@ -234,10 +234,11 @@ public class HomeFragment extends Fragment {
 
                 // jump to sos activity
                 new Handler().postDelayed(() -> {
-                    startActivity(new Intent(fragmentActivity, SosActivity.class));
-                    if (fragmentActivity != null) {
-                        fragmentActivity.finish();
-                    }
+                    Intent jumpToSos = new Intent(fragmentActivity, SosActivity.class);
+                    jumpToSos.putExtra("loggedInUser", userTracker);
+                    jumpToSos.putExtra("vehiclesHashMapList", vehiclesHashMapList);
+                    startActivity(jumpToSos);
+                    fragmentActivity.finish();
                 }, 500);
             }, 1500);
         });
@@ -256,9 +257,6 @@ public class HomeFragment extends Fragment {
                 // jump to sos activity
                 new Handler().postDelayed(() -> {
                     startActivity(new Intent(fragmentActivity, MechanicSOSActivity.class));
-                    if (fragmentActivity != null) {
-                        fragmentActivity.finish();
-                    }
                 }, 500);
             }, 1500);
         });

@@ -191,7 +191,7 @@ public class SignUpActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         // sign up success, create user on Firestore database
                         String id = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-                        String email1 = mAuth.getCurrentUser().getEmail();
+                        String signedUpEmail = mAuth.getCurrentUser().getEmail();
 
                         // TODO: Check valid vendor ID on database
 
@@ -201,29 +201,20 @@ public class SignUpActivity extends AppCompatActivity {
                                 id.trim(),
                                 nameSignup.getText().toString().trim(),
                                 phoneSignup.getText().toString().trim(),
-                                Objects.requireNonNull(email1).trim(),
+                                Objects.requireNonNull(signedUpEmail).trim(),
                                 isMechanic,
                                 vendorIdSignup.getText().toString().trim());
 
                         // show msg and hide progress dialog
-                        new Handler().postDelayed(() -> {
-                            cpd.dismiss();
-                            Toast.makeText(this,
-                                    "Signed up successfully!", Toast.LENGTH_SHORT).show();
+                        cpd.dismiss();
+                        Toast.makeText(this,
+                                "Signed up successfully!", Toast.LENGTH_SHORT).show();
 
-                            // jump into main activity
-                            new Handler().postDelayed(() -> {
-                                startActivity(new Intent(this, LoginActivity.class));
-                                finish();
-                            }, 500);
-                        }, 1000);
-                    } else {
-                        // If sign up fails, display a message to the user.
+                        // jump into main activity
                         new Handler().postDelayed(() -> {
-                            cpd.dismiss();
-                            Toast.makeText(this,
-                                    "Signed up failed!", Toast.LENGTH_SHORT).show();
-                        }, 1000);
+                            startActivity(new Intent(this, LoginActivity.class));
+                            finish();
+                        }, 500);
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -232,6 +223,9 @@ public class SignUpActivity extends AppCompatActivity {
                             .equals("The email address is already in use by another account.")) {
                         Toast.makeText(this,
                                 "Email is already in use!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this,
+                                "Signed up failed!", Toast.LENGTH_SHORT).show();
                     }
                 });
         // [END create_user_with_email]
