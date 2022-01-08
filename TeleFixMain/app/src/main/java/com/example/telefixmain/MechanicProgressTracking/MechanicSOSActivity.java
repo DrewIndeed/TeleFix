@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class MechanicSOSActivity extends AppCompatActivity {
-    // firestore
+    // firestore & realtime db
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseDatabase vendorBookings = FirebaseDatabase.getInstance();
 
@@ -81,7 +81,7 @@ public class MechanicSOSActivity extends AppCompatActivity {
 //        acceptSOSRequest = findViewById(R.id.btn_accept_sos_request);
 
         // listen for db reference
-        DatabaseReference openSOSRequest = vendorBookings.getReference().child(vendorId).child("sos").child("metadata");
+        DatabaseReference openSOSRequest = vendorBookings.getReference().child(vendorId).child("sos").child("request");
         // set ValueEventListener that delay the onDataChange
         ValueEventListener openSOSRequestListener = new ValueEventListener() {
             @Override

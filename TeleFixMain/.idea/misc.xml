@@ -35,6 +35,7 @@
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.45" />
         <entry key="app/src/main/res/layout/activity_mechanic_sos.xml" value="0.28229166666666666" />
+        <entry key="app/src/main/res/layout/activity_mechanic_sos_request.xml" value="0.13489583333333333" />
         <entry key="app/src/main/res/layout/activity_on_way.xml" value="0.12522522522522522" />
         <entry key="app/src/main/res/layout/activity_read_billing.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/layout/activity_request_processing.xml" value="0.2554054054054054" />
@@ -45,15 +46,11 @@
         <entry key="app/src/main/res/layout/custom_pricelist_dialog.xml" value="0.45" />
         <entry key="app/src/main/res/layout/custom_progress_dialog.xml" value="0.2554054054054054" />
         <entry key="app/src/main/res/layout/fragment_history.xml" value="0.2554054054054054" />
-        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/fragment_price_list.xml" value="0.4469541409993155" />
+        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.23688846865998162" />
         <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.375" />
         <entry key="app/src/main/res/layout/loading_progress.xml" value="0.5078755725825527" />
         <entry key="app/src/main/res/layout/map_bottom_sheet.xml" value="0.3404255319148936" />
         <entry key="app/src/main/res/layout/mechanic_waiting.xml" value="0.41388888888888886" />
-        <entry key="app/src/main/res/layout/price_item_slot.xml" value="0.5677083333333334" />
-        <entry key="app/src/main/res/layout/row_price_item.xml" value="0.5765625" />
-        <entry key="app/src/main/res/layout/row_vehicle_item.xml" value="0.4427966101694915" />
         <entry key="app/src/main/res/layout/row_billing.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/row_price_item.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/row_sos_request_item.xml" value="0.335" />

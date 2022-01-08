@@ -29,7 +29,7 @@ public class BookingHandler {
 
         SOSRequest sosRequest = new SOSRequest(userId, timeCreated, currentLat, currentLng);
 
-        vendorRef.child("sos").child("metadata").child(requestId).setValue(sosRequest)
+        vendorRef.child("sos").child("request").child(requestId).setValue(sosRequest)
                 .addOnCompleteListener(task -> Toast.makeText(context,
                         "Request sent!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
@@ -44,7 +44,7 @@ public class BookingHandler {
                                         String mechanicId) {
         DatabaseReference vendorRef = rootNode.getReference(vendorId);
 
-        vendorRef.child("sos").child("metadata").child(requestId).child("mechanicId").setValue(mechanicId)
+        vendorRef.child("sos").child("request").child(requestId).child("mechanicId").setValue(mechanicId)
                 .addOnCompleteListener(task -> Toast.makeText(context,
                         "REQUEST ACCEPTED BY MECHANIC ID " + mechanicId, Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
@@ -58,7 +58,7 @@ public class BookingHandler {
 
         DatabaseReference vendorRef = rootNode.getReference(vendorId);
 
-        vendorRef.child("sos").child("metadata").child(requestId).removeValue()
+        vendorRef.child("sos").child("request").child(requestId).removeValue()
                 .addOnCompleteListener(task -> Toast.makeText(context,
                         "Request cancelled!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(context, "" +

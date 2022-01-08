@@ -243,10 +243,9 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                         // dismiss dialog before open a new one to avoid window leak
                         sosBottomDialog.dismiss();
 
-                        // Create request metadata
+                        // Create request
                         currentRequestId = UUID.randomUUID().toString();
                         long createdTimestamp = System.currentTimeMillis() / 1000L;
-
 
                         // waiting bottom dialog
                         View waitDialog = openBottomSheetDialog(
@@ -270,7 +269,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
                                     // Update current requested vendor
                                     currentVendorRef = vendorsBookings.getReference(currentVendorId)
-                                            .child("sos").child("metadata").child(currentRequestId);
+                                            .child("sos").child("request").child(currentRequestId);
 
                                     // log msg
                                     System.out.println("Current Vendor DatabaseReference has been updated!");
