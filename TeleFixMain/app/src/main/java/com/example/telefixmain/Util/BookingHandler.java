@@ -27,7 +27,7 @@ public class BookingHandler {
         System.out.println(vendorId + " " + userId);
         DatabaseReference vendorRef = rootNode.getReference(vendorId);
 
-        SOSRequest sosRequest = new SOSRequest(userId, timeCreated, currentLat, currentLng);
+        SOSRequest sosRequest = new SOSRequest(requestId, userId, timeCreated, currentLat, currentLng);
 
         vendorRef.child("sos").child("request").child(requestId).setValue(sosRequest)
                 .addOnCompleteListener(task -> Toast.makeText(context,

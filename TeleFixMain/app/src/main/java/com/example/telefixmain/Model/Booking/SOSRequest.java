@@ -2,6 +2,7 @@ package com.example.telefixmain.Model.Booking;
 
 public class SOSRequest {
     // Public attribute to allow Firebase Realtime Database push to / retrieve from DocumentReference
+    private String requestId;
     private String userId;
     private String mechanicId;
     private long timestampCreated;
@@ -12,7 +13,8 @@ public class SOSRequest {
         // Default constructor required for calls to DataSnapshot.getValue(SOSMetadata.class)
     }
 
-    public SOSRequest(String userId, long timestampCreated, double lat, double lng) {
+    public SOSRequest(String requestId, String userId, long timestampCreated, double lat, double lng) {
+        this.requestId = requestId;
         this.mechanicId = "";
         this.userId = userId;
         this.timestampCreated = timestampCreated;
@@ -58,5 +60,13 @@ public class SOSRequest {
 
     public void setLng(double lng) {
         this.lng = lng;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
 }
