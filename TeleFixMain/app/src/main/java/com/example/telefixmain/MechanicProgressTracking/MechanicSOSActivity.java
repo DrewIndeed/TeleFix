@@ -152,6 +152,7 @@ public class MechanicSOSActivity extends AppCompatActivity {
                 } else {
                     // Check existed in current billing --> Show the current quantity to avoid duplicated
                     int index = 0;
+                    boolean isRemoved = false;
 
                     if (billings.size() == 0) {
                         billings.add(new SOSBilling(billingItem.getText().toString(), Integer.parseInt(billingQuantity.getText().toString())));
@@ -163,11 +164,13 @@ public class MechanicSOSActivity extends AppCompatActivity {
                                 // TODO: If mechanic want to delete an item --> Set quantity to 0 --> Delete on list
                                 if (Integer.parseInt(billingQuantity.getText().toString()) == 0) {
                                     billings.remove(i);
+                                    isRemoved = true;
+                                    Toast.makeText(this, "Removed the existed service", Toast.LENGTH_SHORT).show();
                                 }
                                 else {
                                     billings.set(i, new SOSBilling(billingItem.getText().toString(), Integer.parseInt(billingQuantity.getText().toString())));
+                                    Toast.makeText(this, "Update the quantity existed service", Toast.LENGTH_SHORT).show();
                                 }
-                                Toast.makeText(this, "Update the quantity existed service", Toast.LENGTH_SHORT).show();
                                 break;
                             }
                             if (i == billings.size()-1) {
@@ -175,7 +178,12 @@ public class MechanicSOSActivity extends AppCompatActivity {
                             }
                         }
                     }
-                    billingAdapter.notifyItemChanged(index);
+                    if (isRemoved) {
+                        billingAdapter.notifyItemRemoved(index);
+                    } else {
+                        billingAdapter.notifyItemChanged(index);
+                    }
+
                     calculateTotal();
                     currentPrice.setText("Total: " + String.format("%,d",currentTotal) + ",000 VND");
                     billingItem.getText().clear();
