@@ -306,6 +306,8 @@ DatabaseHandler {
                                     });
                                 }
                             }
+                        } else {
+                            callback.run();
                         }
                     }
                 })
