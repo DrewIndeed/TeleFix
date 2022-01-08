@@ -3,17 +3,16 @@ package com.example.telefixmain.Model;
 import androidx.annotation.NonNull;
 
 public class Vehicle {
+    private String userId;
     private String vehicleBrand, vehicleModel, vehicleYear, vehicleColor;
     private String vehicleNumberPlate, vehicleId;
 
-    public Vehicle(String vehicleBrand, String vehicleModel, String vehicleYear,
-                   String vehicleColor, String vehicleNumberPlate, String vehicleId) {
-        this.vehicleBrand = vehicleBrand;
-        this.vehicleModel = vehicleModel;
-        this.vehicleYear = vehicleYear;
-        this.vehicleColor = vehicleColor;
-        this.vehicleNumberPlate = vehicleNumberPlate;
-        this.vehicleId = vehicleId;
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getVehicleId() {
@@ -65,10 +64,12 @@ public class Vehicle {
     }
 
     @NonNull
+
     @Override
     public String toString() {
         return "Vehicle{" +
-                "vehicleBrand='" + vehicleBrand + '\'' +
+                "userId='" + userId + '\'' +
+                ", vehicleBrand='" + vehicleBrand + '\'' +
                 ", vehicleModel='" + vehicleModel + '\'' +
                 ", vehicleYear='" + vehicleYear + '\'' +
                 ", vehicleColor='" + vehicleColor + '\'' +

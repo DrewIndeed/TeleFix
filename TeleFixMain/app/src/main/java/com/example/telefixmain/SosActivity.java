@@ -183,7 +183,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
         // generate invisible markers from fetched vendors
-        DatabaseHandler.getAllVendors(db, SosActivity.this, vendorsResultContainer,
+        DatabaseHandler.getAllVendors(db, vendorsResultContainer,
                 () -> {
                     // render on ui
                     if (vendorsResultContainer.size() > 0) {
@@ -417,7 +417,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
             viewDialog.findViewById(R.id.btn_view_price_list).setOnClickListener(view -> {
                 // get prices of target vendor
                 DatabaseHandler.getVendorPriceListById(
-                        db, this,
+                        db,
                         currentVendorId,
                         inspectionPriceContainer,
                         repairPriceContainer, () -> {
@@ -451,9 +451,9 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                 String formattedPrice;
                                 String currentPrice = Objects.requireNonNull(repairPriceContainer.get(key));
                                 if (Integer.parseInt(currentPrice) >= 1000) {
-                                    formattedPrice = currentPrice.charAt(0) + ".000.000 VND";
+                                    formattedPrice = currentPrice.charAt(0) + ",000,000 VND";
                                 } else {
-                                    formattedPrice = currentPrice + ".000 VND";
+                                    formattedPrice = currentPrice + ",000 VND";
                                 }
                                 tempContainer.put("servicePrice", formattedPrice);
                                 repairPricesHashMapList.add(tempContainer);

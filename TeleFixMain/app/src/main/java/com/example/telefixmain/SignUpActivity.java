@@ -197,7 +197,7 @@ public class SignUpActivity extends AppCompatActivity {
 
 
                         // Create user on database
-                        DatabaseHandler.createUserOnDatabase(db, SignUpActivity.this,
+                        DatabaseHandler.createUser(db, SignUpActivity.this,
                                 id.trim(),
                                 nameSignup.getText().toString().trim(),
                                 phoneSignup.getText().toString().trim(),

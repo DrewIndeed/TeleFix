@@ -98,7 +98,6 @@ public class ProfileFragment extends Fragment {
             // get user from database and fill in text inputs
             DatabaseHandler.getSingleUser(
                     db,
-                    fragmentActivity,
                     mUser.getUid(),
                     userResult, () -> {
                         // render on ui

@@ -88,7 +88,7 @@ public class IssueBillingActivity extends AppCompatActivity {
         String currentVendorId = "01";
 
         DatabaseHandler.getVendorPriceListById(
-                db, this,
+                db,
                 currentVendorId,
                 inspectionPriceContainer,
                 repairPriceContainer, () -> {

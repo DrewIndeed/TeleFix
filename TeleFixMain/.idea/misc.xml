@@ -47,7 +47,7 @@
         <entry key="app/src/main/res/layout/custom_pricelist_dialog.xml" value="0.45" />
         <entry key="app/src/main/res/layout/custom_progress_dialog.xml" value="0.2554054054054054" />
         <entry key="app/src/main/res/layout/fragment_history.xml" value="0.2554054054054054" />
-        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.45" />
+        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_price_list.xml" value="0.4469541409993155" />
         <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.375" />
         <entry key="app/src/main/res/layout/fragment_vehicle_register.xml" value="0.5" />
@@ -56,7 +56,7 @@
         <entry key="app/src/main/res/layout/mechanic_waiting.xml" value="0.41388888888888886" />
         <entry key="app/src/main/res/layout/price_item_slot.xml" value="0.5677083333333334" />
         <entry key="app/src/main/res/layout/row_price_item.xml" value="0.5765625" />
-        <entry key="app/src/main/res/layout/row_vehicle_item.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/row_vehicle_item.xml" value="0.4427966101694915" />
         <entry key="app/src/main/res/menu/item_menu.xml" value="0.2554054054054054" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.371875" />
       </map>
