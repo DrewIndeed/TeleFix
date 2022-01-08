@@ -36,6 +36,7 @@ public class VehicleListAdapter extends RecyclerView.Adapter<VehicleItemViewHold
         // binding views and set data
         holder.vehicleTitle.setText(vehicleHashMapList.get(position).get("vehicleTitle"));
         holder.vehicleColor.setText(vehicleHashMapList.get(position).get("vehicleColor"));
+        holder.vehicleNumberPlate.setText(vehicleHashMapList.get(position).get("vehicleNumberPlate"));
     }
 
     @Override

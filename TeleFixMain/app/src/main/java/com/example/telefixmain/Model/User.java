@@ -11,7 +11,7 @@ public class User {
     private String phone;
     private boolean isVendor;
     private String vendorId;
-    private ArrayList<String> registeredVehicles;
+    private ArrayList<String> registerVehicles;
 
     public String getId() {
         return id;
@@ -62,11 +62,11 @@ public class User {
     }
 
     public ArrayList<String> getRegisteredVehicles() {
-        return registeredVehicles;
+        return registerVehicles;
     }
 
-    public void setRegisteredVehicles(ArrayList<String> registeredVehicles) {
-        this.registeredVehicles = registeredVehicles;
+    public void setRegisteredVehicles(ArrayList<String> registerVehicles) {
+        this.registerVehicles = registerVehicles;
     }
 
     @NonNull

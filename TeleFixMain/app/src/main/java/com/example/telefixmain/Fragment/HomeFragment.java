@@ -7,6 +7,8 @@ import android.os.Bundle;
 
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -19,8 +21,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.telefixmain.MechanicProgressTracking.MechanicSOSActivity;
+import com.example.telefixmain.Adapter.VehicleListAdapter;
+import com.example.telefixmain.BillingActivities.IssueBillingActivity;
+
 import com.example.telefixmain.Dialog.CustomProgressDialog;
 import com.example.telefixmain.Model.User;
+import com.example.telefixmain.Model.Vehicle;
 import com.example.telefixmain.R;
 import com.example.telefixmain.SosActivity;
 import com.example.telefixmain.Util.DatabaseHandler;
@@ -31,6 +37,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class HomeFragment extends Fragment {
@@ -49,6 +56,18 @@ public class HomeFragment extends Fragment {
 
     // Global Arraylist to store result
     ArrayList<User> userResult = new ArrayList<>();
+    ArrayList<String> vehiclesIdResult = new ArrayList<>();
+    ArrayList<Vehicle> vehiclesResult = new ArrayList<>();
+    ArrayList<HashMap<String, String>> vehiclesHashMapList = new ArrayList<>();
+
+    // custom adapter
+    VehicleListAdapter vehicleListAdapter;
+
+    // recycler view to display data
+    RecyclerView vehicleListRV;
+
+    // layout manager for recycler view
+    RecyclerView.LayoutManager vehicleListLayoutManager;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -82,7 +101,6 @@ public class HomeFragment extends Fragment {
         if (mUser != null) {
             DatabaseHandler.getSingleUser(
                     db,
-                    fragmentActivity,
                     mUser.getUid(),
                     userResult, () -> {
                         // render on ui
@@ -94,6 +112,40 @@ public class HomeFragment extends Fragment {
                             userName.setText(userResult.get(0).getName());
                             userName.startAnimation(AnimationUtils.loadAnimation(fragmentActivity,
                                     R.anim.fade_in));
+
+                            DatabaseHandler.getUserVehicleList(db, fragmentActivity, mUser.getUid(),
+                                    vehiclesIdResult, vehiclesResult, () -> {
+                                        // populate here
+                                        for (Vehicle currentVehicle : vehiclesResult) {
+                                            // single vehicle hash map
+                                            HashMap<String, String> tempContainer = new HashMap<>();
+
+                                            // inject vehicle data
+                                            tempContainer.put("vehicleTitle",
+                                                    currentVehicle.getVehicleBrand() + " "
+                                                            + currentVehicle.getVehicleModel() + " "
+                                                            + currentVehicle.getVehicleYear());
+                                            tempContainer.put("vehicleColor",
+                                                    currentVehicle.getVehicleColor());
+                                            tempContainer.put("vehicleNumberPlate",
+                                                    currentVehicle.getVehicleNumberPlate());
+
+                                            // add to vehicle hash map list
+                                            vehiclesHashMapList.add(tempContainer);
+
+                                            if (vehiclesResult.indexOf(currentVehicle) == vehiclesResult.size() - 1) {
+                                                // recycler usage
+                                                vehicleListRV = root.findViewById(R.id.rv_vehicle_list);
+                                                vehicleListRV.setVisibility(View.VISIBLE);
+                                                vehicleListRV.setHasFixedSize(true);
+                                                vehicleListLayoutManager = new LinearLayoutManager(fragmentActivity);
+                                                vehicleListRV.setLayoutManager(vehicleListLayoutManager);
+                                                vehicleListAdapter = new VehicleListAdapter(
+                                                        fragmentActivity, vehiclesHashMapList);
+                                                vehicleListRV.setAdapter(vehicleListAdapter);
+                                            }
+                                        }
+                                    });
                         }
                     }
             );
@@ -141,16 +193,18 @@ public class HomeFragment extends Fragment {
                         cpd.changeText("Registering vehicle ...");
                         cpd.show();
 
-                        new Handler().postDelayed(() -> {
-                            cpd.dismiss();
-                            DatabaseHandler.createVehicle(db,
-                                    fragmentActivity, mUser.getUid(),
-                                    vBrand.getText().toString(),
-                                    vModel.getText().toString(),
-                                    vYear.getText().toString(),
-                                    vColor.getText().toString(),
-                                    vNumberPlate.getText().toString(), bottomSheetDialog::dismiss);
-                        }, 1000);
+                        // create new vehicle on database
+                        DatabaseHandler.createVehicle(db,
+                                fragmentActivity, mUser.getUid(),
+                                vBrand.getText().toString(),
+                                vModel.getText().toString(),
+                                vYear.getText().toString(),
+                                vColor.getText().toString(),
+                                vNumberPlate.getText().toString(), () -> {
+                                    cpd.dismiss();
+                                    bottomSheetDialog.dismiss();
+                                });
+
                     }
                 });
             });

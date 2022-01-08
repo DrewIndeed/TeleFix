@@ -1,12 +1,10 @@
 package com.example.telefixmain.Util;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Context;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.example.telefixmain.Model.User;
+import com.example.telefixmain.Model.Vehicle;
 import com.example.telefixmain.Model.Vendor;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -15,7 +13,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -24,13 +21,14 @@ DatabaseHandler {
     /**
      * Method to create new user on database
      */
-    public static void createUserOnDatabase(FirebaseFirestore db, Context context,
-                                            String id,
-                                            String name,
-                                            String phone,
-                                            String email,
-                                            boolean isMechanic,
-                                            String vendorId) {
+    public static void createUser(FirebaseFirestore db,
+                                  Context context,
+                                  String id,
+                                  String name,
+                                  String phone,
+                                  String email,
+                                  boolean isMechanic,
+                                  String vendorId) {
 
         // Create a new user
         HashMap<String, Object> data = new HashMap<>();
@@ -59,7 +57,7 @@ DatabaseHandler {
     /**
      * Method to get single user from database based on id
      */
-    public static void getSingleUser(FirebaseFirestore db, Context context,
+    public static void getSingleUser(FirebaseFirestore db,
                                      String id, ArrayList<User> resultContainer,
                                      Runnable callback) {
         // document reference instance
@@ -80,10 +78,12 @@ DatabaseHandler {
 
                 // success msg
                 System.out.println("QUERY USER SUCCESSFULLY!");
-            } else {
-                Log.d(TAG, "Cached get failed: ", task.getException());
             }
-        });
+        })
+                .addOnFailureListener(e -> {
+                    System.out.println(e.getMessage());
+                    System.out.println("QUERY USER FAILED!");
+                });
     }
 
     /**
@@ -129,7 +129,7 @@ DatabaseHandler {
     /**
      * Method to get vendors' info
      */
-    public static void getAllVendors(FirebaseFirestore db, Context context,
+    public static void getAllVendors(FirebaseFirestore db,
                                      ArrayList<Vendor> resultContainer,
                                      Runnable callback) {
         // target "vendors" collection
@@ -160,7 +160,6 @@ DatabaseHandler {
      */
     @SuppressWarnings("unchecked")
     public static void getVendorPriceListById(FirebaseFirestore db,
-                                              Context context,
                                               String vendorId,
                                               HashMap<String, String> inspectionPriceContainer,
                                               HashMap<String, String> repairPriceContainer,
@@ -266,6 +265,83 @@ DatabaseHandler {
                     // this will be called when data updated unsuccessfully
                     System.out.println(e.getMessage());
                     Toast.makeText(context, "Register vehicle failed!", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    /**
+     * Method to get user's registered vehicles list
+     */
+    @SuppressWarnings("unchecked")
+    public static void getUserVehicleList(FirebaseFirestore db,
+                                          Context context,
+                                          String userId,
+                                          ArrayList<String> vehiclesIdResult,
+                                          ArrayList<Vehicle> vehiclesResult,
+                                          Runnable callback) {
+        // find user and get vehicle list
+        db.collection("users")
+                .document(userId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // result document
+                        DocumentSnapshot documentSnapshot = task.getResult();
+
+                        // casting vehicle to array list
+                        ArrayList<String> vehicleTempList =
+                                (ArrayList<String>) documentSnapshot.get("registerVehicles");
+
+                        // populate vehicle id array list
+                        vehiclesIdResult.addAll(Objects.requireNonNull(vehicleTempList));
+
+                        // populate vehicles object list
+                        for (String vId : vehiclesIdResult) {
+                            if (vehiclesIdResult.indexOf(vId) == vehiclesIdResult.size() - 1) {
+                                // run callback if it is the last id
+                                getSingleVehicle(db, vId, vehiclesResult, callback);
+                            } else {
+                                getSingleVehicle(db, vId, vehiclesResult, () -> {
+                                });
+                            }
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    System.out.println(e.getMessage());
+                    Toast.makeText(context, "Get vehicle list failed!", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    /**
+     * Method to get single vehicle from database based on id
+     */
+    public static void getSingleVehicle(FirebaseFirestore db,
+                                        String vehicleId,
+                                        ArrayList<Vehicle> resultContainer,
+                                        Runnable callback) {
+        // document reference instance
+        DocumentReference docRef = db.collection("vehicles").document(vehicleId);
+
+        // start querying by id
+        docRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                // Document found in the offline cache
+                DocumentSnapshot document = task.getResult();
+                Vehicle vehicle = document.toObject(Vehicle.class);
+
+                // add found user object to container
+                resultContainer.add(vehicle);
+
+                // log
+                callback.run();
+
+                // success msg
+                System.out.println("QUERY VEHICLE SUCCESSFULLY!");
+            }
+        })
+                .addOnFailureListener(e -> {
+                    System.out.println(e.getMessage());
+                    System.out.println("QUERY VEHICLE FAILED!");
                 });
     }
 }

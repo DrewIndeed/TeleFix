@@ -73,7 +73,7 @@ public class BillingAdapter extends RecyclerView.Adapter<BillingViewHolder> {
         String currentVendorId = "01";
 
         DatabaseHandler.getVendorPriceListById(
-            db, issueBillingActivity,
+            db,
             currentVendorId,
             inspectionPriceContainer,
             repairPriceContainer, () -> {});
