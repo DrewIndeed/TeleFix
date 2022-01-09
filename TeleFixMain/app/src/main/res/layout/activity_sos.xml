@@ -5,7 +5,7 @@
     android:id="@+id/rl_sos"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SosActivity">
+    tools:context=".Activity.Customer.SosActivity">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/google_map"

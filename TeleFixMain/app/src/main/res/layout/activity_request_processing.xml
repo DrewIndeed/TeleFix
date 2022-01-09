@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".RequestProcessingActivity">
+    tools:context=".Activity.Customer.RequestProcessingActivity">
 
     <LinearLayout
         android:id="@+id/layout_billing_user"

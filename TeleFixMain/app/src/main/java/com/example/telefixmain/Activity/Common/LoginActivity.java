@@ -1,4 +1,4 @@
-package com.example.telefixmain;
+package com.example.telefixmain.Activity.Common;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -17,9 +17,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.telefixmain.Dialog.CustomProgressDialog;
+import com.example.telefixmain.Activity.Customer.MainActivity;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vehicle;
+import com.example.telefixmain.R;
 import com.example.telefixmain.Util.DatabaseHandler;
+import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -48,10 +51,11 @@ public class LoginActivity extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     // [END declare_auth]
 
-    ArrayList<User> userResult = new ArrayList<>();
-    ArrayList<String> vehiclesIdResult = new ArrayList<>();
-    ArrayList<Vehicle> vehiclesResult = new ArrayList<>();
-    ArrayList<HashMap<String, String>> vehiclesHashMapList = new ArrayList<>();
+    // declare vehicles data containers
+    ArrayList<User> userResult;
+    ArrayList<String> vehiclesIdResult;
+    ArrayList<Vehicle> vehiclesResult;
+    ArrayList<HashMap<String, String>> vehiclesHashMapList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,9 +66,6 @@ public class LoginActivity extends AppCompatActivity {
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
         // [END initialize_auth]
-
-        // get current user from Firebase Auth
-        mUser = mAuth.getCurrentUser();
 
         // init progress dialog
         cpd = new CustomProgressDialog(this, R.style.SheetDialog);
@@ -129,50 +130,88 @@ public class LoginActivity extends AppCompatActivity {
                 // call verifying log on method
                 signIn(inputEmail.getText().toString(), inputPwd.getText().toString(),
                         () -> {
+                            // get new instance of mUser
+                            mUser = mAuth.getCurrentUser();
+                            userResult = new ArrayList<>();
+
                             // if there is a logged in user
                             if (mUser != null) {
                                 DatabaseHandler.getSingleUser(
                                         db,
                                         mUser.getUid(),
                                         userResult, () -> {
-                                            // intent to jump to main activity
-                                            Intent toMainActivity = new Intent(this, MainActivity.class);
-                                            toMainActivity.putExtra("loggedInUser", userResult.get(0));
+                                            if (!Boolean.parseBoolean(userResult.get(0).getIsMechanic())) {
+                                                // intent to jump to main activity
+                                                Intent toMainActivity = new Intent(this, MainActivity.class);
+                                                toMainActivity.putExtra("loggedInUser", userResult.get(0));
 
-                                            // get user's vehicle list
-                                            DatabaseHandler.getUserVehicleList(db, this, mUser.getUid(),
-                                                    vehiclesIdResult, vehiclesResult, () -> {
-                                                        // do only if there is any vehicle id, otherwise cut short the process
-                                                        if (vehiclesResult.size() > 0) {
-                                                            // populate here
-                                                            for (Vehicle currentVehicle : vehiclesResult) {
-                                                                // single vehicle hash map
-                                                                HashMap<String, String> tempContainer = new HashMap<>();
+                                                // init vehicles data containers
+                                                vehiclesIdResult = new ArrayList<>();
+                                                vehiclesResult = new ArrayList<>();
+                                                vehiclesHashMapList = new ArrayList<>();
 
-                                                                // inject vehicle data
-                                                                tempContainer.put("vehicleTitle",
-                                                                        currentVehicle.getVehicleBrand() + " "
-                                                                                + currentVehicle.getVehicleModel() + " "
-                                                                                + currentVehicle.getVehicleYear());
-                                                                tempContainer.put("vehicleColor",
-                                                                        currentVehicle.getVehicleColor());
-                                                                tempContainer.put("vehicleNumberPlate",
-                                                                        currentVehicle.getVehicleNumberPlate());
+                                                // get user's vehicle list
+                                                DatabaseHandler.getUserVehicleList(db, this, mUser.getUid(),
+                                                        vehiclesIdResult, vehiclesResult, () -> {
+                                                            // do only if there is any vehicle id, otherwise cut short the process
+                                                            if (vehiclesResult.size() > 0) {
+                                                                // populate here
+                                                                for (Vehicle currentVehicle : vehiclesResult) {
+                                                                    // single vehicle hash map
+                                                                    HashMap<String, String> tempContainer = new HashMap<>();
 
-                                                                // add to vehicle hash map list
-                                                                vehiclesHashMapList.add(tempContainer);
+                                                                    // inject vehicle data
+                                                                    tempContainer.put("vehicleTitle",
+                                                                            currentVehicle.getVehicleBrand() + " "
+                                                                                    + currentVehicle.getVehicleModel() + " "
+                                                                                    + currentVehicle.getVehicleYear());
+                                                                    tempContainer.put("vehicleColor",
+                                                                            currentVehicle.getVehicleColor());
+                                                                    tempContainer.put("vehicleNumberPlate",
+                                                                            currentVehicle.getVehicleNumberPlate());
+
+                                                                    // add to vehicle hash map list
+                                                                    vehiclesHashMapList.add(tempContainer);
+                                                                }
                                                             }
                                                             // show msg and hide progress dialog
                                                             cpd.dismiss();
                                                             Toast.makeText(this,
                                                                     "Logged in successfully!", Toast.LENGTH_SHORT).show();
-
                                                             // jump into main activity
                                                             toMainActivity.putExtra("vehiclesHashMapList", vehiclesHashMapList);
-                                                        }
-                                                        startActivity(toMainActivity);
-                                                        finish();
-                                                    });
+                                                            startActivity(toMainActivity);
+                                                            finish();
+                                                        });
+                                            } else {
+                                                // THIS IS JUST FOR MOCKING
+                                                cpd.dismiss();
+                                                Toast.makeText(this,
+                                                        "Logged in AS MECHANIC!", Toast.LENGTH_SHORT).show();
+                                                new Handler().postDelayed(() -> {
+                                                    AuthUI.getInstance()
+                                                            .signOut(this)
+                                                            .addOnCompleteListener(task -> {
+                                                                // dialog to show signing out
+                                                                cpd.changeText("Signing out ...");
+                                                                cpd.show();
+                                                            });
+
+                                                    new Handler().postDelayed(() -> {
+                                                        // dismiss dialog
+                                                        cpd.dismiss();
+
+                                                        // jump to log in activity
+                                                        new Handler().postDelayed(() -> {
+                                                            // user is now signed out
+                                                            Toast.makeText(this, "Singed out successfully!",
+                                                                    Toast.LENGTH_SHORT).show();
+                                                            startActivity(new Intent(this, LoginActivity.class));
+                                                            finish();
+                                                        }, 500);
+                                                    }, 1000);
+                                                }, 1000);
+                                            }
                                         }
                                 );
                             }
@@ -221,6 +260,9 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     System.out.println("LOGIN VERIFIED COMPLETED!");
                     if (task.isSuccessful()) {
+                        // log to keep track
+                        System.out.println("LOGIN VERIFIED SUCCESSFULLY!");
+
                         // run callback when done
                         callback.run();
                     } else {

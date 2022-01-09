@@ -1,4 +1,4 @@
-package com.example.telefixmain;
+package com.example.telefixmain.Activity.Customer;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,8 +23,10 @@ import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.telefixmain.Fragment.PriceListFragment;
-import com.example.telefixmain.Model.Booking.SOSRequest;
+import com.example.telefixmain.Model.Booking.SOSMetadata;
+import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vendor;
+import com.example.telefixmain.R;
 import com.example.telefixmain.Util.BookingHandler;
 import com.example.telefixmain.Util.DatabaseHandler;
 import com.example.telefixmain.Util.MarkerHandler;
@@ -124,12 +126,23 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
     // pending post delay tracker
     private Handler handlerTracker;
 
+    // data receivers from intent
+    User userTracker;
+    ArrayList<HashMap<String, String>> vehiclesHashMapList;
+
+    @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // binding with the layout for this activity
         setContentView(R.layout.activity_sos);
+
+        // get data from intent sent from Login Activity
+        Intent intent = getIntent();
+        userTracker = (User) intent.getSerializableExtra("loggedInUser");
+        vehiclesHashMapList = (ArrayList<HashMap<String, String>>)
+                intent.getSerializableExtra("vehiclesHashMapList");
 
         // main content fade in
         rlSos = findViewById(R.id.rl_sos);
@@ -163,7 +176,10 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // back to home fragment
         findViewById(R.id.back_home_at_sos).setOnClickListener(view -> {
-            startActivity(new Intent(this, MainActivity.class));
+            Intent backToHome = new Intent(this, MainActivity.class);
+            backToHome.putExtra("loggedInUser", userTracker);
+            backToHome.putExtra("vehiclesHashMapList", vehiclesHashMapList);
+            startActivity(backToHome);
             finish();
         });
     }

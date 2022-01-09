@@ -3,16 +3,14 @@ package com.example.telefixmain.Model;
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 public class User implements Serializable {
     private String id;
     private String name;
     private String email;
     private String phone;
-    private boolean isVendor;
+    private String isMechanic;
     private String vendorId;
-    private ArrayList<String> registerVehicles;
 
     public String getId() {
         return id;
@@ -46,12 +44,12 @@ public class User implements Serializable {
         this.phone = phone;
     }
 
-    public boolean isVendor() {
-        return isVendor;
+    public String getIsMechanic() {
+        return isMechanic;
     }
 
-    public void setVendor(boolean vendor) {
-        isVendor = vendor;
+    public void setIsMechanic(String isMechanic) {
+        this.isMechanic = isMechanic;
     }
 
     public String getVendorId() {
@@ -62,14 +60,6 @@ public class User implements Serializable {
         this.vendorId = vendorId;
     }
 
-    public ArrayList<String> getRegisteredVehicles() {
-        return registerVehicles;
-    }
-
-    public void setRegisteredVehicles(ArrayList<String> registerVehicles) {
-        this.registerVehicles = registerVehicles;
-    }
-
     @NonNull
     @Override
     public String toString() {
@@ -78,7 +68,7 @@ public class User implements Serializable {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
-                ", isVendor=" + isVendor +
+                ", isMechanic=" + isMechanic +
                 ", vendorId='" + vendorId + '\'' +
                 '}';
     }

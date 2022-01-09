@@ -1,4 +1,4 @@
-package com.example.telefixmain;
+package com.example.telefixmain.Activity.Common;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import com.example.telefixmain.Activity.Common.SignUpActivity;
+import com.example.telefixmain.R;
 import com.github.ybq.android.spinkit.style.CubeGrid;
 
 @SuppressLint("CustomSplashScreen")

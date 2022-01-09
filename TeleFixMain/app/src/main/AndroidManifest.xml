@@ -18,10 +18,10 @@
             android:name=".MechanicProgressTracking.MechanicSOSActivity"
             android:exported="false" />
         <activity
-            android:name=".RequestProcessingActivity"
+            android:name=".Activity.Customer.RequestProcessingActivity"
             android:exported="false" />
         <activity
-            android:name=".SosActivity"
+            android:name=".Activity.Customer.SosActivity"
             android:exported="false" />
 
         <meta-data
@@ -29,20 +29,20 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".Activity.Customer.MainActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".Activity.Common.LoginActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".SignUpActivity"
+            android:name=".Activity.Common.SignUpActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".SplashActivity"
-            android:exported="true" >
+            android:name=".Activity.Common.SplashActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
