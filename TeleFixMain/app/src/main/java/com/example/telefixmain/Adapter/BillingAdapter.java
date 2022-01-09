@@ -1,5 +1,6 @@
 package com.example.telefixmain.Adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +44,7 @@ public class BillingAdapter extends RecyclerView.Adapter<BillingViewHolder> {
         return new BillingViewHolder(itemView);
     }
 
+    @SuppressLint({"DefaultLocale", "SetTextI18n"})
     @Override
     public void onBindViewHolder(@NonNull BillingViewHolder holder, int position) {
         String currentItem = currentBilling.get(position).getItem();

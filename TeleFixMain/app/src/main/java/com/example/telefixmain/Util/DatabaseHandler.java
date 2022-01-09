@@ -154,6 +154,40 @@ DatabaseHandler {
     }
 
     /**
+     * Method to get a single vendor's info
+     */
+    public static void getSingleVendor(FirebaseFirestore db,
+                                     String id,
+                                     ArrayList<Vendor> resultContainer,
+                                     Runnable callback) {
+        // target "vendors" collection
+        DocumentReference docRef = db.collection("vendors").document(id);
+
+        // start querying by id
+        docRef.get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Document found in the offline cache
+                        DocumentSnapshot doc = task.getResult();
+                        Vendor vendor = doc.toObject(Vendor.class);
+                        resultContainer.add(vendor);
+
+                        // success msg
+                        System.out.println("FETCH VENDORS SUCCESSFULLY!");
+
+                        callback.run();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // fail msg
+                    System.out.println("FETCH VENDORS FAILED!");
+                    System.out.println("FETCH VENDORS ERROR: " + e.getMessage());
+                });
+        // run call back function
+
+    }
+
+    /**
      * Method to get vendors' price list
      */
     @SuppressWarnings("unchecked")

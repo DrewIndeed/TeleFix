@@ -1,6 +1,5 @@
-package com.example.telefixmain.MechanicProgressTracking;
+package com.example.telefixmain.Activity.Mechanic;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -9,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -19,22 +17,17 @@ import android.widget.Toast;
 
 import com.example.telefixmain.Adapter.BillingAdapter;
 import com.example.telefixmain.Model.Booking.SOSBilling;
-import com.example.telefixmain.Model.Booking.SOSRequest;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.BookingHandler;
 import com.example.telefixmain.Util.DatabaseHandler;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class MechanicSOSActivity extends AppCompatActivity {
+public class SOSProgressActivity extends AppCompatActivity {
     // firestore & realtime db
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseDatabase vendorBookings = FirebaseDatabase.getInstance();
@@ -80,30 +73,30 @@ public class MechanicSOSActivity extends AppCompatActivity {
 //        String vendorId = (String) i.getExtras().get("currentVendorId");
 //        acceptSOSRequest = findViewById(R.id.btn_accept_sos_request);
 
-        // listen for db reference
-        DatabaseReference openSOSRequest = vendorBookings.getReference().child(vendorId).child("sos").child("request");
-        // set ValueEventListener that delay the onDataChange
-        ValueEventListener openSOSRequestListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot ds : snapshot.getChildren()) {
-
-                    SOSRequest sosRequest = ds.getValue(SOSRequest.class);
-
-                    // Todo: test on single request update (scale on arraylist later
-                    if (Objects.requireNonNull(sosRequest).getMechanicId().equals("$")) {
-                        acceptSOSRequest.setVisibility(View.VISIBLE);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        };
-
-        openSOSRequest.addValueEventListener(openSOSRequestListener);
+//        // listen for db reference
+//        DatabaseReference openSOSRequest = vendorBookings.getReference().child(vendorId).child("sos").child("request");
+//        // set ValueEventListener that delay the onDataChange
+//        ValueEventListener openSOSRequestListener = new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                for (DataSnapshot ds : snapshot.getChildren()) {
+//
+//                    SOSRequest sosRequest = ds.getValue(SOSRequest.class);
+//
+//                    // Todo: test on single request update (scale on arraylist later
+//                    if (Objects.requireNonNull(sosRequest).getMechanicId().equals("$")) {
+//                        acceptSOSRequest.setVisibility(View.VISIBLE);
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        };
+//
+//        openSOSRequest.addValueEventListener(openSOSRequestListener);
 
 //        acceptSOSRequest.setOnClickListener(view -> {
 //            BookingHandler.acceptSOSRequest(vendorBookings,this,vendorId,requestId,mechanicId);
@@ -123,7 +116,7 @@ public class MechanicSOSActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        billingAdapter = new BillingAdapter(MechanicSOSActivity.this,billings);
+        billingAdapter = new BillingAdapter(SOSProgressActivity.this,billings);
         recyclerView.setAdapter(billingAdapter);
 
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
@@ -194,12 +187,12 @@ public class MechanicSOSActivity extends AppCompatActivity {
         issueBillingButton = findViewById(R.id.btn_issue_billing);
         issueBillingButton.setOnClickListener(view -> {
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(MechanicSOSActivity.this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(SOSProgressActivity.this);
             builder.setTitle("Confirm upload billing");
             builder.setMessage("Do you want to upload this bill to user ?");
             builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    BookingHandler.uploadSOSBilling(vendorBookings, MechanicSOSActivity.this, vendorId, requestId, billings, currentTotal,() -> {
+                    BookingHandler.uploadSOSBilling(vendorBookings, SOSProgressActivity.this, vendorId, requestId, billings, currentTotal,() -> {
                         System.out.println("ACTION AFTER SUCCESSFULLY RECEIVED BILLING!!!!--------------");
 
                         // TODO: ADD BILLING TO DATABASE & NOTIFY USER

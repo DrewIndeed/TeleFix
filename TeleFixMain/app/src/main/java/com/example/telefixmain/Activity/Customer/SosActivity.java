@@ -23,7 +23,7 @@ import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.telefixmain.Fragment.PriceListFragment;
-import com.example.telefixmain.Model.Booking.SOSMetadata;
+import com.example.telefixmain.Model.Booking.SOSRequest;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vendor;
 import com.example.telefixmain.R;

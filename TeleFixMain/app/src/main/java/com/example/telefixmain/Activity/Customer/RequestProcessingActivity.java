@@ -142,10 +142,6 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
         currentProgress.addValueEventListener(sosProgressListener);
 
-
-        // Fetch billing from db
-        currentBilling = vendorsBookings.getReference().child("01").child("sos").child("billing").child("mockRequestId");
-
         sosBillingListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -155,7 +151,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
                 Map<String, Integer> data = snapshot.child("data").getValue(genericTypeIndicator);
 
                 ArrayList<SOSBilling> tmpBillList = new ArrayList<>();
-                for (Map.Entry<String,Integer> entry : data.entrySet()) {
+                for (Map.Entry<String,Integer> entry : Objects.requireNonNull(data).entrySet()) {
                     SOSBilling tmpBilling = new SOSBilling(entry.getKey(), entry.getValue());
                     tmpBillList.add(tmpBilling);
                 }
@@ -182,9 +178,9 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
         UserBtnProceedPayment.setOnClickListener(view -> {
             stepView.done(true);
-
+            // Fetch billing from db
+            currentBilling = vendorsBookings.getReference().child("01").child("sos").child("billing").child("mockRequestId");
             // Set billing visible
-
             billingLayout.setVisibility(View.VISIBLE);
 
             findViewById(R.id.to_payment_button).setVisibility(View.VISIBLE);

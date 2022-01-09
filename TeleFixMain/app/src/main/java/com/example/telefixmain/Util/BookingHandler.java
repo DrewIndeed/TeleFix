@@ -41,12 +41,16 @@ public class BookingHandler {
                                         Context context,
                                         String vendorId,
                                         String requestId,
-                                        String mechanicId) {
+                                        String mechanicId,
+                                        Runnable callback) {
         DatabaseReference vendorRef = rootNode.getReference(vendorId);
 
         vendorRef.child("sos").child("request").child(requestId).child("mechanicId").setValue(mechanicId)
-                .addOnCompleteListener(task -> Toast.makeText(context,
-                        "REQUEST ACCEPTED BY MECHANIC ID " + mechanicId, Toast.LENGTH_SHORT).show())
+                .addOnCompleteListener(task -> {
+                    Toast.makeText(context,
+                            "REQUEST ACCEPTED BY MECHANIC ID " + mechanicId, Toast.LENGTH_SHORT).show();
+                    callback.run();
+                })
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
                         e.getMessage(), Toast.LENGTH_SHORT).show());
     }

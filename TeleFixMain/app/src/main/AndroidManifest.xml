@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.telefixmain" >
+    package="com.example.telefixmain">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -13,9 +13,12 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/app_icon"
         android:supportsRtl="true"
-        android:theme="@style/Theme.TeleFixMain" >
+        android:theme="@style/Theme.TeleFixMain">
         <activity
-            android:name=".MechanicProgressTracking.MechanicSOSActivity"
+            android:name=".Activity.Mechanic.SOSRequestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Mechanic.SOSProgressActivity"
             android:exported="false" />
         <activity
             android:name=".Activity.Customer.RequestProcessingActivity"
