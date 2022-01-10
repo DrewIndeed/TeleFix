@@ -175,7 +175,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
         userBtnCancelProgress.setOnClickListener(view -> {
             isApproved = true;
-            BookingHandler.confirmProgressFromUser(vendorsBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "abort");;
+            BookingHandler.confirmProgressFromUser(vendorsBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "aborted");;
             currentStep = 4;
             stepView.go(currentStep, true);
 
@@ -188,7 +188,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
         userBtnAcceptProgress.setOnClickListener(view -> {
             isApproved = true;
-            BookingHandler.confirmProgressFromUser(vendorsBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "confirm");;
+            BookingHandler.confirmProgressFromUser(vendorsBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "confirmed");;
             currentStep = 4;
             stepView.go(currentStep, true);
 
@@ -207,7 +207,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
                 billingAdapter.notifyDataSetChanged();
             });
             findViewById(R.id.processing_request_gif).setVisibility(View.GONE);
-
+            userBtnProceedPayment.setVisibility(View.GONE);
 
             findViewById(R.id.to_payment_button).setVisibility(View.VISIBLE);
             findViewById(R.id.to_payment_button).startAnimation(

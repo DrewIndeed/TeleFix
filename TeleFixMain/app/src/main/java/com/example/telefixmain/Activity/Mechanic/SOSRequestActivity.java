@@ -31,6 +31,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Objects;
 
 public class SOSRequestActivity extends AppCompatActivity implements SOSRequestAdapter.OnRequestListener {
 
@@ -93,9 +96,13 @@ public class SOSRequestActivity extends AppCompatActivity implements SOSRequestA
                 ArrayList<SOSRequest> tmp = new ArrayList<>();
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     SOSRequest request = ds.getValue(SOSRequest.class);
-                    tmp.add(request);
+                    if (Objects.requireNonNull(request).getMechanicId().equals("")) { tmp.add(request); }
                     System.out.println("FETCH REQUEST ___________________");
                 }
+
+                // Sort collections by time created
+                Collections.sort(tmp, (o1, o2) -> Long.compare(o1.getTimestampCreated(), o2.getTimestampCreated()));
+
                 sosRequests.addAll(tmp);
                 sosRequestAdapter.notifyDataSetChanged();
             }
@@ -122,6 +129,8 @@ public class SOSRequestActivity extends AppCompatActivity implements SOSRequestA
     @Override
     public void onRequestClick(int position) {
         String requestId = sosRequests.get(position).getRequestId();
+        String customerId = sosRequests.get(position).getUserId();
+        long startTime = sosRequests.get(position).getTimestampCreated();
         // Confirm accept SOS request
         AlertDialog.Builder builder = new AlertDialog.Builder(SOSRequestActivity.this);
         builder.setTitle("Confirm accept SOS request");
@@ -147,6 +156,8 @@ public class SOSRequestActivity extends AppCompatActivity implements SOSRequestA
                                     Intent i = new Intent(SOSRequestActivity.this, SOSProgressActivity.class);
                                     i.putExtra("vendorId", vendorId);
                                     i.putExtra("requestId", requestId);
+                                    i.putExtra("customerId",customerId);
+                                    i.putExtra("startTime", startTime);
                                     startActivity(i);
                                 }, 3000);
                             });

@@ -1,5 +1,6 @@
 package com.example.telefixmain.Activity.Mechanic;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -17,12 +18,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.telefixmain.Activity.Customer.RequestProcessingActivity;
 import com.example.telefixmain.Adapter.BillingAdapter;
 import com.example.telefixmain.Model.Booking.SOSBilling;
+import com.example.telefixmain.Model.Booking.SOSProgress;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.BookingHandler;
 import com.example.telefixmain.Util.DatabaseHandler;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -33,6 +42,8 @@ public class SOSProgressActivity extends AppCompatActivity {
     // firestore & realtime db
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseDatabase vendorBookings = FirebaseDatabase.getInstance();
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseUser mUser = mAuth.getCurrentUser();
 
     // array list to contain name of services
     private ArrayList<String> services = new ArrayList<>();
@@ -42,13 +53,12 @@ public class SOSProgressActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private BillingAdapter billingAdapter;
     private TextView currentPrice;
+    private TextView billingStatus;
 
     private AutoCompleteTextView billingItem;
     private EditText billingQuantity;
     private Button addBillingButton;
     private Button issueBillingButton;
-
-    private Button acceptSOSRequest;
 
     // init pricelist
     private HashMap<String, String> inspectionPriceContainer = new HashMap<>();
@@ -57,6 +67,13 @@ public class SOSProgressActivity extends AppCompatActivity {
     //current billing
     private ArrayList<SOSBilling> billings = new ArrayList<>();
     private int currentTotal;
+
+    // current progress
+    private DatabaseReference currentProgress;
+    private ValueEventListener sosProgressListener;
+
+    private boolean isUploaded = false;
+    private boolean isAborted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,9 +90,14 @@ public class SOSProgressActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String requestId = (String) intent.getExtras().get("requestId");
         String vendorId = (String) intent.getExtras().get("vendorId");
-
+        String customerId = (String) intent.getExtras().get("customerId");
+        long startTime = (Long) intent.getExtras().get("startTime");
 
         //--------------Billing section--------------------
+        // check billing status
+        billingStatus = findViewById(R.id.tv_billing_status);
+        checkBillStatus();
+
         // Check total price:
         currentPrice = findViewById(R.id.tv_current_total);
         currentPrice.setText("Total: " + String.format("%,d",currentTotal) + ",000 VND");
@@ -144,6 +166,9 @@ public class SOSProgressActivity extends AppCompatActivity {
                         billingAdapter.notifyItemChanged(index);
                     }
 
+                    // remove flag whenever local billing list was changed
+                    isUploaded = false;
+
                     calculateTotal();
                     currentPrice.setText("Total: " + String.format("%,d",currentTotal) + ",000 VND");
                     billingItem.getText().clear();
@@ -162,6 +187,8 @@ public class SOSProgressActivity extends AppCompatActivity {
             builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     BookingHandler.uploadSOSBilling(vendorBookings, SOSProgressActivity.this, vendorId, requestId, billings, currentTotal,() -> {
+                        isUploaded = true;
+                        checkBillStatus();
                         // Hide push draft billing
                         issueBillingButton.setVisibility(View.GONE);
                     });
@@ -178,17 +205,91 @@ public class SOSProgressActivity extends AppCompatActivity {
         });
 
         //-------------------------Update progress------------------
-        Button MechanicBtnArrived = findViewById(R.id.btn_mock_arrived);
-        Button MechanicBtnFixed = findViewById(R.id.btn_mock_fixed);
+        Button mechanicBtnArrived = findViewById(R.id.btn_mock_arrived);
+        Button mechanicBtnFixed = findViewById(R.id.btn_mock_fixed);
+        Button mechanicBtnEndProgress = findViewById(R.id.btn_end_sos_progress);
 
-        MechanicBtnArrived.setOnClickListener(view -> {
+        //---------------------Listen to db----------------
+        currentProgress = vendorBookings.getReference(vendorId).child("sos").child("progress").child(requestId);
+        // set ValueEventListener that delay the onDataChange
+        sosProgressListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                SOSProgress sosProgress = snapshot.getValue(SOSProgress.class);
+
+                // if user not abort and approve (by setting confirm billing time) --> Set Fixed (final button) visible
+                if (Objects.requireNonNull(sosProgress).getAbortedTime() == 0 && sosProgress.getConfirmBillingTime() != 0) {
+                    mechanicBtnFixed.setVisibility(View.VISIBLE);
+                }
+                else if (Objects.requireNonNull(sosProgress).getAbortedTime() != 0) {
+                    isAborted = true;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };
+        currentProgress.addValueEventListener(sosProgressListener);
+
+        mechanicBtnArrived.setOnClickListener(view -> {
             BookingHandler.updateProgressFromMechanic(vendorBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "arrived");
+            mechanicBtnArrived.setVisibility(View.GONE);
         });
 
-        MechanicBtnFixed.setOnClickListener(view -> {
+        mechanicBtnFixed.setOnClickListener(view -> {
             BookingHandler.uploadSOSBilling(vendorBookings, SOSProgressActivity.this, vendorId, requestId, billings, currentTotal,() -> {
+                isUploaded = true;
+                checkBillStatus();
+                mechanicBtnEndProgress.setVisibility(View.VISIBLE);
                 BookingHandler.updateProgressFromMechanic(vendorBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "fixed");});
         });
+
+        //--------End progress-------
+
+        mechanicBtnEndProgress.setOnClickListener(view -> {
+            BookingHandler.confirmSOSBilling(vendorBookings, SOSProgressActivity.this, vendorId, requestId, System.currentTimeMillis()/1000L, () -> {
+                // Add to events database and exit
+                AlertDialog.Builder builder = new AlertDialog.Builder(SOSProgressActivity.this);
+                builder.setTitle("Confirm end SOS progress");
+                builder.setMessage("Please make sure the user has paid for the request properly.");
+                builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // if aborted
+                        if (isAborted) {
+                            DatabaseHandler.createEvent(db, SOSProgressActivity.this, requestId, customerId, vendorId,
+                                    mUser.getUid(),"sos","aborted", startTime,System.currentTimeMillis()/1000L,
+                                    billings, currentTotal);
+                        }
+                        else {
+                            DatabaseHandler.createEvent(db, SOSProgressActivity.this, requestId, customerId, vendorId,
+                                    mUser.getUid(),"sos","success", startTime,System.currentTimeMillis()/1000L,
+                                    billings, currentTotal);
+                        }
+
+                        // Return to home activity
+                        Intent i = new Intent(SOSProgressActivity.this, SOSProgressActivity.class);
+                        startActivity(i);
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
+            });
+        });
+    }
+
+    private void checkBillStatus() {
+        if (!isUploaded) {
+            billingStatus.setText("Local changes haven't been uploaded!");
+        } else {
+            billingStatus.setText("Current bill is up to date!");
+        }
     }
 
     private void getPriceList() {

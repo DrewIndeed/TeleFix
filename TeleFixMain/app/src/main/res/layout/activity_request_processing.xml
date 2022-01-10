@@ -152,7 +152,7 @@
         android:layout_width="300dp"
         android:layout_height="75dp"
         android:background="@drawable/custom_btn_bg_7"
-        android:text="Confirm Payment"
+        android:text="Back to Home"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

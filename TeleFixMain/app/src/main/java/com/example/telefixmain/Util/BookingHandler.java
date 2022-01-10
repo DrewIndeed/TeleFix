@@ -148,6 +148,7 @@ public class BookingHandler {
         }
 
         billingRef.child("timestamp").setValue(System.currentTimeMillis()/1000L);
+        billingRef.child("paidTime").setValue(0);
         billingRef.child("total").setValue(total);
         billingRef.child("data").setValue(billingData)
                 .addOnCompleteListener(task -> {
@@ -219,5 +220,25 @@ public class BookingHandler {
                                 e.getMessage(), Toast.LENGTH_SHORT).show());
                 break;
         }
+    }
+
+    // method for MECHANIC to confirm receiving payment
+    public static void confirmSOSBilling(FirebaseDatabase rootNode,
+                                        Context context,
+                                        String vendorId,
+                                        String requestId,
+                                        long timestamp,
+                                        Runnable callback) {
+        DatabaseReference vendorRef = rootNode.getReference(vendorId);
+
+        // Set value to "mechanicId"
+        vendorRef.child("sos").child("billing").child(requestId).child("paidTime").setValue(timestamp)
+                .addOnCompleteListener(task -> {
+                    Toast.makeText(context,
+                            "PAID AT: " + timestamp, Toast.LENGTH_SHORT).show();
+                    callback.run();
+                })
+                .addOnFailureListener(e -> Toast.makeText(context, "" +
+                        e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 }
