@@ -138,12 +138,15 @@ public class SOSRequestAdapter extends RecyclerView.Adapter<SOSRequestViewHolder
         return 0;
     }
 
+    /**
+     * Method to convert the unix timestamp to GMT
+     */
     public static String timestampConverter (long unixValue) {
         Date date = new java.util.Date(unixValue*1000L);
         // the format of your date
         @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm:ss");
         // give a timezone reference for formatting (see comment at the bottom)
-        sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT-4"));
+        sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT-7"));
         return sdf.format(date);
     }
 
