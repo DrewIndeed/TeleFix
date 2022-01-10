@@ -112,7 +112,7 @@ public class SOSRequestAdapter extends RecyclerView.Adapter<SOSRequestViewHolder
                                     new Handler().postDelayed(() -> {
                                         Intent i = new Intent(activityContext, SOSProgressActivity.class);
                                         i.putExtra("vendorId", vendorId);
-                                        i.putExtra("mechanicId", mechanicId);
+                                        i.putExtra("requestId", requestId);
                                         activityContext.startActivity(i);
                                     }, 3000);
                                 });

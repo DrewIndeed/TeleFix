@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -13,14 +13,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="gone"
-        android:paddingBottom="10dp">
+        android:paddingBottom="10dp"
+        android:layout_marginBottom="300dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Current billing"
             android:gravity="center"
+            android:text="Current billing"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -33,33 +37,51 @@
             android:id="@+id/tv_current_total_user"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Total: "
             android:gravity="center"
+            android:text="Total: "
             android:visibility="visible" />
 
     </LinearLayout>
 
     <Button
-        android:id="@+id/btn_abort"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/btn_draft_billing"
+        android:layout_width="301dp"
+        android:layout_height="75dp"
         android:backgroundTint="@color/bmw_dark_gray"
+        android:text="View Draft Bill"
         android:visibility="invisible"
-        android:text="Cancel" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.489"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.832" />
+
     <Button
         android:id="@+id/btn_accept_billing"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="301dp"
+        android:layout_height="76dp"
         android:backgroundTint="@color/bmw_red"
+        android:text="View Bill "
         android:visibility="invisible"
-        android:text="View Bill " />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.489"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.833" />
 
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/processing_request_gif"
         android:layout_width="250dp"
         android:layout_height="250dp"
-        android:layout_marginBottom="15dp"
-        android:src="@drawable/fixing_sos" />
+        android:src="@drawable/fixing_sos"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.29" />
 
     <com.shuhart.stepview.StepView
         android:id="@+id/step_view_on_way"
@@ -68,6 +90,15 @@
         android:paddingLeft="40dp"
         android:paddingRight="40dp"
         android:paddingBottom="40dp"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.644"
 
         app:sv_animationDuration="600"
         app:sv_animationType="All"
@@ -80,13 +111,10 @@
 
         app:sv_nextStepLineColor="@color/bmw_light_gray"
         app:sv_nextTextColor="@color/bmw_light_gray"
-
         app:sv_selectedCircleColor="@color/bmw_light_blue"
         app:sv_selectedCircleRadius="20dp"
-
         app:sv_selectedStepNumberColor="@color/bmw_white"
         app:sv_selectedTextColor="@color/bmw_dark_blue"
-
         app:sv_stepLineWidth="2dp"
         app:sv_stepNumberTextSize="18sp"
         app:sv_stepPadding="5dp" />
@@ -98,5 +126,11 @@
         android:background="@drawable/custom_btn_bg_7"
         android:text="Proceed to Payment"
         android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.832"
         tools:ignore="HardcodedText,TextContrastCheck" />
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

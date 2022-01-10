@@ -7,7 +7,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -63,48 +65,15 @@ public class SOSProgressActivity extends AppCompatActivity {
 
         getPriceList();
 
-        String mechanicId = "mockMechanicId"; // Mock mechanicID
-        String requestId = "mockRequestId"; // Mock requestID
-        String vendorId = "01"; // Mock vendorID
+//        String mechanicId = "mockMechanicId"; // Mock mechanicID
+//        String requestId = "mockRequestId"; // Mock requestID
+//        String vendorId = "01"; // Mock vendorID
 
         // get intent
-//        Intent i = getIntent();
-//        String requestId = (String) i.getExtras().get("currentRequestId");
-//        String vendorId = (String) i.getExtras().get("currentVendorId");
-//        acceptSOSRequest = findViewById(R.id.btn_accept_sos_request);
+        Intent intent = getIntent();
+        String requestId = (String) intent.getExtras().get("requestId");
+        String vendorId = (String) intent.getExtras().get("vendorId");
 
-//        // listen for db reference
-//        DatabaseReference openSOSRequest = vendorBookings.getReference().child(vendorId).child("sos").child("request");
-//        // set ValueEventListener that delay the onDataChange
-//        ValueEventListener openSOSRequestListener = new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                for (DataSnapshot ds : snapshot.getChildren()) {
-//
-//                    SOSRequest sosRequest = ds.getValue(SOSRequest.class);
-//
-//                    // Todo: test on single request update (scale on arraylist later
-//                    if (Objects.requireNonNull(sosRequest).getMechanicId().equals("$")) {
-//                        acceptSOSRequest.setVisibility(View.VISIBLE);
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        };
-//
-//        openSOSRequest.addValueEventListener(openSOSRequestListener);
-
-//        acceptSOSRequest.setOnClickListener(view -> {
-//            BookingHandler.acceptSOSRequest(vendorBookings,this,vendorId,requestId,mechanicId);
-//
-//            // Mocking purpose
-//            BookingHandler.createProgressTracking(vendorBookings,this,vendorId,requestId,System.currentTimeMillis()/1000,() -> {});
-//            acceptSOSRequest.setVisibility(View.GONE);
-//        });
 
         //--------------Billing section--------------------
         // Check total price:
@@ -183,7 +152,7 @@ public class SOSProgressActivity extends AppCompatActivity {
             }
         });
 
-        // push billing to database;
+        // push billing to database (this is the 1st draft billing);
         issueBillingButton = findViewById(R.id.btn_issue_billing);
         issueBillingButton.setOnClickListener(view -> {
 
@@ -193,9 +162,8 @@ public class SOSProgressActivity extends AppCompatActivity {
             builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     BookingHandler.uploadSOSBilling(vendorBookings, SOSProgressActivity.this, vendorId, requestId, billings, currentTotal,() -> {
-                        System.out.println("ACTION AFTER SUCCESSFULLY RECEIVED BILLING!!!!--------------");
-
-                        // TODO: ADD BILLING TO DATABASE & NOTIFY USER
+                        // Hide push draft billing
+                        issueBillingButton.setVisibility(View.GONE);
                     });
                 }
             });
@@ -210,7 +178,6 @@ public class SOSProgressActivity extends AppCompatActivity {
         });
 
         //-------------------------Update progress------------------
-        // mock button
         Button MechanicBtnArrived = findViewById(R.id.btn_mock_arrived);
         Button MechanicBtnFixed = findViewById(R.id.btn_mock_fixed);
 
@@ -219,9 +186,9 @@ public class SOSProgressActivity extends AppCompatActivity {
         });
 
         MechanicBtnFixed.setOnClickListener(view -> {
-            BookingHandler.updateProgressFromMechanic(vendorBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "fixed");
+            BookingHandler.uploadSOSBilling(vendorBookings, SOSProgressActivity.this, vendorId, requestId, billings, currentTotal,() -> {
+                BookingHandler.updateProgressFromMechanic(vendorBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "fixed");});
         });
-
     }
 
     private void getPriceList() {

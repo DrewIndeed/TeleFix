@@ -1,6 +1,7 @@
 package com.example.telefixmain.Util;
 
 import android.content.Context;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.telefixmain.Model.Booking.SOSBilling;
@@ -8,10 +9,12 @@ import com.example.telefixmain.Model.Booking.SOSRequest;
 import com.example.telefixmain.Model.Booking.SOSProgress;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class BookingHandler {
     public static void sendSOSRequest(FirebaseDatabase rootNode,
@@ -155,5 +158,38 @@ public class BookingHandler {
                         e.getMessage(), Toast.LENGTH_SHORT).show());
 
         callback.run();
+    }
+
+    public static void viewSOSBilling(FirebaseDatabase rootNode,
+                                      Context context,
+                                      String vendorId,
+                                      String requestId,
+                                      ArrayList<SOSBilling> currentBilling,
+                                      TextView tvTotal,
+                                      Runnable callback) {
+        DatabaseReference billingRef = rootNode.getReference(vendorId).child("sos").child("billing").child(requestId);
+
+        billingRef.get()
+                .addOnSuccessListener(dataSnapshot -> {
+                    // Get billing data
+                    GenericTypeIndicator<Map<String, Integer>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Integer>>() {};
+                    Map<String, Integer> data = dataSnapshot.child("data").getValue(genericTypeIndicator);
+
+                    ArrayList<SOSBilling> tmpBillList = new ArrayList<>();
+                    for (Map.Entry<String,Integer> entry : Objects.requireNonNull(data).entrySet()) {
+                        SOSBilling tmpBilling = new SOSBilling(entry.getKey(), entry.getValue());
+                        tmpBillList.add(tmpBilling);
+                    }
+                    currentBilling.clear();
+                    currentBilling.addAll(tmpBillList);
+
+                    callback.run();
+
+                    // Get total
+                    int currentTotal = dataSnapshot.child("total").getValue(Integer.class);
+                    tvTotal.setText("Total: " + String.format("%,d",currentTotal) + ",000 VND");
+                })
+                .addOnFailureListener(e -> Toast.makeText(context, "" +
+                        e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 }
