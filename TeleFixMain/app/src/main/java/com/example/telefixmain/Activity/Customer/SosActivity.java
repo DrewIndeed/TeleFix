@@ -24,7 +24,7 @@ import android.widget.Toast;
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.telefixmain.Dialog.CustomProgressDialog;
 import com.example.telefixmain.Fragment.PriceListFragment;
-import com.example.telefixmain.Model.Booking.SOSMetadata;
+import com.example.telefixmain.Model.Booking.SOSRequest;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vendor;
 import com.example.telefixmain.R;
@@ -267,7 +267,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                         // dismiss dialog before open a new one to avoid window leak
                         sosBottomDialog.dismiss();
 
-                        // Create request metadata
+                        // Create request
                         currentRequestId = UUID.randomUUID().toString();
                         long createdTimestamp = System.currentTimeMillis() / 1000L;
 
@@ -285,6 +285,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                         // Create sos booking request on Realtime Database
                         BookingHandler.sendSOSRequest(vendorsBookings, SosActivity.this,
                                 currentVendorId, mUser.getUid(), currentRequestId, createdTimestamp,
+                                currentLocation.latitude, currentLocation.longitude,
                                 () -> {
                                     // animate msg
                                     dialogMsg.startAnimation(AnimationUtils
@@ -292,7 +293,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
                                     // Update current requested vendor
                                     currentVendorRef = vendorsBookings.getReference(currentVendorId)
-                                            .child("sos").child("metadata").child(currentRequestId);
+                                            .child("sos").child("request").child(currentRequestId);
 
                                     // log msg
                                     System.out.println("Current Vendor DatabaseReference has been updated!");
@@ -306,7 +307,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 // get SOSRequest object and use the values to update the UI
-                                SOSMetadata sosRequest = dataSnapshot.getValue(SOSMetadata.class);
+                                SOSRequest sosRequest = dataSnapshot.getValue(SOSRequest.class);
                                 // animate when found mechanic
                                 // hide dialog dismiss ability
                                 if (!Objects.requireNonNull(sosRequest).getMechanicId().equals("")) {
@@ -336,22 +337,13 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                         // dismiss dialog before open a new one to avoid window leak
                                         sosBottomDialog.dismiss();
 
-                                        // initialize progress tracking
-                                        long startProgressTracking = System.currentTimeMillis() / 1000L;
-                                        BookingHandler.createProgressTracking(
-                                                vendorsBookings,
-                                                SosActivity.this,
-                                                currentVendorId,
-                                                currentRequestId,
-                                                startProgressTracking, () -> {
-                                                    // start intent
-                                                    Intent i = new Intent(SosActivity.this,
-                                                            RequestProcessingActivity.class);
-                                                    i.putExtra("currentVendorId", currentVendorId);
-                                                    i.putExtra("currentRequestId", currentRequestId);
-                                                    startActivity(i);
-                                                    finish();
-                                                });
+                                        // start intent
+                                        Intent i = new Intent(SosActivity.this,
+                                                RequestProcessingActivity.class);
+                                        i.putExtra("currentVendorId", currentVendorId);
+                                        i.putExtra("currentRequestId", currentRequestId);
+                                        startActivity(i);
+                                        finish();
 
                                     }, 4000);
                                 }

@@ -19,17 +19,16 @@ import com.example.telefixmain.Adapter.BillingAdapter;
 import com.example.telefixmain.Model.Booking.SOSBilling;
 import com.example.telefixmain.Model.Booking.SOSProgress;
 import com.example.telefixmain.R;
+import com.example.telefixmain.Util.BookingHandler;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.shuhart.stepview.StepView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class RequestProcessingActivity extends AppCompatActivity {
@@ -39,11 +38,10 @@ public class RequestProcessingActivity extends AppCompatActivity {
     // Realtime Database
     private final FirebaseDatabase vendorsBookings = FirebaseDatabase.getInstance();
     private DatabaseReference currentProgress;
+    private ValueEventListener sosProgressListener;
     private DatabaseReference currentBilling;
-    private String currentVendorId;
-    private String currentRequestId;
-    private ValueEventListener sosRequestListener;
     private ValueEventListener sosBillingListener;
+
 
     // keep track of currentStep
     private int currentStep = 0;
@@ -56,18 +54,14 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
     // billing
     private ArrayList<SOSBilling> billings = new ArrayList<>();
-    private int currentTotal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_processing);
 
-        // Set database listener
-
         // Check total price:
         currentPrice = findViewById(R.id.tv_current_total_user);
-        currentPrice.setText("Total: " + String.format("%,d",currentTotal) + ",000 VND");
 
         // recyclerview settings
         recyclerView = findViewById(R.id.read_billing_recyclerview);
@@ -92,7 +86,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
         System.out.println("RequestID: " + requestId + " ------------------ " + "VendorID: " + vendorId);
 
-        Button UserBtnCancel = findViewById(R.id.btn_abort);
+        Button UserBtnDraftPayment = findViewById(R.id.btn_draft_billing);
         Button UserBtnProceedPayment = findViewById(R.id.btn_accept_billing);
 
         // add steps for step view
@@ -109,10 +103,22 @@ public class RequestProcessingActivity extends AppCompatActivity {
 //        UserBtnCancel.setOnClickListener(view -> {
 //            BookingHandler.updateProgressFromMechanic(vendorsBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "aborted");
 //        });
+         currentBilling = vendorsBookings.getReference(vendorId).child("sos").child("billing").child(requestId);
+         sosBillingListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) { UserBtnDraftPayment.setVisibility(View.VISIBLE); }
+            }
 
-        DatabaseReference currentProgress = vendorsBookings.getReference(vendorId).child("sos").child("progress").child(requestId);
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        };
+        currentBilling.addValueEventListener(sosBillingListener);
+
+        currentProgress = vendorsBookings.getReference(vendorId).child("sos").child("progress").child(requestId);
         // set ValueEventListener that delay the onDataChange
-        ValueEventListener sosProgressListener = new ValueEventListener() {
+        sosProgressListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 SOSProgress sosProgress = snapshot.getValue(SOSProgress.class);
@@ -121,11 +127,11 @@ public class RequestProcessingActivity extends AppCompatActivity {
                     if (sosProgress.getStartFixingTimestamp() != 0) {
                         currentStep = 2;
                         stepView.go(currentStep, true);
-                        UserBtnCancel.setVisibility(View.VISIBLE);
                     }
                     if (sosProgress.getStartFixingTimestamp() != 0 && sosProgress.getStartBillingTimestamp() != 0) {
                         currentStep = 3;
                         stepView.go(currentStep, true);
+//                        currentBilling.addListenerForSingleValueEvent(sosBillingListener);
                         UserBtnProceedPayment.setVisibility(View.VISIBLE);
                     }
                 }
@@ -143,49 +149,23 @@ public class RequestProcessingActivity extends AppCompatActivity {
         currentProgress.addValueEventListener(sosProgressListener);
 
 
-        // Fetch billing from db
-        currentBilling = vendorsBookings.getReference().child("01").child("sos").child("billing").child("mockRequestId");
-
-        sosBillingListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                billings = snapshot.child("data").getValue(ArrayList.class);price
-                // Get billing data
-                GenericTypeIndicator<Map<String, Integer>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Integer>>() {};
-                Map<String, Integer> data = snapshot.child("data").getValue(genericTypeIndicator);
-
-                ArrayList<SOSBilling> tmpBillList = new ArrayList<>();
-                for (Map.Entry<String,Integer> entry : data.entrySet()) {
-                    SOSBilling tmpBilling = new SOSBilling(entry.getKey(), entry.getValue());
-                    tmpBillList.add(tmpBilling);
-                }
-
-                billings.clear();
-                billings.addAll(tmpBillList);
-                billingAdapter.notifyDataSetChanged();
-
-                // Get total
-                currentTotal = snapshot.child("total").getValue(Integer.class);
-                currentPrice.setText("Total: " + String.format("%,d",currentTotal) + ",000 VND");
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        };
-        currentBilling.addValueEventListener(sosBillingListener);
-
 
 
         billingLayout = findViewById(R.id.layout_billing_user);
 
+        UserBtnDraftPayment.setOnClickListener(view -> {
+            // Set billing visible
+            billingLayout.setVisibility(View.VISIBLE);
+            BookingHandler.viewSOSBilling(vendorsBookings, this, vendorId, requestId, billings, currentPrice, () -> {
+                billingAdapter.notifyDataSetChanged();
+            });
+            findViewById(R.id.processing_request_gif).setVisibility(View.GONE);
+        });
+
+
+
         UserBtnProceedPayment.setOnClickListener(view -> {
             stepView.done(true);
-
-            // Set billing visible
-
-            billingLayout.setVisibility(View.VISIBLE);
 
             findViewById(R.id.to_payment_button).setVisibility(View.VISIBLE);
             findViewById(R.id.to_payment_button).startAnimation(

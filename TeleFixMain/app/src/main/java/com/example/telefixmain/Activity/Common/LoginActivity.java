@@ -18,11 +18,11 @@ import android.widget.Toast;
 
 import com.example.telefixmain.Dialog.CustomProgressDialog;
 import com.example.telefixmain.Activity.Customer.MainActivity;
+import com.example.telefixmain.Activity.Mechanic.SOSRequestActivity;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vehicle;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.DatabaseHandler;
-import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -185,32 +185,38 @@ public class LoginActivity extends AppCompatActivity {
                                                         });
                                             } else {
                                                 // THIS IS JUST FOR MOCKING
+                                                // intent to jump to main activity
+                                                Intent toMechanicSOSRequestActivity = new Intent(this, SOSRequestActivity.class);
+                                                toMechanicSOSRequestActivity.putExtra("loggedInUser", userResult.get(0));
+
                                                 cpd.dismiss();
                                                 Toast.makeText(this,
                                                         "Logged in AS MECHANIC!", Toast.LENGTH_SHORT).show();
-                                                new Handler().postDelayed(() -> {
-                                                    AuthUI.getInstance()
-                                                            .signOut(this)
-                                                            .addOnCompleteListener(task -> {
-                                                                // dialog to show signing out
-                                                                cpd.changeText("Signing out ...");
-                                                                cpd.show();
-                                                            });
-
-                                                    new Handler().postDelayed(() -> {
-                                                        // dismiss dialog
-                                                        cpd.dismiss();
-
-                                                        // jump to log in activity
-                                                        new Handler().postDelayed(() -> {
-                                                            // user is now signed out
-                                                            Toast.makeText(this, "Singed out successfully!",
-                                                                    Toast.LENGTH_SHORT).show();
-                                                            startActivity(new Intent(this, LoginActivity.class));
-                                                            finish();
-                                                        }, 500);
-                                                    }, 1000);
-                                                }, 1000);
+                                                startActivity(toMechanicSOSRequestActivity);
+                                                finish();
+//                                                new Handler().postDelayed(() -> {
+//                                                    AuthUI.getInstance()
+//                                                            .signOut(this)
+//                                                            .addOnCompleteListener(task -> {
+//                                                                // dialog to show signing out
+//                                                                cpd.changeText("Signing out ...");
+//                                                                cpd.show();
+//                                                            });
+//
+//                                                    new Handler().postDelayed(() -> {
+//                                                        // dismiss dialog
+//                                                        cpd.dismiss();
+//
+//                                                        // jump to log in activity
+//                                                        new Handler().postDelayed(() -> {
+//                                                            // user is now signed out
+//                                                            Toast.makeText(this, "Singed out successfully!",
+//                                                                    Toast.LENGTH_SHORT).show();
+//                                                            startActivity(new Intent(this, LoginActivity.class));
+//                                                            finish();
+//                                                        }, 500);
+//                                                    }, 1000);
+//                                                }, 1000);
                                             }
                                         }
                                 );

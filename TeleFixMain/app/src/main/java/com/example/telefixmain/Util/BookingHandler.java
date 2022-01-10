@@ -1,17 +1,20 @@
 package com.example.telefixmain.Util;
 
 import android.content.Context;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.telefixmain.Model.Booking.SOSBilling;
-import com.example.telefixmain.Model.Booking.SOSMetadata;
+import com.example.telefixmain.Model.Booking.SOSRequest;
 import com.example.telefixmain.Model.Booking.SOSProgress;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class BookingHandler {
     public static void sendSOSRequest(FirebaseDatabase rootNode,
@@ -20,14 +23,16 @@ public class BookingHandler {
                                       String userId,
                                       String requestId,
                                       long timeCreated,
+                                      double currentLat,
+                                      double currentLng,
                                       Runnable callback) {
 
         System.out.println(vendorId + " " + userId);
         DatabaseReference vendorRef = rootNode.getReference(vendorId);
 
-        SOSMetadata sosRequest = new SOSMetadata(userId, timeCreated);
+        SOSRequest sosRequest = new SOSRequest(requestId, userId, timeCreated, currentLat, currentLng);
 
-        vendorRef.child("sos").child("metadata").child(requestId).setValue(sosRequest)
+        vendorRef.child("sos").child("request").child(requestId).setValue(sosRequest)
                 .addOnCompleteListener(task -> Toast.makeText(context,
                         "Request sent!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
@@ -39,12 +44,16 @@ public class BookingHandler {
                                         Context context,
                                         String vendorId,
                                         String requestId,
-                                        String mechanicId) {
+                                        String mechanicId,
+                                        Runnable callback) {
         DatabaseReference vendorRef = rootNode.getReference(vendorId);
 
-        vendorRef.child("sos").child("metadata").child(requestId).child("mechanicId").setValue(mechanicId)
-                .addOnCompleteListener(task -> Toast.makeText(context,
-                        "REQUEST ACCEPTED BY MECHANIC ID " + mechanicId, Toast.LENGTH_SHORT).show())
+        vendorRef.child("sos").child("request").child(requestId).child("mechanicId").setValue(mechanicId)
+                .addOnCompleteListener(task -> {
+                    Toast.makeText(context,
+                            "REQUEST ACCEPTED BY MECHANIC ID " + mechanicId, Toast.LENGTH_SHORT).show();
+                    callback.run();
+                })
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
                         e.getMessage(), Toast.LENGTH_SHORT).show());
     }
@@ -56,7 +65,7 @@ public class BookingHandler {
 
         DatabaseReference vendorRef = rootNode.getReference(vendorId);
 
-        vendorRef.child("sos").child("metadata").child(requestId).removeValue()
+        vendorRef.child("sos").child("request").child(requestId).removeValue()
                 .addOnCompleteListener(task -> Toast.makeText(context,
                         "Request cancelled!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
@@ -149,5 +158,38 @@ public class BookingHandler {
                         e.getMessage(), Toast.LENGTH_SHORT).show());
 
         callback.run();
+    }
+
+    public static void viewSOSBilling(FirebaseDatabase rootNode,
+                                      Context context,
+                                      String vendorId,
+                                      String requestId,
+                                      ArrayList<SOSBilling> currentBilling,
+                                      TextView tvTotal,
+                                      Runnable callback) {
+        DatabaseReference billingRef = rootNode.getReference(vendorId).child("sos").child("billing").child(requestId);
+
+        billingRef.get()
+                .addOnSuccessListener(dataSnapshot -> {
+                    // Get billing data
+                    GenericTypeIndicator<Map<String, Integer>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Integer>>() {};
+                    Map<String, Integer> data = dataSnapshot.child("data").getValue(genericTypeIndicator);
+
+                    ArrayList<SOSBilling> tmpBillList = new ArrayList<>();
+                    for (Map.Entry<String,Integer> entry : Objects.requireNonNull(data).entrySet()) {
+                        SOSBilling tmpBilling = new SOSBilling(entry.getKey(), entry.getValue());
+                        tmpBillList.add(tmpBilling);
+                    }
+                    currentBilling.clear();
+                    currentBilling.addAll(tmpBillList);
+
+                    callback.run();
+
+                    // Get total
+                    int currentTotal = dataSnapshot.child("total").getValue(Integer.class);
+                    tvTotal.setText("Total: " + String.format("%,d",currentTotal) + ",000 VND");
+                })
+                .addOnFailureListener(e -> Toast.makeText(context, "" +
+                        e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 }
