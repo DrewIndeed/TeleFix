@@ -19,6 +19,7 @@ public class CustomProgressDialog extends Dialog {
     @SuppressLint("InflateParams")
     public CustomProgressDialog(@NonNull Context context, @StyleRes int theme) {
         super(context, theme);
+        setCancelable(false);
         getWindow().getAttributes().gravity = Gravity.CENTER;
         setTitle(null);
         view = LayoutInflater.from(context).inflate(R.layout.progress_dialog_custom, null);

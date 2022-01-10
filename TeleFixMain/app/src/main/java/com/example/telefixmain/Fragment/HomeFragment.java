@@ -255,9 +255,8 @@ public class HomeFragment extends Fragment {
                 cpd.dismiss();
 
                 // jump to sos activity
-                new Handler().postDelayed(() -> {
-                    startActivity(new Intent(fragmentActivity, MechanicSOSActivity.class));
-                }, 500);
+                new Handler().postDelayed(() -> startActivity(new Intent(fragmentActivity,
+                        MechanicSOSActivity.class)), 500);
             }, 1500);
         });
 

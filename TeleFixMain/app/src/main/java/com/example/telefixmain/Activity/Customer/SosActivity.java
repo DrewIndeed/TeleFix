@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.example.telefixmain.Dialog.CustomProgressDialog;
 import com.example.telefixmain.Fragment.PriceListFragment;
 import com.example.telefixmain.Model.Booking.SOSMetadata;
 import com.example.telefixmain.Model.User;
@@ -65,8 +66,8 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
     // set the interval in which update should be received. The fastest interval indicates
     // that the application can receive the update faster when available.
-    private static final long UPDATE_INTERVAL = 8000;
-    private static final long FASTEST_INTERVAL = 3000;
+    private static final long UPDATE_INTERVAL = 5000;
+    private static final long FASTEST_INTERVAL = 500;
 
     // map as class attribute to use in multiple methods
     private GoogleMap mMap;
@@ -82,9 +83,6 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
     // TAG for exception handling
     private static final String TAG = SosActivity.class.getSimpleName();
-
-    // define location of Ho Chi Minh City, Vietnam
-    private final LatLng HO_CHI_MINH = new LatLng(10.8231, 106.6297);
 
     // Current user
     // database objects
@@ -172,6 +170,14 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
         // Fetch vendors
         refreshBtn = findViewById(R.id.refresh_btn_at_sos);
         refreshBtn.setOnClickListener(view -> {
+            CustomProgressDialog customProgressDialog = new CustomProgressDialog(
+                    this, R.style.SheetDialog);
+            customProgressDialog.changeText("Refreshing ... ");
+            customProgressDialog.show();
+            new Handler().postDelayed(() -> {
+                customProgressDialog.dismiss();
+                autoRefresh();
+            }, 6000);
         });
 
         // back to home fragment
@@ -194,6 +200,8 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         // initialize mMap
         mMap = googleMap;
+
+        startLocationUpdate();
 
         // enable the abilities to adjust zoom level
         mMap.getUiSettings().setZoomControlsEnabled(true);
@@ -391,9 +399,6 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
             return false;
         });
-
-        // start updating location by intervals (turn off when testing)
-        startLocationUpdate();
     }
 
     /**
@@ -637,28 +642,34 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
             if (location != null) {
                 supportMapFragment.getMapAsync(googleMap -> {
                     // get that location latitude and longitude
-                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                    currentLocation = latLng;
+                    currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
-                    // enable my location layer on the device
+                    // enable my location layer on the device`
                     googleMap.setMyLocationEnabled(true);
 
                     // enable my location button (which gives closer focus on the location)
                     googleMap.getUiSettings().setMyLocationButtonEnabled(true);
 
                     // move camera to that location
-                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 9));
                 });
             } else { // if the last location does not exist
                 Log.d(TAG, "Current location is null. Using defaults.");
                 Log.e(TAG, "Exception: %s", task.getException());
-                supportMapFragment.getMapAsync(googleMap -> {
-                    // Ho Chi Minh City as the default location
-                    // move camera to Ho Chi Minh City
-                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(HO_CHI_MINH, 10));
-                });
+                supportMapFragment.getMapAsync(googleMap -> autoRefresh());
             }
         });
+    }
+
+    /**
+     * Method to refresh sos activity
+     */
+    private void autoRefresh() {
+        Intent backToHome = new Intent(this, SosActivity.class);
+        backToHome.putExtra("loggedInUser", userTracker);
+        backToHome.putExtra("vehiclesHashMapList", vehiclesHashMapList);
+        startActivity(backToHome);
+        finish();
     }
 
     /**
