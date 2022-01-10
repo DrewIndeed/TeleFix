@@ -6,16 +6,20 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.content.DialogInterface;
+import android.os.Handler;
 
 import com.example.telefixmain.Adapter.SOSRequestAdapter;
 import com.example.telefixmain.Model.Booking.SOSRequest;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vendor;
 import com.example.telefixmain.R;
+import com.example.telefixmain.Util.BookingHandler;
 import com.example.telefixmain.Util.DatabaseHandler;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,7 +32,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
-public class SOSRequestActivity extends AppCompatActivity {
+public class SOSRequestActivity extends AppCompatActivity implements SOSRequestAdapter.OnRequestListener {
 
     // firestore & realtime database & authentication
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -45,6 +49,8 @@ public class SOSRequestActivity extends AppCompatActivity {
     private Location currentLocation = new Location("");
     // intent data receivers
     private User userTracker;
+    private String vendorId;
+    private String mechanicId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +60,8 @@ public class SOSRequestActivity extends AppCompatActivity {
         // Retrieve mechanic info
         Intent intent = getIntent();
         userTracker = (User) intent.getSerializableExtra("loggedInUser");
+        vendorId = userTracker.getVendorId();
+        mechanicId = mUser.getUid();
 
         // Get vendor's location
         getVendorLocation();
@@ -64,28 +72,31 @@ public class SOSRequestActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         sosRequestAdapter = new SOSRequestAdapter(SOSRequestActivity.this,
+                this,
                 currentLocation,
                 sosRequests,
-                userTracker.getVendorId(),
-                mUser.getUid());
+                vendorId,
+                mechanicId);
         recyclerView.setAdapter(sosRequestAdapter);
 
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(itemDecoration);
 
         // listen for db reference
-        DatabaseReference openSOSRequest = vendorsBookings.getReference().child(userTracker.getVendorId()).child("sos").child("request");
+        DatabaseReference openSOSRequest = vendorsBookings.getReference().child(vendorId).child("sos").child("request");
         // set ValueEventListener that delay the onDataChange
         ValueEventListener openSOSRequestListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 // Clear current request list & add again
                 sosRequests.clear();
+                ArrayList<SOSRequest> tmp = new ArrayList<>();
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     SOSRequest request = ds.getValue(SOSRequest.class);
-                    sosRequests.add(request);
+                    tmp.add(request);
                     System.out.println("FETCH REQUEST ___________________");
                 }
+                sosRequests.addAll(tmp);
                 sosRequestAdapter.notifyDataSetChanged();
             }
 
@@ -106,5 +117,49 @@ public class SOSRequestActivity extends AppCompatActivity {
             currentLocation.setLatitude(Double.parseDouble(tmp.get(0).getLat()));
             currentLocation.setLongitude(Double.parseDouble(tmp.get(0).getLng()));
         });
+    }
+
+    @Override
+    public void onRequestClick(int position) {
+        String requestId = sosRequests.get(position).getRequestId();
+        // Confirm accept SOS request
+        AlertDialog.Builder builder = new AlertDialog.Builder(SOSRequestActivity.this);
+        builder.setTitle("Confirm accept SOS request");
+        builder.setMessage("Do you want to confirm helping this user?");
+        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                BookingHandler.acceptSOSRequest(vendorsBookings,
+                        SOSRequestActivity.this,
+                        vendorId,
+                        sosRequests.get(position).getRequestId(),
+                        mechanicId,
+                        () -> {
+                    // initialize progress tracking
+                    long startProgressTracking = System.currentTimeMillis() / 1000L;
+                    BookingHandler.createProgressTracking(
+                            vendorsBookings,
+                            SOSRequestActivity.this,
+                            vendorId,
+                            requestId,
+                            startProgressTracking, () -> {
+                                // Delay to make sure the progress has been initialized on db
+                                new Handler().postDelayed(() -> {
+                                    Intent i = new Intent(SOSRequestActivity.this, SOSProgressActivity.class);
+                                    i.putExtra("vendorId", vendorId);
+                                    i.putExtra("requestId", requestId);
+                                    startActivity(i);
+                                }, 3000);
+                            });
+                });
+
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 }

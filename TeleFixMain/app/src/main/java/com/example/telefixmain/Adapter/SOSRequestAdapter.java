@@ -9,9 +9,12 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.telefixmain.Activity.Customer.RequestProcessingActivity;
@@ -42,7 +45,11 @@ public class SOSRequestAdapter extends RecyclerView.Adapter<SOSRequestViewHolder
     private String vendorId;
     private String mechanicId;
 
+    // Click
+    private OnRequestListener mOnRequestListener;
+
     public SOSRequestAdapter(Context activityContext,
+                             OnRequestListener mOnRequestListener,
                              Location currentLocation,
                              ArrayList<SOSRequest> sosRequests,
                              String vendorId,
@@ -52,6 +59,7 @@ public class SOSRequestAdapter extends RecyclerView.Adapter<SOSRequestViewHolder
         this.sosRequests = sosRequests;
         this.vendorId = vendorId;
         this.mechanicId = mechanicId;
+        this.mOnRequestListener = mOnRequestListener;
     }
 
 
@@ -60,7 +68,7 @@ public class SOSRequestAdapter extends RecyclerView.Adapter<SOSRequestViewHolder
     public SOSRequestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.row_sos_request_item, parent, false);
-        return new SOSRequestViewHolder(itemView);
+        return new SOSRequestViewHolder(itemView, mOnRequestListener);
     }
 
     @SuppressLint("SetTextI18n")
@@ -87,47 +95,47 @@ public class SOSRequestAdapter extends RecyclerView.Adapter<SOSRequestViewHolder
             holder.distance.setText(distanceAwayValue + " km away");
         });
 
-        holder.layout.setOnClickListener(view -> {
-            // Confirm accept SOS request
-            AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
-            builder.setTitle("Confirm accept SOS request");
-            builder.setMessage("Do you want to confirm helping this user?");
-            builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    BookingHandler.acceptSOSRequest(vendorsBookings,
-                            activityContext,
-                            vendorId,
-                            requestId,
-                            mechanicId,
-                            () -> {
-                        // initialize progress tracking
-                        long startProgressTracking = System.currentTimeMillis() / 1000L;
-                        BookingHandler.createProgressTracking(
-                                vendorsBookings,
-                                activityContext,
-                                vendorId,
-                                requestId,
-                                startProgressTracking, () -> {
-                                    // Delay to make sure the progress has been initialized on db
-                                    new Handler().postDelayed(() -> {
-                                        Intent i = new Intent(activityContext, SOSProgressActivity.class);
-                                        i.putExtra("vendorId", vendorId);
-                                        i.putExtra("requestId", requestId);
-                                        activityContext.startActivity(i);
-                                    }, 3000);
-                                });
-                    });
-
-                }
-            });
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.dismiss();
-                }
-            });
-            AlertDialog alert = builder.create();
-            alert.show();
-        });
+//        holder.layout.setOnClickListener(view -> {
+//            // Confirm accept SOS request
+//            AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
+//            builder.setTitle("Confirm accept SOS request");
+//            builder.setMessage("Do you want to confirm helping this user?");
+//            builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+//                public void onClick(DialogInterface dialog, int id) {
+//                    BookingHandler.acceptSOSRequest(vendorsBookings,
+//                            activityContext,
+//                            vendorId,
+//                            requestId,
+//                            mechanicId,
+//                            () -> {
+//                        // initialize progress tracking
+//                        long startProgressTracking = System.currentTimeMillis() / 1000L;
+//                        BookingHandler.createProgressTracking(
+//                                vendorsBookings,
+//                                activityContext,
+//                                vendorId,
+//                                requestId,
+//                                startProgressTracking, () -> {
+//                                    // Delay to make sure the progress has been initialized on db
+//                                    new Handler().postDelayed(() -> {
+//                                        Intent i = new Intent(activityContext, SOSProgressActivity.class);
+//                                        i.putExtra("vendorId", vendorId);
+//                                        i.putExtra("requestId", requestId);
+//                                        activityContext.startActivity(i);
+//                                    }, 3000);
+//                                });
+//                    });
+//
+//                }
+//            });
+//            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                public void onClick(DialogInterface dialog, int id) {
+//                    dialog.dismiss();
+//                }
+//            });
+//            AlertDialog alert = builder.create();
+//            alert.show();
+//        });
     }
 
     @Override
@@ -178,5 +186,9 @@ public class SOSRequestAdapter extends RecyclerView.Adapter<SOSRequestViewHolder
 
         // calculate the result
         return (c * r);
+    }
+
+    public interface OnRequestListener {
+        void onRequestClick(int position);
     }
 }

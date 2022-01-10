@@ -175,6 +175,7 @@ DatabaseHandler {
                         // success msg
                         System.out.println("FETCH VENDORS SUCCESSFULLY!");
 
+                        // run call back function
                         callback.run();
                     }
                 })
@@ -183,8 +184,6 @@ DatabaseHandler {
                     System.out.println("FETCH VENDORS FAILED!");
                     System.out.println("FETCH VENDORS ERROR: " + e.getMessage());
                 });
-        // run call back function
-
     }
 
     /**
