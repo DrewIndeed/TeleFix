@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.telefixmain.Activity.Customer.RequestProcessingActivity;
+import com.example.telefixmain.Activity.Customer.SosActivity;
 import com.example.telefixmain.Activity.Mechanic.SOSProgressActivity;
 import com.example.telefixmain.Model.Booking.SOSRequest;
 import com.example.telefixmain.Model.User;
@@ -98,14 +100,22 @@ public class SOSRequestAdapter extends RecyclerView.Adapter<SOSRequestViewHolder
                             requestId,
                             mechanicId,
                             () -> {
-                        // Delay to make sure the progress has been initialized on db
-                        new Handler().postDelayed(() -> {
-                            Intent i = new Intent(activityContext, SOSProgressActivity.class);
-                            i.putExtra("vendorId", vendorId);
-                            i.putExtra("mechanicId", mechanicId);
-                            activityContext.startActivity(i);
-                        }, 3000);
-
+                        // initialize progress tracking
+                        long startProgressTracking = System.currentTimeMillis() / 1000L;
+                        BookingHandler.createProgressTracking(
+                                vendorsBookings,
+                                activityContext,
+                                vendorId,
+                                requestId,
+                                startProgressTracking, () -> {
+                                    // Delay to make sure the progress has been initialized on db
+                                    new Handler().postDelayed(() -> {
+                                        Intent i = new Intent(activityContext, SOSProgressActivity.class);
+                                        i.putExtra("vendorId", vendorId);
+                                        i.putExtra("mechanicId", mechanicId);
+                                        activityContext.startActivity(i);
+                                    }, 3000);
+                                });
                     });
 
                 }

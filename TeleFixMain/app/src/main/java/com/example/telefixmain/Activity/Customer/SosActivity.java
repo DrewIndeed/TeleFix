@@ -329,22 +329,13 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                         // dismiss dialog before open a new one to avoid window leak
                                         sosBottomDialog.dismiss();
 
-                                        // initialize progress tracking
-                                        long startProgressTracking = System.currentTimeMillis() / 1000L;
-                                        BookingHandler.createProgressTracking(
-                                                vendorsBookings,
-                                                SosActivity.this,
-                                                currentVendorId,
-                                                currentRequestId,
-                                                startProgressTracking, () -> {
-                                                    // start intent
-                                                    Intent i = new Intent(SosActivity.this,
-                                                            RequestProcessingActivity.class);
-                                                    i.putExtra("currentVendorId", currentVendorId);
-                                                    i.putExtra("currentRequestId", currentRequestId);
-                                                    startActivity(i);
-                                                    finish();
-                                                });
+                                        // start intent
+                                        Intent i = new Intent(SosActivity.this,
+                                                RequestProcessingActivity.class);
+                                        i.putExtra("currentVendorId", currentVendorId);
+                                        i.putExtra("currentRequestId", currentRequestId);
+                                        startActivity(i);
+                                        finish();
 
                                     }, 4000);
                                 }
