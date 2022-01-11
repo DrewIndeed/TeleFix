@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.telefixmain.Dialog.CustomProgressDialog;
+import com.example.telefixmain.Activity.Customer.MainActivity;
 import com.example.telefixmain.Activity.Mechanic.SOSRequestActivity;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vehicle;
@@ -139,12 +140,11 @@ public class LoginActivity extends AppCompatActivity {
                                         db,
                                         mUser.getUid(),
                                         userResult, () -> {
-                                            // intent to jump to main activity
-                                            Intent toMainActivity = new Intent(this, MainActivity.class);
-                                            toMainActivity.putExtra("loggedInUser", userResult.get(0));
-
-                                            // if logged in user is a Customer
                                             if (!Boolean.parseBoolean(userResult.get(0).getIsMechanic())) {
+                                                // intent to jump to main activity
+                                                Intent toMainActivity = new Intent(this, MainActivity.class);
+                                                toMainActivity.putExtra("loggedInUser", userResult.get(0));
+
                                                 // init vehicles data containers
                                                 vehiclesIdResult = new ArrayList<>();
                                                 vehiclesResult = new ArrayList<>();
@@ -174,20 +174,27 @@ public class LoginActivity extends AppCompatActivity {
                                                                     vehiclesHashMapList.add(tempContainer);
                                                                 }
                                                             }
-
-                                                            // attach vehicle list before going to Main Activity
+                                                            // show msg and hide progress dialog
+                                                            cpd.dismiss();
+                                                            Toast.makeText(this,
+                                                                    "Logged in successfully!", Toast.LENGTH_SHORT).show();
+                                                            // jump into main activity
                                                             toMainActivity.putExtra("vehiclesHashMapList", vehiclesHashMapList);
+                                                            startActivity(toMainActivity);
+                                                            finish();
                                                         });
-                                            } else { // if logged in user is Mechanic
+                                            } else {
+                                                // THIS IS JUST FOR MOCKING
+                                                // intent to jump to main activity
+                                                Intent toMechanicSOSRequestActivity = new Intent(this, SOSRequestActivity.class);
+                                                toMechanicSOSRequestActivity.putExtra("loggedInUser", userResult.get(0));
 
+                                                cpd.dismiss();
+                                                Toast.makeText(this,
+                                                        "Logged in AS MECHANIC!", Toast.LENGTH_SHORT).show();
+                                                startActivity(toMechanicSOSRequestActivity);
+                                                finish();
                                             }
-
-                                            // show msg and hide progress dialog
-                                            cpd.dismiss();
-                                            Toast.makeText(this,
-                                                    "Logged in successfully!", Toast.LENGTH_SHORT).show();
-                                            startActivity(toMainActivity);
-                                            finish();
                                         }
                                 );
                             }
