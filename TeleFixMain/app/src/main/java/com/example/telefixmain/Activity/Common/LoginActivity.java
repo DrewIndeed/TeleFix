@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.example.telefixmain.Dialog.CustomProgressDialog;
 import com.example.telefixmain.Activity.Customer.MainActivity;
 import com.example.telefixmain.Activity.Mechanic.SOSRequestActivity;
+
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vehicle;
 import com.example.telefixmain.R;
@@ -151,7 +152,7 @@ public class LoginActivity extends AppCompatActivity {
                                                 vehiclesHashMapList = new ArrayList<>();
 
                                                 // get user's vehicle list
-                                                DatabaseHandler.getUserVehicleList(db, this, mUser.getUid(),
+                                                DatabaseHandler.getUserVehicleList(db, this, userResult.get(0).getId(),
                                                         vehiclesIdResult, vehiclesResult, () -> {
                                                             // do only if there is any vehicle id, otherwise cut short the process
                                                             if (vehiclesResult.size() > 0) {
@@ -174,25 +175,21 @@ public class LoginActivity extends AppCompatActivity {
                                                                     vehiclesHashMapList.add(tempContainer);
                                                                 }
                                                             }
+
+                                                            // jump into main activity
                                                             // show msg and hide progress dialog
                                                             cpd.dismiss();
                                                             Toast.makeText(this,
                                                                     "Logged in successfully!", Toast.LENGTH_SHORT).show();
-                                                            // jump into main activity
-                                                            toMainActivity.putExtra("vehiclesHashMapList", vehiclesHashMapList);
                                                             startActivity(toMainActivity);
                                                             finish();
                                                         });
                                             } else {
-                                                // THIS IS JUST FOR MOCKING
-                                                // intent to jump to main activity
-                                                Intent toMechanicSOSRequestActivity = new Intent(this, SOSRequestActivity.class);
-                                                toMechanicSOSRequestActivity.putExtra("loggedInUser", userResult.get(0));
-
+                                                // show msg and hide progress dialog
                                                 cpd.dismiss();
                                                 Toast.makeText(this,
-                                                        "Logged in AS MECHANIC!", Toast.LENGTH_SHORT).show();
-                                                startActivity(toMechanicSOSRequestActivity);
+                                                        "Logged in successfully!", Toast.LENGTH_SHORT).show();
+                                                startActivity(toMainActivity);
                                                 finish();
                                             }
                                         }
