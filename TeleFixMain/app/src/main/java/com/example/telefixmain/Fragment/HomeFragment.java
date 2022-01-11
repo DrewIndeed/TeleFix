@@ -255,9 +255,16 @@ public class HomeFragment extends Fragment {
             new Handler().postDelayed(() -> {
                 cpd.dismiss();
 
-                // jump to sos activity
-                new Handler().postDelayed(() -> startActivity(new Intent(fragmentActivity,
-                        UserMaintenanceActivity.class)), 500);
+                new Handler().postDelayed(() -> {
+                    // jump to maintenance activity
+                    Intent jumpToMaintenance = new Intent(fragmentActivity, UserMaintenanceActivity.class);
+                    jumpToMaintenance.putExtra("loggedInUser", userTracker);
+                    jumpToMaintenance.putExtra("vehiclesHashMapList", vehiclesHashMapList);
+
+                    startActivity(jumpToMaintenance);
+                    fragmentActivity.finish();
+                }, 500);
+
             }, 1500);
         });
 

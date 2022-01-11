@@ -16,6 +16,7 @@
         android:theme="@style/Theme.TeleFixMain">
         <activity
             android:name=".Activity.Customer.UserMaintenanceActivity"
+            android:theme="@style/Theme.TeleFixMainSearch"
             android:exported="false" />
         <activity
             android:name=".Activity.Mechanic.SOSRequestActivity"
