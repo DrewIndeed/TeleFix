@@ -22,7 +22,7 @@ import android.widget.Toast;
 
 import com.example.telefixmain.Dialog.CustomProgressDialog;
 import com.example.telefixmain.Activity.Common.LoginActivity;
-import com.example.telefixmain.Activity.Customer.MainActivity;
+import com.example.telefixmain.Activity.Common.MainActivity;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.DatabaseHandler;

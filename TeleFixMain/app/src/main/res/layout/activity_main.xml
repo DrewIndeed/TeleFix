@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bmw_light_blue"
-    tools:context=".Activity.Customer.MainActivity">
+    tools:context=".Activity.Common.MainActivity">
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nvg"
