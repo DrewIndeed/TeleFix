@@ -17,7 +17,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.telefixmain.Dialog.CustomProgressDialog;
-import com.example.telefixmain.Activity.Mechanic.SOSRequestActivity;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vehicle;
 import com.example.telefixmain.R;
@@ -151,7 +150,7 @@ public class LoginActivity extends AppCompatActivity {
                                                 vehiclesHashMapList = new ArrayList<>();
 
                                                 // get user's vehicle list
-                                                DatabaseHandler.getUserVehicleList(db, this, mUser.getUid(),
+                                                DatabaseHandler.getUserVehicleList(db, this, userResult.get(0).getId(),
                                                         vehiclesIdResult, vehiclesResult, () -> {
                                                             // do only if there is any vehicle id, otherwise cut short the process
                                                             if (vehiclesResult.size() > 0) {
@@ -177,17 +176,21 @@ public class LoginActivity extends AppCompatActivity {
 
                                                             // attach vehicle list before going to Main Activity
                                                             toMainActivity.putExtra("vehiclesHashMapList", vehiclesHashMapList);
+                                                            // show msg and hide progress dialog
+                                                            cpd.dismiss();
+                                                            Toast.makeText(this,
+                                                                    "Logged in successfully!", Toast.LENGTH_SHORT).show();
+                                                            startActivity(toMainActivity);
+                                                            finish();
                                                         });
-                                            } else { // if logged in user is Mechanic
-
+                                            } else {
+                                                // show msg and hide progress dialog
+                                                cpd.dismiss();
+                                                Toast.makeText(this,
+                                                        "Logged in successfully!", Toast.LENGTH_SHORT).show();
+                                                startActivity(toMainActivity);
+                                                finish();
                                             }
-
-                                            // show msg and hide progress dialog
-                                            cpd.dismiss();
-                                            Toast.makeText(this,
-                                                    "Logged in successfully!", Toast.LENGTH_SHORT).show();
-                                            startActivity(toMainActivity);
-                                            finish();
                                         }
                                 );
                             }
