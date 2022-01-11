@@ -208,7 +208,7 @@ public class BookingHandler {
             case "aborted":
                 progressRef.child("abortTime").setValue(timeStamp)
                         .addOnCompleteListener(task -> Toast.makeText(context,
-                                "User has refused t", Toast.LENGTH_SHORT).show())
+                                "User has refused fixing request", Toast.LENGTH_SHORT).show())
                         .addOnFailureListener(e -> Toast.makeText(context, "" +
                                 e.getMessage(), Toast.LENGTH_SHORT).show());
                 break;

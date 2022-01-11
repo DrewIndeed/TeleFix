@@ -53,7 +53,7 @@
             android:id="@+id/add_billing_item"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Item" />
+            android:text="SOS inspection" />
 
         <TextView
             android:layout_width="match_parent"

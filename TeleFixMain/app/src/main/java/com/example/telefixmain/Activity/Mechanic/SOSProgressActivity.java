@@ -80,18 +80,14 @@ public class SOSProgressActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mechanic_sos);
 
-        getPriceList();
-
-//        String mechanicId = "mockMechanicId"; // Mock mechanicID
-//        String requestId = "mockRequestId"; // Mock requestID
-//        String vendorId = "01"; // Mock vendorID
-
         // get intent
         Intent intent = getIntent();
         String requestId = (String) intent.getExtras().get("requestId");
         String vendorId = (String) intent.getExtras().get("vendorId");
         String customerId = (String) intent.getExtras().get("customerId");
         long startTime = (Long) intent.getExtras().get("startTime");
+
+        getPriceList(vendorId);
 
         //--------------Billing section--------------------
         // check billing status
@@ -168,6 +164,7 @@ public class SOSProgressActivity extends AppCompatActivity {
 
                     // remove flag whenever local billing list was changed
                     isUploaded = false;
+                    checkBillStatus();
 
                     calculateTotal();
                     currentPrice.setText("Total: " + String.format("%,d",currentTotal) + ",000 VND");
@@ -218,11 +215,12 @@ public class SOSProgressActivity extends AppCompatActivity {
                 SOSProgress sosProgress = snapshot.getValue(SOSProgress.class);
 
                 // if user not abort and approve (by setting confirm billing time) --> Set Fixed (final button) visible
-                if (Objects.requireNonNull(sosProgress).getAbortedTime() == 0 && sosProgress.getConfirmBillingTime() != 0) {
+                if (Objects.requireNonNull(sosProgress).getAbortTime() == 0 && sosProgress.getConfirmBillingTime() != 0) {
                     mechanicBtnFixed.setVisibility(View.VISIBLE);
                 }
-                else if (Objects.requireNonNull(sosProgress).getAbortedTime() != 0) {
+                else if (Objects.requireNonNull(sosProgress).getAbortTime() != 0) {
                     isAborted = true;
+                    mechanicBtnEndProgress.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -292,13 +290,10 @@ public class SOSProgressActivity extends AppCompatActivity {
         }
     }
 
-    private void getPriceList() {
-        // Mock default one
-        String currentVendorId = "01";
-
+    private void getPriceList(String vendorId) {
         DatabaseHandler.getVendorPriceListById(
                 db,
-                currentVendorId,
+                vendorId,
                 inspectionPriceContainer,
                 repairPriceContainer, () -> {
                     services.addAll(inspectionPriceContainer.keySet());
