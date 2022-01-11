@@ -51,6 +51,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private BillingAdapter billingAdapter;
     private TextView currentPrice;
+    private boolean isApproved = false;
 
     // billing
     private ArrayList<SOSBilling> billings = new ArrayList<>();
@@ -86,14 +87,17 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
         System.out.println("RequestID: " + requestId + " ------------------ " + "VendorID: " + vendorId);
 
-        Button UserBtnDraftPayment = findViewById(R.id.btn_draft_billing);
-        Button UserBtnProceedPayment = findViewById(R.id.btn_accept_billing);
+        Button userBtnDraftPayment = findViewById(R.id.btn_draft_billing);
+        Button userBtnProceedPayment = findViewById(R.id.btn_accept_billing);
+        Button userBtnCancelProgress = findViewById(R.id.btn_cancel_progress);
+        Button userBtnAcceptProgress = findViewById(R.id.btn_confirm_progress);
 
         // add steps for step view
         List<String> steps = new ArrayList<>();
         steps.add("Mechanic found");
         steps.add("Mechanic arriving");
         steps.add("Inspecting");
+        steps.add("Confirm Proceed Fixing");
         steps.add("Proceed Payment");
         stepView.setSteps(steps);
 
@@ -107,7 +111,13 @@ public class RequestProcessingActivity extends AppCompatActivity {
          sosBillingListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) { UserBtnDraftPayment.setVisibility(View.VISIBLE); }
+                if (snapshot.exists()) {
+                    if (!isApproved) {
+                        userBtnDraftPayment.setVisibility(View.VISIBLE);
+                        userBtnCancelProgress.setVisibility(View.VISIBLE);
+                        userBtnAcceptProgress.setVisibility(View.VISIBLE);
+                    }
+                }
             }
 
             @Override
@@ -124,15 +134,14 @@ public class RequestProcessingActivity extends AppCompatActivity {
                 SOSProgress sosProgress = snapshot.getValue(SOSProgress.class);
 
                 if (Objects.requireNonNull(sosProgress).getAbortedTime() == 0) {
-                    if (sosProgress.getStartFixingTimestamp() != 0) {
+                    if (sosProgress.getStartFixingTimestamp() != 0 && sosProgress.getConfirmBillingTime() == 0) {
                         currentStep = 2;
                         stepView.go(currentStep, true);
                     }
                     if (sosProgress.getStartFixingTimestamp() != 0 && sosProgress.getStartBillingTimestamp() != 0) {
-                        currentStep = 3;
-                        stepView.go(currentStep, true);
-//                        currentBilling.addListenerForSingleValueEvent(sosBillingListener);
-                        UserBtnProceedPayment.setVisibility(View.VISIBLE);
+//                        currentStep = 5;
+//                        stepView.go(currentStep, true);
+                        userBtnProceedPayment.setVisibility(View.VISIBLE);
                     }
                 }
                 else {
@@ -153,19 +162,52 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
         billingLayout = findViewById(R.id.layout_billing_user);
 
-        UserBtnDraftPayment.setOnClickListener(view -> {
+        userBtnDraftPayment.setOnClickListener(view -> {
             // Set billing visible
             billingLayout.setVisibility(View.VISIBLE);
             BookingHandler.viewSOSBilling(vendorsBookings, this, vendorId, requestId, billings, currentPrice, () -> {
                 billingAdapter.notifyDataSetChanged();
             });
             findViewById(R.id.processing_request_gif).setVisibility(View.GONE);
+            currentStep = 3;
+            stepView.go(currentStep, true);
         });
 
+        userBtnCancelProgress.setOnClickListener(view -> {
+            isApproved = true;
+            BookingHandler.confirmProgressFromUser(vendorsBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "aborted");;
+            currentStep = 4;
+            stepView.go(currentStep, true);
 
+            billingLayout.setVisibility(View.GONE);
+            findViewById(R.id.processing_request_gif).setVisibility(View.VISIBLE);
+            userBtnAcceptProgress.setVisibility(View.GONE);
+            userBtnDraftPayment.setVisibility(View.GONE);
+            userBtnCancelProgress.setVisibility(View.GONE);
+        });
 
-        UserBtnProceedPayment.setOnClickListener(view -> {
+        userBtnAcceptProgress.setOnClickListener(view -> {
+            isApproved = true;
+            BookingHandler.confirmProgressFromUser(vendorsBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "confirmed");;
+            currentStep = 4;
+            stepView.go(currentStep, true);
+
+            billingLayout.setVisibility(View.GONE);
+            findViewById(R.id.processing_request_gif).setVisibility(View.VISIBLE);
+            userBtnAcceptProgress.setVisibility(View.GONE);
+            userBtnDraftPayment.setVisibility(View.GONE);
+            userBtnCancelProgress.setVisibility(View.GONE);
+        });
+
+        userBtnProceedPayment.setOnClickListener(view -> {
             stepView.done(true);
+            // Set billing visible
+            billingLayout.setVisibility(View.VISIBLE);
+            BookingHandler.viewSOSBilling(vendorsBookings, this, vendorId, requestId, billings, currentPrice, () -> {
+                billingAdapter.notifyDataSetChanged();
+            });
+            findViewById(R.id.processing_request_gif).setVisibility(View.GONE);
+            userBtnProceedPayment.setVisibility(View.GONE);
 
             findViewById(R.id.to_payment_button).setVisibility(View.VISIBLE);
             findViewById(R.id.to_payment_button).startAnimation(

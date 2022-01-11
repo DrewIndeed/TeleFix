@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.telefixmain.Activity.Customer.UserMaintenanceActivity;
 import com.example.telefixmain.Adapter.VehicleListAdapter;
 
 import com.example.telefixmain.Dialog.CustomProgressDialog;
@@ -256,7 +257,7 @@ public class HomeFragment extends Fragment {
 
                 // jump to sos activity
                 new Handler().postDelayed(() -> startActivity(new Intent(fragmentActivity,
-                        MechanicSOSActivity.class)), 500);
+                        UserMaintenanceActivity.class)), 500);
             }, 1500);
         });
 

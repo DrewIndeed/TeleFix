@@ -47,7 +47,7 @@
         android:id="@+id/btn_draft_billing"
         android:layout_width="301dp"
         android:layout_height="75dp"
-        android:backgroundTint="@color/bmw_dark_gray"
+        android:backgroundTint="@color/bmw_light_blue"
         android:text="View Draft Bill"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -58,18 +58,46 @@
         app:layout_constraintVertical_bias="0.832" />
 
     <Button
-        android:id="@+id/btn_accept_billing"
-        android:layout_width="301dp"
-        android:layout_height="76dp"
-        android:backgroundTint="@color/bmw_red"
-        android:text="View Bill "
+        android:id="@+id/btn_cancel_progress"
+        android:layout_width="147dp"
+        android:layout_height="74dp"
+        android:backgroundTint="@color/bmw_dark_gray"
+        android:text="Cancel SOS Request"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.489"
+        app:layout_constraintHorizontal_bias="0.204"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.833" />
+        app:layout_constraintVertical_bias="0.955" />
+
+    <Button
+        android:id="@+id/btn_confirm_progress"
+        android:layout_width="153dp"
+        android:layout_height="74dp"
+        android:backgroundTint="@color/bmw_dark_gray"
+        android:text="Confirm Inspecting Billing"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.779"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.957" />
+
+    <Button
+        android:id="@+id/btn_accept_billing"
+        android:layout_width="300dp"
+        android:layout_height="75dp"
+        android:backgroundTint="@color/bmw_red"
+        android:text="View Finalized Bill"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.83" />
 
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/processing_request_gif"
@@ -124,13 +152,13 @@
         android:layout_width="300dp"
         android:layout_height="75dp"
         android:background="@drawable/custom_btn_bg_7"
-        android:text="Proceed to Payment"
+        android:text="Back to Home"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintHorizontal_bias="0.486"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.832"
+        app:layout_constraintVertical_bias="0.83"
         tools:ignore="HardcodedText,TextContrastCheck" />
 </androidx.constraintlayout.widget.ConstraintLayout>

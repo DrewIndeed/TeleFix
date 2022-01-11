@@ -3,6 +3,7 @@ package com.example.telefixmain.Util;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.example.telefixmain.Model.Booking.SOSBilling;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vehicle;
 import com.example.telefixmain.Model.Vendor;
@@ -173,18 +174,17 @@ DatabaseHandler {
                         resultContainer.add(vendor);
 
                         // success msg
-                        System.out.println("FETCH VENDORS SUCCESSFULLY!");
+                        System.out.println("FETCH VENDOR WITH ID " + id + " SUCCESSFULLY!");
 
+                        // run call back function
                         callback.run();
                     }
                 })
                 .addOnFailureListener(e -> {
                     // fail msg
-                    System.out.println("FETCH VENDORS FAILED!");
-                    System.out.println("FETCH VENDORS ERROR: " + e.getMessage());
+                    System.out.println("FETCH VENDOR FAILED!");
+                    System.out.println("FETCH VENDOR ERROR: " + e.getMessage());
                 });
-        // run call back function
-
     }
 
     /**
@@ -379,6 +379,47 @@ DatabaseHandler {
                 .addOnFailureListener(e -> {
                     System.out.println(e.getMessage());
                     System.out.println("QUERY VEHICLE FAILED!");
+                });
+    }
+
+    public static void createEvent (FirebaseFirestore db,
+                                    Context context,
+                                    String requestId,
+                                    String userId,
+                                    String vendorId,
+                                    String mechanicId,
+                                    String type,
+                                    String status,
+                                    long startTime,
+                                    long endTime,
+                                    ArrayList<SOSBilling> billingData,
+                                    int total) {
+
+        // Create a new user
+        HashMap<String, Object> data = new HashMap<>();
+
+        // put zone data into temp data HashMap
+        data.put("requestId", requestId);
+        data.put("userId", userId);
+        data.put("vendorId", vendorId);
+        data.put("mechanicId", mechanicId);
+        data.put("type", type);
+        data.put("status", status);
+        data.put("startTime", startTime);
+        data.put("endTime", endTime);
+        data.put("billingData", billingData);
+        data.put("total", total);
+
+
+        // Add a new document with a generated ID
+        db.collection("events").document(requestId).set(data)
+                .addOnSuccessListener(documentReference -> {
+                    // this will be called when data added successfully
+                    Toast.makeText(context, "EVENT CREATED SUCCESSFULLY", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    // this will be called when there is an error while adding
+                    Toast.makeText(context, "EVENT CREATED FAILED!", Toast.LENGTH_SHORT).show();
                 });
     }
 }

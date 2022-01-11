@@ -15,6 +15,7 @@
         android:paddingBottom="10dp">
 
         <TextView
+            android:id="@+id/tv_billing_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Current billing"
@@ -99,8 +100,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/gray"
+            android:visibility="gone"
             android:text="Fixed" />
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_end_sos_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/bmw_light_gray"
+        android:visibility="invisible"
+        android:text="End Progress" />
 
 </LinearLayout>

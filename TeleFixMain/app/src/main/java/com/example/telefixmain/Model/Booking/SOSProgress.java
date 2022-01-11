@@ -4,15 +4,17 @@ public class SOSProgress {
     private long startMovingTimestamp;
     private long startFixingTimestamp;
     private long startBillingTimestamp;
-    private long abortedTime;
+    private long abortTime;
+    private long confirmBillingTime;
 
     public SOSProgress() {}
 
     public SOSProgress(long startMovingTimestamp) {
         this.startMovingTimestamp = startMovingTimestamp;
-        this.abortedTime = 0;
+        this.abortTime = 0;
         this.startBillingTimestamp = 0;
         this.startFixingTimestamp = 0;
+        this.confirmBillingTime = 0;
     }
 
     public long getStartMovingTimestamp() {
@@ -40,10 +42,18 @@ public class SOSProgress {
     }
 
     public long getAbortedTime() {
-        return abortedTime;
+        return abortTime;
     }
 
     public void setAbortedTime(long abortedTime) {
-        this.abortedTime = abortedTime;
+        this.abortTime = abortedTime;
+    }
+
+    public long getConfirmBillingTime() {
+        return confirmBillingTime;
+    }
+
+    public void setConfirmBillingTime(long confirmBillingTime) {
+        this.confirmBillingTime = confirmBillingTime;
     }
 }

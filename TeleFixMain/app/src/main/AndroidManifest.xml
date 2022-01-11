@@ -15,6 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TeleFixMain">
         <activity
+            android:name=".Activity.Customer.UserMaintenanceActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.Mechanic.SOSRequestActivity"
             android:exported="false" />
         <activity
