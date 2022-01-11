@@ -66,8 +66,8 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
     // set the interval in which update should be received. The fastest interval indicates
     // that the application can receive the update faster when available.
-    private static final long UPDATE_INTERVAL = 5000;
-    private static final long FASTEST_INTERVAL = 500;
+    private static final long UPDATE_INTERVAL = 8000;
+    private static final long FASTEST_INTERVAL = 5000;
 
     // map as class attribute to use in multiple methods
     private GoogleMap mMap;
