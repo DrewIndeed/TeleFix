@@ -264,8 +264,12 @@ public class ProfileFragment extends Fragment {
             Button updatePwdBtn = changePwdDialog.findViewById(R.id.btn_start_update_pwd);
             updatePwdBtn.setOnClickListener(subview -> {
                 try {
-                    if (newPwdInput.getText().toString().equals("")
-                            || newPwdInput.getText().toString().length() < 6) {
+                    if (newPwdInput.getText().toString().equals("") || currentPwdInput.getText().toString().equals("")) {
+                        // show msg on screen
+                        Toast.makeText(fragmentActivity,
+                                "Please fill in all information!",
+                                Toast.LENGTH_SHORT).show();
+                    } else if (newPwdInput.getText().toString().length() < 6) {
                         // show msg on screen
                         Toast.makeText(fragmentActivity,
                                 "New password's minimum length: 6",

@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -89,6 +90,7 @@ public class SOSRequestActivity extends AppCompatActivity implements SOSRequestA
         DatabaseReference openSOSRequest = vendorsBookings.getReference().child(vendorId).child("sos").child("request");
         // set ValueEventListener that delay the onDataChange
         ValueEventListener openSOSRequestListener = new ValueEventListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 // Clear current request list & add again
@@ -96,7 +98,9 @@ public class SOSRequestActivity extends AppCompatActivity implements SOSRequestA
                 ArrayList<SOSRequest> tmp = new ArrayList<>();
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     SOSRequest request = ds.getValue(SOSRequest.class);
-                    if (Objects.requireNonNull(request).getMechanicId().equals("")) { tmp.add(request); }
+                    if (Objects.requireNonNull(request).getMechanicId().equals("")) {
+                        tmp.add(request);
+                    }
                     System.out.println("FETCH REQUEST ___________________");
                 }
 
@@ -143,25 +147,25 @@ public class SOSRequestActivity extends AppCompatActivity implements SOSRequestA
                         sosRequests.get(position).getRequestId(),
                         mechanicId,
                         () -> {
-                    // initialize progress tracking
-                    long startProgressTracking = System.currentTimeMillis() / 1000L;
-                    BookingHandler.createProgressTracking(
-                            vendorsBookings,
-                            SOSRequestActivity.this,
-                            vendorId,
-                            requestId,
-                            startProgressTracking, () -> {
-                                // Delay to make sure the progress has been initialized on db
-                                new Handler().postDelayed(() -> {
-                                    Intent i = new Intent(SOSRequestActivity.this, SOSProgressActivity.class);
-                                    i.putExtra("vendorId", vendorId);
-                                    i.putExtra("requestId", requestId);
-                                    i.putExtra("customerId",customerId);
-                                    i.putExtra("startTime", startTime);
-                                    startActivity(i);
-                                }, 3000);
-                            });
-                });
+                            // initialize progress tracking
+                            long startProgressTracking = System.currentTimeMillis() / 1000L;
+                            BookingHandler.createProgressTracking(
+                                    vendorsBookings,
+                                    SOSRequestActivity.this,
+                                    vendorId,
+                                    requestId,
+                                    startProgressTracking, () -> {
+                                        // Delay to make sure the progress has been initialized on db
+                                        new Handler().postDelayed(() -> {
+                                            Intent i = new Intent(SOSRequestActivity.this, SOSProgressActivity.class);
+                                            i.putExtra("vendorId", vendorId);
+                                            i.putExtra("requestId", requestId);
+                                            i.putExtra("customerId", customerId);
+                                            i.putExtra("startTime", startTime);
+                                            startActivity(i);
+                                        }, 3000);
+                                    });
+                        });
 
             }
         });

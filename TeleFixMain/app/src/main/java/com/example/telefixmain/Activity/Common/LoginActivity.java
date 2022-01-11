@@ -194,29 +194,6 @@ public class LoginActivity extends AppCompatActivity {
                                                         "Logged in AS MECHANIC!", Toast.LENGTH_SHORT).show();
                                                 startActivity(toMechanicSOSRequestActivity);
                                                 finish();
-//                                                new Handler().postDelayed(() -> {
-//                                                    AuthUI.getInstance()
-//                                                            .signOut(this)
-//                                                            .addOnCompleteListener(task -> {
-//                                                                // dialog to show signing out
-//                                                                cpd.changeText("Signing out ...");
-//                                                                cpd.show();
-//                                                            });
-//
-//                                                    new Handler().postDelayed(() -> {
-//                                                        // dismiss dialog
-//                                                        cpd.dismiss();
-//
-//                                                        // jump to log in activity
-//                                                        new Handler().postDelayed(() -> {
-//                                                            // user is now signed out
-//                                                            Toast.makeText(this, "Singed out successfully!",
-//                                                                    Toast.LENGTH_SHORT).show();
-//                                                            startActivity(new Intent(this, LoginActivity.class));
-//                                                            finish();
-//                                                        }, 500);
-//                                                    }, 1000);
-//                                                }, 1000);
                                             }
                                         }
                                 );
