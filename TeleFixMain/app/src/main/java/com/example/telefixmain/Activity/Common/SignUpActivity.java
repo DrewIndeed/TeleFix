@@ -187,15 +187,26 @@ public class SignUpActivity extends AppCompatActivity {
         cpd.changeText("Singing up ...");
         cpd.show();
 
+        if (vendorIdSignup.getVisibility() == View.VISIBLE) {
+            DatabaseHandler.isVendorExistsById(db, SignUpActivity.this,
+                    vendorIdSignup.getText().toString().trim(),
+                    () -> cpd.dismiss(),
+                    () -> createAuthAndDatabaseUser(email, password));
+        } else {
+            createAuthAndDatabaseUser(email, password);
+        }
+    }
+
+    /**
+     * Method to create Auth and Firestore instance for User
+     */
+    private void createAuthAndDatabaseUser(String email, String password) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         // sign up success, create user on Firestore database
                         String id = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
                         String signedUpEmail = mAuth.getCurrentUser().getEmail();
-
-                        // TODO: Check valid vendor ID on database
-
 
                         // Create user on database
                         DatabaseHandler.createUser(db, SignUpActivity.this,
@@ -204,7 +215,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 phoneSignup.getText().toString().trim(),
                                 Objects.requireNonNull(signedUpEmail).trim(),
                                 Boolean.toString(isMechanic),
-                                vendorIdSignup.getText().toString().trim());
+                                vendorIdSignup.getText().toString());
 
                         // show msg and hide progress dialog
                         cpd.dismiss();
@@ -217,6 +228,7 @@ public class SignUpActivity extends AppCompatActivity {
                             finish();
                         }, 500);
                     }
+
                 })
                 .addOnFailureListener(e -> {
                     System.out.println(e.getMessage());
@@ -229,6 +241,5 @@ public class SignUpActivity extends AppCompatActivity {
                                 "Signed up failed!", Toast.LENGTH_SHORT).show();
                     }
                 });
-        // [END create_user_with_email]
     }
 }
