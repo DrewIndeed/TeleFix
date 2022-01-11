@@ -17,8 +17,9 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
 
-public class
-DatabaseHandler {
+public class DatabaseHandler {
+    private static int completeCount;
+
     /**
      * Method to create new user on database
      */
@@ -158,9 +159,9 @@ DatabaseHandler {
      * Method to get a single vendor's info
      */
     public static void getSingleVendor(FirebaseFirestore db,
-                                     String id,
-                                     ArrayList<Vendor> resultContainer,
-                                     Runnable callback) {
+                                       String id,
+                                       ArrayList<Vendor> resultContainer,
+                                       Runnable callback) {
         // target "vendors" collection
         DocumentReference docRef = db.collection("vendors").document(id);
 
@@ -328,15 +329,11 @@ DatabaseHandler {
 
                         // do only if there is any vehicle id, otherwise cut short the process
                         if (vehiclesIdResult.size() > 0) {
-                            // populate vehicles object list
-                            for (String vId : vehiclesIdResult) {
-                                if (vehiclesIdResult.indexOf(vId) == vehiclesIdResult.size() - 1) {
-                                    // run callback if it is the last id
-                                    getSingleVehicle(db, vId, vehiclesResult, callback);
-                                } else {
-                                    getSingleVehicle(db, vId, vehiclesResult, () -> {
-                                    });
-                                }
+                            completeCount = 0;
+                            for (int i = 0; i < vehiclesIdResult.size(); i++) {
+                                getSingleVehicle(db, vehiclesIdResult.get(i), vehiclesResult, ()
+                                        -> populateVehicleObjectList(completeCount,
+                                        vehiclesIdResult.size(), callback));
                             }
                         } else {
                             callback.run();
@@ -347,6 +344,20 @@ DatabaseHandler {
                     System.out.println(e.getMessage());
                     Toast.makeText(context, "Get vehicle list failed!", Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    /**
+     * Method to identify if all async tasks from getting vehicles are completed
+     */
+    private static void populateVehicleObjectList(int count, int idListSize, Runnable callback) {
+        // print to keep track of completed async tasks
+        System.out.println(completeCount);
+
+        // if number of completed tasks equals to number of provided ids
+        if (count == idListSize) {
+            // run callback
+            callback.run();
+        }
     }
 
     /**
@@ -362,7 +373,10 @@ DatabaseHandler {
         // start querying by id
         docRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                // Document found in the offline cache
+                // increase complete count value
+                completeCount++;
+
+                // document found in the offline cache
                 DocumentSnapshot document = task.getResult();
                 Vehicle vehicle = document.toObject(Vehicle.class);
 
@@ -382,18 +396,18 @@ DatabaseHandler {
                 });
     }
 
-    public static void createEvent (FirebaseFirestore db,
-                                    Context context,
-                                    String requestId,
-                                    String userId,
-                                    String vendorId,
-                                    String mechanicId,
-                                    String type,
-                                    String status,
-                                    long startTime,
-                                    long endTime,
-                                    ArrayList<SOSBilling> billingData,
-                                    int total) {
+    public static void createEvent(FirebaseFirestore db,
+                                   Context context,
+                                   String requestId,
+                                   String userId,
+                                   String vendorId,
+                                   String mechanicId,
+                                   String type,
+                                   String status,
+                                   long startTime,
+                                   long endTime,
+                                   ArrayList<SOSBilling> billingData,
+                                   int total) {
 
         // Create a new user
         HashMap<String, Object> data = new HashMap<>();
