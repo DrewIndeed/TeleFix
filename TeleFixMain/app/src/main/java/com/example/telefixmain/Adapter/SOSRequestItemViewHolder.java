@@ -1,7 +1,6 @@
 package com.example.telefixmain.Adapter;
 
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -10,13 +9,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.telefixmain.R;
 
-public class SOSRequestViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+public class SOSRequestItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     TextView userInfo, distance, timeCreated;
     ConstraintLayout layout;
     View mView;
-    SOSRequestAdapter.OnRequestListener onRequestListener;
+    SOSRequestListAdapter.OnRequestListener onRequestListener;
 
-    public SOSRequestViewHolder(@NonNull View itemView, SOSRequestAdapter.OnRequestListener onRequestListener) {
+    public SOSRequestItemViewHolder(@NonNull View itemView, SOSRequestListAdapter.OnRequestListener onRequestListener) {
         super(itemView);
         mView = itemView;
 

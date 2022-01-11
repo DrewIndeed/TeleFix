@@ -2,28 +2,17 @@ package com.example.telefixmain.Adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.location.Location;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.telefixmain.Activity.Customer.RequestProcessingActivity;
-import com.example.telefixmain.Activity.Customer.SosActivity;
-import com.example.telefixmain.Activity.Mechanic.SOSProgressActivity;
 import com.example.telefixmain.Model.Booking.SOSRequest;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.R;
-import com.example.telefixmain.Util.BookingHandler;
 import com.example.telefixmain.Util.DatabaseHandler;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -32,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class SOSRequestAdapter extends RecyclerView.Adapter<SOSRequestViewHolder>{
+public class SOSRequestListAdapter extends RecyclerView.Adapter<SOSRequestItemViewHolder>{
     private Context activityContext;
     private ArrayList<SOSRequest> sosRequests;
     private Location currentLocation;
@@ -48,12 +37,12 @@ public class SOSRequestAdapter extends RecyclerView.Adapter<SOSRequestViewHolder
     // Click
     private OnRequestListener mOnRequestListener;
 
-    public SOSRequestAdapter(Context activityContext,
-                             OnRequestListener mOnRequestListener,
-                             Location currentLocation,
-                             ArrayList<SOSRequest> sosRequests,
-                             String vendorId,
-                             String mechanicId) {
+    public SOSRequestListAdapter(Context activityContext,
+                                 OnRequestListener mOnRequestListener,
+                                 Location currentLocation,
+                                 ArrayList<SOSRequest> sosRequests,
+                                 String vendorId,
+                                 String mechanicId) {
         this.activityContext = activityContext;
         this.currentLocation = currentLocation;
         this.sosRequests = sosRequests;
@@ -65,15 +54,15 @@ public class SOSRequestAdapter extends RecyclerView.Adapter<SOSRequestViewHolder
 
     @NonNull
     @Override
-    public SOSRequestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public SOSRequestItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.row_sos_request_item, parent, false);
-        return new SOSRequestViewHolder(itemView, mOnRequestListener);
+        return new SOSRequestItemViewHolder(itemView, mOnRequestListener);
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull SOSRequestViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull SOSRequestItemViewHolder holder, int position) {
         // retrieve request info on database
         String requestId = sosRequests.get(position).getRequestId();
         String userId = sosRequests.get(position).getUserId();

@@ -9,13 +9,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.content.DialogInterface;
 import android.os.Handler;
 
-import com.example.telefixmain.Adapter.SOSRequestAdapter;
+import com.example.telefixmain.Adapter.SOSRequestListAdapter;
 import com.example.telefixmain.Model.Booking.SOSRequest;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vendor;
@@ -33,10 +32,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Objects;
 
-public class SOSRequestActivity extends AppCompatActivity implements SOSRequestAdapter.OnRequestListener {
+public class SOSRequestActivity extends AppCompatActivity implements SOSRequestListAdapter.OnRequestListener {
 
     // firestore & realtime database & authentication
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -46,7 +44,7 @@ public class SOSRequestActivity extends AppCompatActivity implements SOSRequestA
 
     // xml
     private RecyclerView recyclerView;
-    private SOSRequestAdapter sosRequestAdapter;
+    private SOSRequestListAdapter sosRequestAdapter;
 
     // data
     private ArrayList<SOSRequest> sosRequests = new ArrayList<>();
@@ -75,7 +73,7 @@ public class SOSRequestActivity extends AppCompatActivity implements SOSRequestA
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        sosRequestAdapter = new SOSRequestAdapter(SOSRequestActivity.this,
+        sosRequestAdapter = new SOSRequestListAdapter(SOSRequestActivity.this,
                 this,
                 currentLocation,
                 sosRequests,

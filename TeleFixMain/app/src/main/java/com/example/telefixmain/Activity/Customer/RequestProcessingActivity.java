@@ -13,9 +13,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.telefixmain.Adapter.BillingAdapter;
+import com.example.telefixmain.Adapter.BillingListAdapter;
 import com.example.telefixmain.Model.Booking.SOSBilling;
 import com.example.telefixmain.Model.Booking.SOSProgress;
 import com.example.telefixmain.R;
@@ -49,7 +48,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
     // xml
     private LinearLayout billingLayout;
     private RecyclerView recyclerView;
-    private BillingAdapter billingAdapter;
+    private BillingListAdapter billingAdapter;
     private TextView currentPrice;
     private boolean isApproved = false;
 
@@ -69,7 +68,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        billingAdapter = new BillingAdapter(RequestProcessingActivity.this,billings);
+        billingAdapter = new BillingListAdapter(RequestProcessingActivity.this,billings);
         recyclerView.setAdapter(billingAdapter);
 
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);

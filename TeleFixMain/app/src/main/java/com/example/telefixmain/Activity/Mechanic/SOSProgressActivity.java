@@ -18,8 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.telefixmain.Activity.Customer.RequestProcessingActivity;
-import com.example.telefixmain.Adapter.BillingAdapter;
+import com.example.telefixmain.Adapter.BillingListAdapter;
 import com.example.telefixmain.Model.Booking.SOSBilling;
 import com.example.telefixmain.Model.Booking.SOSProgress;
 import com.example.telefixmain.R;
@@ -51,7 +50,7 @@ public class SOSProgressActivity extends AppCompatActivity {
 
     // xml
     private RecyclerView recyclerView;
-    private BillingAdapter billingAdapter;
+    private BillingListAdapter billingAdapter;
     private TextView currentPrice;
     private TextView billingStatus;
 
@@ -103,7 +102,7 @@ public class SOSProgressActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        billingAdapter = new BillingAdapter(SOSProgressActivity.this,billings);
+        billingAdapter = new BillingListAdapter(SOSProgressActivity.this,billings);
         recyclerView.setAdapter(billingAdapter);
 
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);

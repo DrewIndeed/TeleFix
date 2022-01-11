@@ -10,11 +10,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.telefixmain.R;
 
-public class BillingViewHolder extends RecyclerView.ViewHolder {
+public class BillingItemViewHolder extends RecyclerView.ViewHolder {
     TextView item, quantity, total;
     View mView;
 
-    public BillingViewHolder(@NonNull View itemView) {
+    public BillingItemViewHolder(@NonNull View itemView) {
         super(itemView);
         mView = itemView;
 
