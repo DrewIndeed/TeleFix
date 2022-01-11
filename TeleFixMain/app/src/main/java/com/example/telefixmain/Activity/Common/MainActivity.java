@@ -1,4 +1,4 @@
-package com.example.telefixmain.Activity.Customer;
+package com.example.telefixmain.Activity.Common;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
