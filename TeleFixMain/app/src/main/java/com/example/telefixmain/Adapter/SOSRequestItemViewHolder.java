@@ -1,17 +1,17 @@
 package com.example.telefixmain.Adapter;
 
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.telefixmain.R;
 
 public class SOSRequestItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     TextView userInfo, distance, timeCreated;
-    ConstraintLayout layout;
+    LinearLayout layout;
     View mView;
     SOSRequestListAdapter.OnRequestListener onRequestListener;
 

@@ -19,9 +19,6 @@
             android:theme="@style/Theme.TeleFixMainSearch"
             android:exported="false" />
         <activity
-            android:name=".Activity.Mechanic.SOSRequestActivity"
-            android:exported="false" />
-        <activity
             android:name=".Activity.Mechanic.SOSProgressActivity"
             android:exported="false" />
         <activity
