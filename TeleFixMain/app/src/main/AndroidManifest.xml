@@ -16,6 +16,7 @@
         android:theme="@style/Theme.TeleFixMain">
         <activity
             android:name=".Activity.Customer.UserMaintenanceActivity"
+            android:theme="@style/Theme.TeleFixMainSearch"
             android:exported="false" />
         <activity
             android:name=".Activity.Mechanic.SOSProgressActivity"
@@ -32,7 +33,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".Activity.Common.MainActivity"
+            android:name=".Activity.Customer.MainActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />
         <activity

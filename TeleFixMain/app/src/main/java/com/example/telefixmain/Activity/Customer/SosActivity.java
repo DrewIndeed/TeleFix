@@ -22,7 +22,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.example.telefixmain.Activity.Common.MainActivity;
 import com.example.telefixmain.Dialog.CustomProgressDialog;
 import com.example.telefixmain.Fragment.PriceListFragment;
 import com.example.telefixmain.Model.Booking.SOSRequest;

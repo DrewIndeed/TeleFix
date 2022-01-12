@@ -13,10 +13,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.telefixmain.Activity.Common.MainActivity;
-import com.example.telefixmain.Adapter.BillingAdapter;
+import com.example.telefixmain.Adapter.BillingListAdapter;
 import com.example.telefixmain.Model.Booking.SOSBilling;
 import com.example.telefixmain.Model.Booking.SOSProgress;
 import com.example.telefixmain.R;
@@ -50,7 +48,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
     // xml
     private LinearLayout billingLayout;
     private RecyclerView recyclerView;
-    private BillingAdapter billingAdapter;
+    private BillingListAdapter billingAdapter;
     private TextView currentPrice;
     private boolean isApproved = false;
 
@@ -70,7 +68,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        billingAdapter = new BillingAdapter(RequestProcessingActivity.this,billings);
+        billingAdapter = new BillingListAdapter(RequestProcessingActivity.this,billings);
         recyclerView.setAdapter(billingAdapter);
 
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
@@ -134,20 +132,16 @@ public class RequestProcessingActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 SOSProgress sosProgress = snapshot.getValue(SOSProgress.class);
 
-                if (Objects.requireNonNull(sosProgress).getAbortedTime() == 0) {
-                    if (sosProgress.getStartFixingTimestamp() != 0 && sosProgress.getConfirmBillingTime() == 0) {
-                        currentStep = 2;
-                        stepView.go(currentStep, true);
-                    }
-                    if (sosProgress.getStartFixingTimestamp() != 0 && sosProgress.getStartBillingTimestamp() != 0) {
-//                        currentStep = 5;
-//                        stepView.go(currentStep, true);
-                        userBtnProceedPayment.setVisibility(View.VISIBLE);
-                    }
+                if (Objects.requireNonNull(sosProgress).getStartFixingTimestamp() != 0 && Objects.requireNonNull(sosProgress).getConfirmBillingTime() == 0 && Objects.requireNonNull(sosProgress).getAbortTime() == 0) {
+                    currentStep = 2;
+                    stepView.go(currentStep, true);
                 }
-                else {
-                    Toast.makeText(RequestProcessingActivity.this, "Abort request", Toast.LENGTH_SHORT).show();
+                else if (Objects.requireNonNull(sosProgress).getStartFixingTimestamp() != 0 && Objects.requireNonNull(sosProgress).getStartBillingTimestamp() != 0) {
+                    userBtnProceedPayment.setVisibility(View.VISIBLE);
                 }
+//                else if (Objects.requireNonNull(sosProgress).getAbortTime() !=  0) {
+//                    currentStep =
+//                }
             }
 
             @Override
@@ -175,16 +169,27 @@ public class RequestProcessingActivity extends AppCompatActivity {
         });
 
         userBtnCancelProgress.setOnClickListener(view -> {
-            isApproved = true;
+            isApproved = false;
             BookingHandler.confirmProgressFromUser(vendorsBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "aborted");;
             currentStep = 4;
             stepView.go(currentStep, true);
+            stepView.done(true);
 
             billingLayout.setVisibility(View.GONE);
             findViewById(R.id.processing_request_gif).setVisibility(View.VISIBLE);
             userBtnAcceptProgress.setVisibility(View.GONE);
             userBtnDraftPayment.setVisibility(View.GONE);
             userBtnCancelProgress.setVisibility(View.GONE);
+
+            findViewById(R.id.to_payment_button).setVisibility(View.VISIBLE);
+            findViewById(R.id.to_payment_button).startAnimation(
+                    AnimationUtils.loadAnimation(RequestProcessingActivity.this, R.anim.fade_in));
+
+            // DUMMY
+            findViewById(R.id.to_payment_button).setOnClickListener(view1 -> {
+                startActivity(new Intent(RequestProcessingActivity.this, MainActivity.class));
+                finish();
+            });
         });
 
         userBtnAcceptProgress.setOnClickListener(view -> {

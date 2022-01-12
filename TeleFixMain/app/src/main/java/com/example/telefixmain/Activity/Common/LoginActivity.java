@@ -17,6 +17,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.telefixmain.Dialog.CustomProgressDialog;
+import com.example.telefixmain.Activity.Customer.MainActivity;
+import com.example.telefixmain.Activity.Mechanic.SOSRequestActivity;
+
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vehicle;
 import com.example.telefixmain.R;
@@ -138,12 +141,11 @@ public class LoginActivity extends AppCompatActivity {
                                         db,
                                         mUser.getUid(),
                                         userResult, () -> {
-                                            // intent to jump to main activity
-                                            Intent toMainActivity = new Intent(this, MainActivity.class);
-                                            toMainActivity.putExtra("loggedInUser", userResult.get(0));
-
-                                            // if logged in user is a Customer
                                             if (!Boolean.parseBoolean(userResult.get(0).getIsMechanic())) {
+                                                // intent to jump to main activity
+                                                Intent toMainActivity = new Intent(this, MainActivity.class);
+                                                toMainActivity.putExtra("loggedInUser", userResult.get(0));
+
                                                 // init vehicles data containers
                                                 vehiclesIdResult = new ArrayList<>();
                                                 vehiclesResult = new ArrayList<>();
@@ -174,8 +176,7 @@ public class LoginActivity extends AppCompatActivity {
                                                                 }
                                                             }
 
-                                                            // attach vehicle list before going to Main Activity
-                                                            toMainActivity.putExtra("vehiclesHashMapList", vehiclesHashMapList);
+                                                            // jump into main activity
                                                             // show msg and hide progress dialog
                                                             cpd.dismiss();
                                                             Toast.makeText(this,

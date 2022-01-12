@@ -10,17 +10,15 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.telefixmain.Model.Booking.SOSBilling;
-import com.example.telefixmain.Model.Vendor;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.DatabaseHandler;
-import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class BillingAdapter extends RecyclerView.Adapter<BillingViewHolder> {
+public class BillingListAdapter extends RecyclerView.Adapter<BillingItemViewHolder> {
     private Context issueBillingActivity;
     private ArrayList<SOSBilling> currentBilling;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -29,7 +27,7 @@ public class BillingAdapter extends RecyclerView.Adapter<BillingViewHolder> {
     private HashMap<String, String> inspectionPriceContainer = new HashMap<>();
     private HashMap<String, String> repairPriceContainer = new HashMap<>();
 
-    public BillingAdapter(Context issueBillingActivity, ArrayList<SOSBilling> currentBilling) {
+    public BillingListAdapter(Context issueBillingActivity, ArrayList<SOSBilling> currentBilling) {
         this.issueBillingActivity = issueBillingActivity;
         this.currentBilling = currentBilling;
         getPriceList();
@@ -37,16 +35,16 @@ public class BillingAdapter extends RecyclerView.Adapter<BillingViewHolder> {
 
     @NonNull
     @Override
-    public BillingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public BillingItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // inflate layout
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.row_billing, parent, false);
-        return new BillingViewHolder(itemView);
+        return new BillingItemViewHolder(itemView);
     }
 
     @SuppressLint({"DefaultLocale", "SetTextI18n"})
     @Override
-    public void onBindViewHolder(@NonNull BillingViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull BillingItemViewHolder holder, int position) {
         String currentItem = currentBilling.get(position).getItem();
         int currentQuantity = currentBilling.get(position).getQuantity();
         int currentPrice = 0;

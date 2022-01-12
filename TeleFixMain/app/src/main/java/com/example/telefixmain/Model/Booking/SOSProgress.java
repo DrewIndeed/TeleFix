@@ -41,12 +41,12 @@ public class SOSProgress {
         this.startBillingTimestamp = startBillingTimestamp;
     }
 
-    public long getAbortedTime() {
+    public long getAbortTime() {
         return abortTime;
     }
 
-    public void setAbortedTime(long abortedTime) {
-        this.abortTime = abortedTime;
+    public void setAbortTime(long abortTime) {
+        this.abortTime = abortTime;
     }
 
     public long getConfirmBillingTime() {

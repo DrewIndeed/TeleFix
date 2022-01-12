@@ -21,13 +21,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class SOSRequestAdapter extends RecyclerView.Adapter<SOSRequestViewHolder> {
+public class SOSRequestListAdapter extends RecyclerView.Adapter<SOSRequestItemViewHolder>{
     Context activityContext;
     ArrayList<SOSRequest> sosRequests;
     Location currentLocation;
 
     // Firestore & realtime db & auth
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+
     // info id
     String vendorId;
     String mechanicId;
@@ -35,13 +36,12 @@ public class SOSRequestAdapter extends RecyclerView.Adapter<SOSRequestViewHolder
     // Click
     OnRequestListener mOnRequestListener;
 
-    // constructor
-    public SOSRequestAdapter(Context activityContext,
-                             OnRequestListener mOnRequestListener,
-                             Location currentLocation,
-                             ArrayList<SOSRequest> sosRequests,
-                             String vendorId,
-                             String mechanicId) {
+    public SOSRequestListAdapter(Context activityContext,
+                                 OnRequestListener mOnRequestListener,
+                                 Location currentLocation,
+                                 ArrayList<SOSRequest> sosRequests,
+                                 String vendorId,
+                                 String mechanicId) {
         this.activityContext = activityContext;
         this.currentLocation = currentLocation;
         this.sosRequests = sosRequests;
@@ -52,15 +52,15 @@ public class SOSRequestAdapter extends RecyclerView.Adapter<SOSRequestViewHolder
 
     @NonNull
     @Override
-    public SOSRequestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public SOSRequestItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.row_sos_request_item, parent, false);
-        return new SOSRequestViewHolder(itemView, mOnRequestListener);
+        return new SOSRequestItemViewHolder(itemView, mOnRequestListener);
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull SOSRequestViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull SOSRequestItemViewHolder holder, int position) {
         // retrieve request info on database
         // String requestId = sosRequests.get(position).getRequestId();
         String userId = sosRequests.get(position).getUserId();
