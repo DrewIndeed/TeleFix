@@ -2,11 +2,15 @@ package com.example.telefixmain.Fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,26 +25,37 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.telefixmain.Activity.Customer.UserMaintenanceActivity;
+import com.example.telefixmain.Activity.Mechanic.SOSProgressActivity;
+import com.example.telefixmain.Adapter.SOSRequestAdapter;
 import com.example.telefixmain.Adapter.VehicleListAdapter;
 
 import com.example.telefixmain.Dialog.CustomProgressDialog;
-import com.example.telefixmain.Activity.Mechanic.SOSRequestActivity;
+import com.example.telefixmain.Model.Booking.SOSRequest;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vehicle;
+import com.example.telefixmain.Model.Vendor;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Activity.Customer.SosActivity;
+import com.example.telefixmain.Util.BookingHandler;
+import com.example.telefixmain.Util.Comparator.RequestTimeStampComparator;
 import com.example.telefixmain.Util.DatabaseHandler;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements SOSRequestAdapter.OnRequestListener {
     LinearLayout homeContent, jumpToSos, jumpToMaintenance;
     Activity fragmentActivity;
     TextView userName;
@@ -53,6 +68,7 @@ public class HomeFragment extends Fragment {
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseUser mUser = mAuth.getCurrentUser();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseDatabase vendorsBookings = FirebaseDatabase.getInstance();
 
     // custom adapter
     VehicleListAdapter vehicleListAdapter;
@@ -66,10 +82,17 @@ public class HomeFragment extends Fragment {
     // data receivers from constructor call
     User userTracker;
     ArrayList<HashMap<String, String>> vehiclesHashMapList;
+    String vendorId, mechanicId;
 
     // declare vehicles data containers
     ArrayList<String> vehiclesIdResult;
     ArrayList<Vehicle> vehiclesResult;
+
+    ArrayList<SOSRequest> sosRequests = new ArrayList<>();
+    Location currentLocation = new Location("");
+
+    // fragment root layout
+    ViewGroup root;
 
     public HomeFragment(User userTracker, ArrayList<HashMap<String, String>> vehiclesHashMapList) {
         this.userTracker = userTracker;
@@ -78,7 +101,7 @@ public class HomeFragment extends Fragment {
 
     @SuppressLint("ResourceType")
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         // init fragment activity
@@ -87,20 +110,19 @@ public class HomeFragment extends Fragment {
         // init progress dialog
         cpd = new CustomProgressDialog(Objects.requireNonNull(fragmentActivity), R.style.SheetDialog);
 
-        // root
-        ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_home, container, false);
-
         // if there is a logged in user
         if (userTracker != null) {
-            // render user name on UI
-            userName = root.findViewById(R.id.tv_name_home);
-            userName.setText(userTracker.getName());
-
             // if user is a Customer
             if (!Boolean.parseBoolean(userTracker.getIsMechanic())) {
+                // root
+                root = (ViewGroup) inflater.inflate(R.layout.fragment_home, container, false);
+
+                // render user name on UI
+                userName = root.findViewById(R.id.tv_name_home);
+                userName.setText(userTracker.getName());
+
                 // fade in content
                 homeContent = root.findViewById(R.id.ll_home_fragment);
-                homeContent.setVisibility(View.VISIBLE);
                 homeContent.startAnimation(AnimationUtils.loadAnimation(fragmentActivity, R.anim.fade_in));
 
                 // render to recycler view
@@ -256,9 +278,126 @@ public class HomeFragment extends Fragment {
                                 UserMaintenanceActivity.class)), 500);
                     }, 1500);
                 });
+            } else {
+                // root
+                root = (ViewGroup) inflater.inflate(R.layout.fragment_home_mechanic, container, false);
+
+                // Retrieve mechanic info
+                vendorId = userTracker.getVendorId();
+                mechanicId = userTracker.getId();
+
+                // render user name on UI
+                userName = root.findViewById(R.id.tv_name_mechanic_home);
+                userName.setText(userTracker.getName());
+
+                // fade in content
+                homeContent = root.findViewById(R.id.ll_home_fragment_mechanic);
+                homeContent.startAnimation(AnimationUtils.loadAnimation(fragmentActivity, R.anim.fade_in));
+
+                // Get vendor's location
+                getVendorLocation();
+
+                // recyclerview settings
+                RecyclerView recyclerView = root.findViewById(R.id.rv_sos_pending_requests);
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(fragmentActivity);
+                SOSRequestAdapter sosRequestAdapter = new SOSRequestAdapter(fragmentActivity,
+                        this,
+                        currentLocation,
+                        sosRequests,
+                        vendorId,
+                        mechanicId);
+                RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(
+                        fragmentActivity, DividerItemDecoration.VERTICAL);
+                recyclerView.setLayoutManager(linearLayoutManager);
+                recyclerView.setAdapter(sosRequestAdapter);
+                recyclerView.addItemDecoration(itemDecoration);
+
+                // listen for db reference
+                DatabaseReference openSOSRequest = vendorsBookings.getReference()
+                        .child(vendorId).child("sos").child("request");
+                // set ValueEventListener that delay the onDataChange
+                ValueEventListener openSOSRequestListener = new ValueEventListener() {
+                    @SuppressLint("NotifyDataSetChanged")
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        // Clear current request list & add again
+                        sosRequests.clear();
+                        ArrayList<SOSRequest> tmp = new ArrayList<>();
+                        for (DataSnapshot ds : snapshot.getChildren()) {
+                            SOSRequest request = ds.getValue(SOSRequest.class);
+                            if (Objects.requireNonNull(request).getMechanicId().equals("")) {
+                                tmp.add(request);
+                            }
+                            System.out.println("FETCH REQUEST ___________________");
+                        }
+
+                        // Sort collections by time created
+                        Collections.sort(tmp, new RequestTimeStampComparator());
+                        sosRequests.addAll(tmp);
+                        sosRequestAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                };
+                openSOSRequest.addValueEventListener(openSOSRequestListener);
             }
         }
         // Inflate the layout for this fragment
         return root;
+    }
+
+    /**
+     * Method to get vendor location
+     */
+    private void getVendorLocation() {
+        ArrayList<Vendor> tmp = new ArrayList<>();
+        DatabaseHandler.getSingleVendor(db, userTracker.getVendorId(), tmp, () -> {
+            currentLocation.setLatitude(Double.parseDouble(tmp.get(0).getLat()));
+            currentLocation.setLongitude(Double.parseDouble(tmp.get(0).getLng()));
+        });
+    }
+
+    @Override
+    public void onRequestClick(int position) {
+        String requestId = sosRequests.get(position).getRequestId();
+        String customerId = sosRequests.get(position).getUserId();
+        long startTime = sosRequests.get(position).getTimestampCreated();
+        // Confirm accept SOS request
+        AlertDialog.Builder builder = new AlertDialog.Builder(fragmentActivity);
+        builder.setTitle("Confirm accept SOS request");
+        builder.setMessage("Do you want to confirm helping this user?");
+        builder.setPositiveButton("Confirm", (dialog, id)
+                -> BookingHandler.acceptSOSRequest(
+                vendorsBookings,
+                fragmentActivity,
+                vendorId,
+                sosRequests.get(position).getRequestId(),
+                mechanicId,
+                () -> {
+                    // initialize progress tracking
+                    long startProgressTracking = System.currentTimeMillis() / 1000L;
+                    BookingHandler.createProgressTracking(
+                            vendorsBookings,
+                            fragmentActivity,
+                            vendorId,
+                            requestId,
+                            startProgressTracking, () -> {
+                                // Delay to make sure the progress has been initialized on db
+                                new Handler().postDelayed(() -> {
+                                    Intent i = new Intent(fragmentActivity, SOSProgressActivity.class);
+                                    i.putExtra("vendorId", vendorId);
+                                    i.putExtra("requestId", requestId);
+                                    i.putExtra("customerId", customerId);
+                                    i.putExtra("startTime", startTime);
+                                    startActivity(i);
+                                }, 3000);
+                            });
+                }));
+        builder.setNegativeButton("Cancel", (dialog, id) -> dialog.dismiss());
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 }
