@@ -2,9 +2,10 @@ package com.example.telefixmain.Model;
 
 import androidx.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class Vendor {
+public class Vendor implements Serializable {
     private String id;
     private String name;
     private String rating;
