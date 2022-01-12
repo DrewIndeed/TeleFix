@@ -344,7 +344,6 @@ public class HomeFragment extends Fragment implements SOSRequestListAdapter.OnRe
                         }
                     });
                 });
-
                 // jump to sos activity
                 jumpToSos = root.findViewById(R.id.ll_sos_home);
                 jumpToSos.setOnClickListener(view -> {
@@ -384,62 +383,62 @@ public class HomeFragment extends Fragment implements SOSRequestListAdapter.OnRe
                             jumpToMaintenance.putExtra("vehiclesHashMapList", vehiclesHashMapList);
 
                             startActivity(jumpToMaintenance);
-                            fragmentActivity.finish();
                         }, 500);
 
                     }, 1500);
                 });
-            } else {
-                // root
-                root = (ViewGroup) inflater.inflate(R.layout.fragment_home_mechanic, container, false);
+            }
+        }
+        // MECHANIC POV
+        else {
+            // root
+            root = (ViewGroup) inflater.inflate(R.layout.fragment_home_mechanic, container, false);
 
-                // Retrieve mechanic info
-                vendorId = userTracker.getVendorId();
-                mechanicId = userTracker.getId();
+            // Retrieve mechanic info
+            vendorId = userTracker.getVendorId();
+            mechanicId = userTracker.getId();
 
-                // render user name on UI
-                userName = root.findViewById(R.id.tv_name_mechanic_home);
-                userName.setText(userTracker.getName());
+            // render user name on UI
+            userName = root.findViewById(R.id.tv_name_mechanic_home);
+            userName.setText(userTracker.getName());
 
-                // fade in content
-                homeContent = root.findViewById(R.id.ll_home_fragment_mechanic);
-                homeContent.startAnimation(AnimationUtils.loadAnimation(fragmentActivity, R.anim.fade_in));
+            // fade in content
+            homeContent = root.findViewById(R.id.ll_home_fragment_mechanic);
+            homeContent.startAnimation(AnimationUtils.loadAnimation(fragmentActivity, R.anim.fade_in));
 
-                // Get vendor's location
-                getVendorLocation();
+            // Get vendor's location
+            getVendorLocation();
 
-                // recyclerview settings
-                RecyclerView recyclerView = root.findViewById(R.id.rv_sos_pending_requests);
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(fragmentActivity);
-                SOSRequestListAdapter sosRequestAdapter = new SOSRequestListAdapter(fragmentActivity,
-                        this,
-                        currentLocation,
-                        sosRequests,
-                        vendorId,
-                        mechanicId);
-                RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(
-                        fragmentActivity, DividerItemDecoration.VERTICAL);
-                recyclerView.setLayoutManager(linearLayoutManager);
-                recyclerView.setAdapter(sosRequestAdapter);
-                recyclerView.addItemDecoration(itemDecoration);
+            // recyclerview settings
+            RecyclerView recyclerView = root.findViewById(R.id.rv_sos_pending_requests);
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(fragmentActivity);
+            SOSRequestListAdapter sosRequestAdapter = new SOSRequestListAdapter(fragmentActivity,
+                    this,
+                    currentLocation,
+                    sosRequests,
+                    vendorId,
+                    mechanicId);
+            RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(
+                    fragmentActivity, DividerItemDecoration.VERTICAL);
+            recyclerView.setLayoutManager(linearLayoutManager);
+            recyclerView.setAdapter(sosRequestAdapter);
+            recyclerView.addItemDecoration(itemDecoration);
 
-                // listen for db reference
-                DatabaseReference openSOSRequest = vendorsBookings.getReference()
-                        .child(vendorId).child("sos").child("request");
-                // set ValueEventListener that delay the onDataChange
-                ValueEventListener openSOSRequestListener = new ValueEventListener() {
-                    @SuppressLint("NotifyDataSetChanged")
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        // Clear current request list & add again
-                        sosRequests.clear();
-                        ArrayList<SOSRequest> tmp = new ArrayList<>();
-                        for (DataSnapshot ds : snapshot.getChildren()) {
-                            SOSRequest request = ds.getValue(SOSRequest.class);
-                            if (Objects.requireNonNull(request).getMechanicId().equals("")) {
-                                tmp.add(request);
-                            }
-                            System.out.println("FETCH REQUEST ___________________");
+            // listen for db reference
+            DatabaseReference openSOSRequest = vendorsBookings.getReference()
+                    .child(vendorId).child("sos").child("request");
+            // set ValueEventListener that delay the onDataChange
+            ValueEventListener openSOSRequestListener = new ValueEventListener() {
+                @SuppressLint("NotifyDataSetChanged")
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    // Clear current request list & add again
+                    sosRequests.clear();
+                    ArrayList<SOSRequest> tmp = new ArrayList<>();
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        SOSRequest request = ds.getValue(SOSRequest.class);
+                        if (Objects.requireNonNull(request).getMechanicId().equals("")) {
+                            tmp.add(request);
                         }
 
                         // Sort collections by time created

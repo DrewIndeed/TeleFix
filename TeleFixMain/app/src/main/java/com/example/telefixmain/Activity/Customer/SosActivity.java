@@ -127,6 +127,9 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
     // data receivers from intent
     User userTracker;
     ArrayList<HashMap<String, String>> vehiclesHashMapList;
+    // maintenance intent
+    String isFromMechanic;
+    Vendor currentVendor;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -138,6 +141,10 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // get data from intent sent from Login Activity
         Intent intent = getIntent();
+
+        isFromMechanic = intent.getStringExtra("isFromMaintenance");
+        currentVendor = (Vendor) intent.getSerializableExtra("currentVendor");
+
         userTracker = (User) intent.getSerializableExtra("loggedInUser");
         vehiclesHashMapList = (ArrayList<HashMap<String, String>>)
                 intent.getSerializableExtra("vehiclesHashMapList");
@@ -226,6 +233,20 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                                 vendorsMarkersContainer);
                                     }
                                 }));
+                        if (isFromMechanic != null && isFromMechanic.equals("true")){
+                            // From Maintenance
+//                            Toast.makeText(this, "HELLOOOOOO" + vendorsResultContainer,Toast.LENGTH_SHORT).show();
+//                            System.out.println("HELLOOOOOO" + vendorsResultContainer);
+//                            System.out.println("LATLNGGGGG" + currentVendor.getLat() + "--------" + currentVendor.getLng());
+                            LatLng currentVendorLocation = new LatLng(Double.parseDouble(currentVendor.getLat()), Double.parseDouble(currentVendor.getLng()));
+
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentVendorLocation, 16));
+
+                            View bottomDialogView = openBottomSheetDialog(
+                                    R.layout.bottom_dialog_vendor_details, R.id.sheet_close_icon,
+                                    Double.parseDouble(currentVendor.getLat()), Double.parseDouble(currentVendor.getLng()));
+
+                        }
                     }
                 });
 

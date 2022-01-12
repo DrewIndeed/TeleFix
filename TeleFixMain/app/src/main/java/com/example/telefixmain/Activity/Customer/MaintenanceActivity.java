@@ -16,6 +16,9 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.SearchView;
 
 import com.example.telefixmain.Adapter.VendorListAdapter;
@@ -29,6 +32,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class MaintenanceActivity extends AppCompatActivity {
@@ -38,9 +42,6 @@ public class MaintenanceActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private VendorListAdapter vendorListAdapter;
-
-    private Location currentLocation;
-    private FusedLocationProviderClient fusedLocationClient;
 
     private SearchView searchView;
     private User userTracker;
@@ -56,29 +57,13 @@ public class MaintenanceActivity extends AppCompatActivity {
         Intent intent = getIntent();
         userTracker = (User) intent.getSerializableExtra("loggedInUser");
 
-        // create a get fused location client
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-        // checking for user's permission before asking for current location
-        // if the permission has been granted, start getting current location and display it on the map
-        if (ActivityCompat.checkSelfPermission(MaintenanceActivity.this,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-            // method to get device's current location
-            getCurrentLocation();
-
-        } else { // if the permission has not been granted, prompt for permission
-            ActivityCompat.requestPermissions(MaintenanceActivity.this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 200);
-        }
-
         DatabaseHandler.getAllVendors(db, vendors, () -> {
             // recyclerview settings
             recyclerView = findViewById(R.id.vendor_list_recyclerview);
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
             recyclerView.setLayoutManager(linearLayoutManager);
 
-            vendorListAdapter = new VendorListAdapter(MaintenanceActivity.this, vendors, currentLocation);
+            vendorListAdapter = new VendorListAdapter(MaintenanceActivity.this, vendors);
             recyclerView.setAdapter(vendorListAdapter);
 
             RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
@@ -110,52 +95,24 @@ public class MaintenanceActivity extends AppCompatActivity {
             }
         });
 
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                //Clear query
+                searchView.setQuery("", false);
+                //Collapse the action view
+                searchView.onActionViewCollapsed();
+                return false;
+            }
+        });
         return true;
     }
 
-    /**
-     * Method to handle the permission request (asking from 'else' statement from above)
-     */
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        // if the request is as requested as above
-        if (requestCode == 200) {
-            // if the granted permissions array has more than 0 items, it means that the permission has been granted
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                // method to get device's current location
-                getCurrentLocation();
-            }
+    public void onBackPressed() {
+        if (!searchView.isIconified()) {
+            searchView.setIconified(true);
         }
-    }
-
-    @SuppressLint("MissingPermission")
-    public void getCurrentLocation() {
-        // getting last location using method from fused location client
-        Task<Location> task = fusedLocationClient.getLastLocation();
-
-        // if the task succeeds
-        task.addOnSuccessListener(location -> {
-            // if the last location exists
-            if (location != null) {
-                // Logic to handle location object
-                currentLocation = location;
-            } else {
-                autoRefresh();
-            }
-        });
-    }
-
-    /**
-     * Method to refresh maintenance activity
-     */
-    private void autoRefresh() {
-        Intent backToHome = new Intent(this, MaintenanceActivity.class);
-        backToHome.putExtra("loggedInUser", userTracker);
-        startActivity(backToHome);
-        finish();
+        super.onBackPressed();
     }
 }

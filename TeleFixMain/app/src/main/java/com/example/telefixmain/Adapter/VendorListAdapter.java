@@ -1,6 +1,7 @@
 package com.example.telefixmain.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.Filterable;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.telefixmain.Activity.Customer.SosActivity;
 import com.example.telefixmain.Model.Vendor;
 import com.example.telefixmain.R;
 
@@ -24,22 +26,22 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorItemViewHolder
     private ArrayList<Vendor> vendorsListOld;
     private Location customerLocation;
 
-    public VendorListAdapter(Context activityContext, ArrayList<Vendor> vendorsList, Location customerLocation) {
+    public VendorListAdapter(Context activityContext, ArrayList<Vendor> vendorsList) {
         this.activityContext = activityContext;
-        this.customerLocation = customerLocation;
+//        this.customerLocation = customerLocation;
         this.vendorsList = vendorsList;
         this.vendorsListOld = vendorsList;
 
         // Sort by distance away
-        Collections.sort(vendorsList, new Comparator<Vendor>() {
-            @Override
-            public int compare(Vendor v1, Vendor v2) {
-                return Double.compare((Math.round(getDistanceFromCurrentLocation(Double.parseDouble(v1.getLat()), customerLocation.getLatitude(),
-                        Double.parseDouble(v1.getLng()), customerLocation.getLongitude()) * 100.0) / 100.0),
-                        (Math.round(getDistanceFromCurrentLocation(Double.parseDouble(v2.getLat()), customerLocation.getLatitude(),
-                                Double.parseDouble(v2.getLng()), customerLocation.getLongitude()) * 100.0) / 100.0));
-            }
-        });
+//        Collections.sort(vendorsList, new Comparator<Vendor>() {
+//            @Override
+//            public int compare(Vendor v1, Vendor v2) {
+//                return Double.compare((Math.round(getDistanceFromCurrentLocation(Double.parseDouble(v1.getLat()), customerLocation.getLatitude(),
+//                        Double.parseDouble(v1.getLng()), customerLocation.getLongitude()) * 100.0) / 100.0),
+//                        (Math.round(getDistanceFromCurrentLocation(Double.parseDouble(v2.getLat()), customerLocation.getLatitude(),
+//                                Double.parseDouble(v2.getLng()), customerLocation.getLongitude()) * 100.0) / 100.0));
+//            }
+//        });
     }
 
     @NonNull
@@ -58,13 +60,26 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorItemViewHolder
         if (vendor == null) { return; }
 
         // Calculate distance from VENDOR to USER
-        String distanceAwayValue = Double.toString(
-                Math.round(getDistanceFromCurrentLocation(
-                        Double.parseDouble(vendor.getLat()), customerLocation.getLatitude(),
-                        Double.parseDouble(vendor.getLng()), customerLocation.getLongitude()) * 100.0) / 100.0);
+//        String distanceAwayValue = Double.toString(
+//                Math.round(getDistanceFromCurrentLocation(
+//                        Double.parseDouble(vendor.getLat()), customerLocation.getLatitude(),
+//                        Double.parseDouble(vendor.getLng()), customerLocation.getLongitude()) * 100.0) / 100.0);
 
         holder.vendorName.setText(vendor.getName());
-        holder.vendorDistance.setText(distanceAwayValue + "km away");
+
+        if (vendor.getRating().equals("")) {
+            holder.vendorDistance.setText("--");
+        }
+        else {
+            holder.vendorDistance.setText(vendor.getRating());
+        }
+
+        holder.layout.setOnClickListener(view -> {
+            Intent i = new Intent(activityContext, SosActivity.class);
+            i.putExtra("currentVendor", vendorsList.get(position));
+            i.putExtra("isFromMaintenance", "true");
+            activityContext.startActivity(i);
+        });
     }
 
     @Override
@@ -73,36 +88,6 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorItemViewHolder
             return vendorsList.size();
         }
         return 0;
-    }
-
-    /**
-     * Method to calculate distance between 2 locations based on latitude and longitude
-     */
-    public static double getDistanceFromCurrentLocation(double lat1, double lat2,
-                                                        double lng1, double lng2) {
-        // The math module contains a function
-        // named toRadians which converts from
-        // degrees to radians.
-        lng1 = Math.toRadians(lng1);
-        lng2 = Math.toRadians(lng2);
-        lat1 = Math.toRadians(lat1);
-        lat2 = Math.toRadians(lat2);
-
-        // Haversine formula
-        double dLong = lng2 - lng1;
-        double dLat = lat2 - lat1;
-        double a = Math.pow(Math.sin(dLat / 2), 2)
-                + Math.cos(lat1) * Math.cos(lat2)
-                * Math.pow(Math.sin(dLong / 2), 2);
-
-        double c = 2 * Math.asin(Math.sqrt(a));
-
-        // Radius of earth in kilometers. Use 3956
-        // for miles
-        double r = 6371;
-
-        // calculate the result
-        return (c * r);
     }
 
     @Override
