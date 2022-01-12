@@ -388,74 +388,75 @@ public class HomeFragment extends Fragment implements SOSRequestListAdapter.OnRe
                     }, 1500);
                 });
             }
-        }
-        // MECHANIC POV
-        else {
-            // root
-            root = (ViewGroup) inflater.inflate(R.layout.fragment_home_mechanic, container, false);
 
-            // Retrieve mechanic info
-            vendorId = userTracker.getVendorId();
-            mechanicId = userTracker.getId();
+            // MECHANIC POV
+            else {
+                // root
+                root = (ViewGroup) inflater.inflate(R.layout.fragment_home_mechanic, container, false);
 
-            // render user name on UI
-            userName = root.findViewById(R.id.tv_name_mechanic_home);
-            userName.setText(userTracker.getName());
+                // Retrieve mechanic info
+                vendorId = userTracker.getVendorId();
+                mechanicId = userTracker.getId();
 
-            // fade in content
-            homeContent = root.findViewById(R.id.ll_home_fragment_mechanic);
-            homeContent.startAnimation(AnimationUtils.loadAnimation(fragmentActivity, R.anim.fade_in));
+                // render user name on UI
+                userName = root.findViewById(R.id.tv_name_mechanic_home);
+                userName.setText(userTracker.getName());
 
-            // Get vendor's location
-            getVendorLocation();
+                // fade in content
+                homeContent = root.findViewById(R.id.ll_home_fragment_mechanic);
+                homeContent.startAnimation(AnimationUtils.loadAnimation(fragmentActivity, R.anim.fade_in));
 
-            // recyclerview settings
-            RecyclerView recyclerView = root.findViewById(R.id.rv_sos_pending_requests);
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(fragmentActivity);
-            SOSRequestListAdapter sosRequestAdapter = new SOSRequestListAdapter(fragmentActivity,
-                    this,
-                    currentLocation,
-                    sosRequests,
-                    vendorId,
-                    mechanicId);
-            RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(
-                    fragmentActivity, DividerItemDecoration.VERTICAL);
-            recyclerView.setLayoutManager(linearLayoutManager);
-            recyclerView.setAdapter(sosRequestAdapter);
-            recyclerView.addItemDecoration(itemDecoration);
+                // Get vendor's location
+                getVendorLocation();
 
-            // listen for db reference
-            DatabaseReference openSOSRequest = vendorsBookings.getReference()
-                    .child(vendorId).child("sos").child("request");
-            // set ValueEventListener that delay the onDataChange
-            ValueEventListener openSOSRequestListener = new ValueEventListener() {
-                @SuppressLint("NotifyDataSetChanged")
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    // Clear current request list & add again
-                    sosRequests.clear();
-                    ArrayList<SOSRequest> tmp = new ArrayList<>();
-                    for (DataSnapshot ds : snapshot.getChildren()) {
-                        SOSRequest request = ds.getValue(SOSRequest.class);
-                        if (Objects.requireNonNull(request).getMechanicId().equals("")) {
-                            tmp.add(request);
+                // recyclerview settings
+                RecyclerView recyclerView = root.findViewById(R.id.rv_sos_pending_requests);
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(fragmentActivity);
+                SOSRequestListAdapter sosRequestAdapter = new SOSRequestListAdapter(fragmentActivity,
+                        this,
+                        currentLocation,
+                        sosRequests,
+                        vendorId,
+                        mechanicId);
+                RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(
+                        fragmentActivity, DividerItemDecoration.VERTICAL);
+                recyclerView.setLayoutManager(linearLayoutManager);
+                recyclerView.setAdapter(sosRequestAdapter);
+                recyclerView.addItemDecoration(itemDecoration);
+
+                // listen for db reference
+                DatabaseReference openSOSRequest = vendorsBookings.getReference()
+                        .child(vendorId).child("sos").child("request");
+                // set ValueEventListener that delay the onDataChange
+                ValueEventListener openSOSRequestListener = new ValueEventListener() {
+                    @SuppressLint("NotifyDataSetChanged")
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        // Clear current request list & add again
+                        sosRequests.clear();
+                        ArrayList<SOSRequest> tmp = new ArrayList<>();
+                        for (DataSnapshot ds : snapshot.getChildren()) {
+                            SOSRequest request = ds.getValue(SOSRequest.class);
+                            if (Objects.requireNonNull(request).getMechanicId().equals("")) {
+                                tmp.add(request);
+                            }
+
+                            // Sort collections by time created
+                            Collections.sort(tmp, new RequestTimeStampComparator());
+                            sosRequests.addAll(tmp);
+                            sosRequestAdapter.notifyDataSetChanged();
                         }
 
-                        // Sort collections by time created
-                        Collections.sort(tmp, new RequestTimeStampComparator());
-                        sosRequests.addAll(tmp);
-                        sosRequestAdapter.notifyDataSetChanged();
                     }
 
-                }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
+                    }
+                };
 
-                }
-            };
-
-            openSOSRequest.addValueEventListener(openSOSRequestListener);
+                openSOSRequest.addValueEventListener(openSOSRequestListener);
+            }
         }
 
         // Inflate the layout for this fragment
