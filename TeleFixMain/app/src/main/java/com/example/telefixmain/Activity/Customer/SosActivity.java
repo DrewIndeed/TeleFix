@@ -6,16 +6,23 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -247,7 +254,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                             bottomDialogView.findViewById(R.id.btn_schedule_maintenance).setVisibility(View.VISIBLE);
 
                             bottomDialogView.findViewById(R.id.btn_schedule_maintenance).setOnClickListener(view -> {
-
+                                openScheduleMaintenanceDialog();
                             });
                         }
                     }
@@ -275,6 +282,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
                 bottomDialogView.findViewById(R.id.btn_schedule_maintenance).setOnClickListener(view -> {
 
+                    openScheduleMaintenanceDialog();
                 });
             }
             else {
@@ -428,6 +436,35 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                 }
             return false;
         });
+    }
+
+    private void openScheduleMaintenanceDialog() {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.center_dialog_maintenance_booking);
+
+        Window window = dialog.getWindow();
+        if (window == null) {
+            return;
+        }
+
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+
+        WindowManager.LayoutParams windowAttributes = window.getAttributes();
+        windowAttributes.gravity = Gravity.CENTER;
+        window.setAttributes(windowAttributes);
+
+        dialog.setCancelable(true);
+
+        EditText datePicker = dialog.findViewById(R.id.edit_date_picker);
+        EditText timePicker = dialog.findViewById(R.id.edit_time_picker);
+        Button scheduleCancel = dialog.findViewById(R.id.btn_cancel_maintenance);
+        Button scheduleConfirm = dialog.findViewById(R.id.btn_confirm_maintenance_user);
+
+        scheduleCancel.setOnClickListener(view -> Toast.makeText(this, "Cancel button clicked", Toast.LENGTH_SHORT).show());
+        scheduleConfirm.setOnClickListener(view -> Toast.makeText(this, "Confirm button clicked", Toast.LENGTH_SHORT).show());
+
+        dialog.show();
     }
 
     /**
