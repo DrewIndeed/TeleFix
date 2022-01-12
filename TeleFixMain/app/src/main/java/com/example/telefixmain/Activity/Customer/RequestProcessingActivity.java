@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -36,25 +37,25 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
     // Realtime Database
     private final FirebaseDatabase vendorsBookings = FirebaseDatabase.getInstance();
-    private DatabaseReference currentProgress;
-    private ValueEventListener sosProgressListener;
-    private DatabaseReference currentBilling;
-    private ValueEventListener sosBillingListener;
-
+    DatabaseReference currentProgress;
+    ValueEventListener sosProgressListener;
+    DatabaseReference currentBilling;
+    ValueEventListener sosBillingListener;
 
     // keep track of currentStep
     private int currentStep = 0;
 
     // xml
-    private LinearLayout billingLayout;
-    private RecyclerView recyclerView;
+    LinearLayout billingLayout;
+    RecyclerView recyclerView;
     private BillingListAdapter billingAdapter;
     private TextView currentPrice;
     private boolean isApproved = false;
 
     // billing
-    private ArrayList<SOSBilling> billings = new ArrayList<>();
+    ArrayList<SOSBilling> billings = new ArrayList<>();
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,10 +103,6 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
         stepView.go(1, true);
 
-
-//        UserBtnCancel.setOnClickListener(view -> {
-//            BookingHandler.updateProgressFromMechanic(vendorsBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "aborted");
-//        });
          currentBilling = vendorsBookings.getReference(vendorId).child("sos").child("billing").child(requestId);
          sosBillingListener = new ValueEventListener() {
             @Override
@@ -132,16 +129,16 @@ public class RequestProcessingActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 SOSProgress sosProgress = snapshot.getValue(SOSProgress.class);
 
-                if (Objects.requireNonNull(sosProgress).getStartFixingTimestamp() != 0 && Objects.requireNonNull(sosProgress).getConfirmBillingTime() == 0 && Objects.requireNonNull(sosProgress).getAbortTime() == 0) {
+                if (Objects.requireNonNull(sosProgress).getStartFixingTimestamp() != 0
+                        && Objects.requireNonNull(sosProgress).getConfirmBillingTime() == 0
+                        && Objects.requireNonNull(sosProgress).getAbortTime() == 0) {
                     currentStep = 2;
                     stepView.go(currentStep, true);
                 }
-                else if (Objects.requireNonNull(sosProgress).getStartFixingTimestamp() != 0 && Objects.requireNonNull(sosProgress).getStartBillingTimestamp() != 0) {
+                else if (Objects.requireNonNull(sosProgress).getStartFixingTimestamp() != 0
+                        && Objects.requireNonNull(sosProgress).getStartBillingTimestamp() != 0) {
                     userBtnProceedPayment.setVisibility(View.VISIBLE);
                 }
-//                else if (Objects.requireNonNull(sosProgress).getAbortTime() !=  0) {
-//                    currentStep =
-//                }
             }
 
             @Override
@@ -151,18 +148,13 @@ public class RequestProcessingActivity extends AppCompatActivity {
         };
 
         currentProgress.addValueEventListener(sosProgressListener);
-
-
-
-
         billingLayout = findViewById(R.id.layout_billing_user);
 
         userBtnDraftPayment.setOnClickListener(view -> {
             // Set billing visible
             billingLayout.setVisibility(View.VISIBLE);
-            BookingHandler.viewSOSBilling(vendorsBookings, this, vendorId, requestId, billings, currentPrice, () -> {
-                billingAdapter.notifyDataSetChanged();
-            });
+            BookingHandler.viewSOSBilling(vendorsBookings, this, vendorId, requestId,
+                    billings, currentPrice, () -> billingAdapter.notifyDataSetChanged());
             findViewById(R.id.processing_request_gif).setVisibility(View.GONE);
             currentStep = 3;
             stepView.go(currentStep, true);
@@ -170,7 +162,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
         userBtnCancelProgress.setOnClickListener(view -> {
             isApproved = false;
-            BookingHandler.confirmProgressFromUser(vendorsBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "aborted");;
+            BookingHandler.confirmProgressFromUser(vendorsBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "aborted");
             currentStep = 4;
             stepView.go(currentStep, true);
             stepView.done(true);
@@ -194,7 +186,8 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
         userBtnAcceptProgress.setOnClickListener(view -> {
             isApproved = true;
-            BookingHandler.confirmProgressFromUser(vendorsBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "confirmed");;
+            BookingHandler.confirmProgressFromUser(vendorsBookings, this,
+                    vendorId, requestId, System.currentTimeMillis()/1000L, "confirmed");
             currentStep = 4;
             stepView.go(currentStep, true);
 
@@ -209,9 +202,8 @@ public class RequestProcessingActivity extends AppCompatActivity {
             stepView.done(true);
             // Set billing visible
             billingLayout.setVisibility(View.VISIBLE);
-            BookingHandler.viewSOSBilling(vendorsBookings, this, vendorId, requestId, billings, currentPrice, () -> {
-                billingAdapter.notifyDataSetChanged();
-            });
+            BookingHandler.viewSOSBilling(vendorsBookings, this, vendorId, requestId,
+                    billings, currentPrice, () -> billingAdapter.notifyDataSetChanged());
             findViewById(R.id.processing_request_gif).setVisibility(View.GONE);
             userBtnProceedPayment.setVisibility(View.GONE);
 
