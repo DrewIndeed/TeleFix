@@ -46,6 +46,7 @@
         <entry key="app/src/main/res/layout/bottom_dialog_mechanic_waiting.xml" value="0.5765625" />
         <entry key="app/src/main/res/layout/bottom_dialog_vehicle_register.xml" value="0.39594594594594595" />
         <entry key="app/src/main/res/layout/bottom_dialog_vendor_details.xml" value="0.2266533512836268" />
+        <entry key="app/src/main/res/layout/center_dialog_maintenance_booking.xml" value="0.27794871794871795" />
         <entry key="app/src/main/res/layout/change_password_dialog.xml" value="0.45" />
         <entry key="app/src/main/res/layout/custom_pricelist_dialog.xml" value="0.45" />
         <entry key="app/src/main/res/layout/custom_progress_dialog.xml" value="0.2554054054054054" />

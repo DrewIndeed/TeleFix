@@ -298,6 +298,7 @@
         </RelativeLayout>
 
         <LinearLayout
+            android:id="@+id/ll_sos_options"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
@@ -325,5 +326,16 @@
                 android:textSize="12sp"
                 tools:ignore="HardcodedText,TextContrastCheck" />
         </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_schedule_maintenance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="30dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/custom_btn_bg_3"
+            android:visibility="gone"
+            android:text="Schedule Maintenance"/>
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>
