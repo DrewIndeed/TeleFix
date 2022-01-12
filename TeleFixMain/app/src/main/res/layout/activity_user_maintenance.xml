@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.Customer.UserMaintenanceActivity">
+    tools:context=".Activity.Customer.MaintenanceActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/vendor_list_recyclerview"

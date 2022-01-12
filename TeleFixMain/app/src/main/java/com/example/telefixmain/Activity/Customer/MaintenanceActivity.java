@@ -18,8 +18,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.widget.SearchView;
 
-import com.example.telefixmain.Activity.Mechanic.SOSRequestActivity;
-import com.example.telefixmain.Adapter.SOSRequestListAdapter;
 import com.example.telefixmain.Adapter.VendorListAdapter;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vendor;
@@ -27,14 +25,13 @@ import com.example.telefixmain.R;
 import com.example.telefixmain.Util.DatabaseHandler;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class UserMaintenanceActivity extends AppCompatActivity {
+public class MaintenanceActivity extends AppCompatActivity {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private ArrayList<Vendor> vendors = new ArrayList<>();
@@ -64,14 +61,14 @@ public class UserMaintenanceActivity extends AppCompatActivity {
 
         // checking for user's permission before asking for current location
         // if the permission has been granted, start getting current location and display it on the map
-        if (ActivityCompat.checkSelfPermission(UserMaintenanceActivity.this,
+        if (ActivityCompat.checkSelfPermission(MaintenanceActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             // method to get device's current location
             getCurrentLocation();
 
         } else { // if the permission has not been granted, prompt for permission
-            ActivityCompat.requestPermissions(UserMaintenanceActivity.this,
+            ActivityCompat.requestPermissions(MaintenanceActivity.this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 200);
         }
 
@@ -81,7 +78,7 @@ public class UserMaintenanceActivity extends AppCompatActivity {
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
             recyclerView.setLayoutManager(linearLayoutManager);
 
-            vendorListAdapter = new VendorListAdapter(UserMaintenanceActivity.this, vendors, currentLocation);
+            vendorListAdapter = new VendorListAdapter(MaintenanceActivity.this, vendors, currentLocation);
             recyclerView.setAdapter(vendorListAdapter);
 
             RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
@@ -146,8 +143,7 @@ public class UserMaintenanceActivity extends AppCompatActivity {
             if (location != null) {
                 // Logic to handle location object
                 currentLocation = location;
-            }
-            else {
+            } else {
                 autoRefresh();
             }
         });
@@ -157,7 +153,7 @@ public class UserMaintenanceActivity extends AppCompatActivity {
      * Method to refresh maintenance activity
      */
     private void autoRefresh() {
-        Intent backToHome = new Intent(this, UserMaintenanceActivity.class);
+        Intent backToHome = new Intent(this, MaintenanceActivity.class);
         backToHome.putExtra("loggedInUser", userTracker);
         startActivity(backToHome);
         finish();

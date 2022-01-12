@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TeleFixMain">
         <activity
-            android:name=".Activity.Customer.UserMaintenanceActivity"
+            android:name=".Activity.Customer.MaintenanceActivity"
             android:theme="@style/Theme.TeleFixMainSearch"
             android:exported="false" />
         <activity
