@@ -447,13 +447,15 @@ public class HomeFragment extends Fragment implements SOSRequestListAdapter.OnRe
                         sosRequestAdapter.notifyDataSetChanged();
                     }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                }
 
-                    }
-                };
-                openSOSRequest.addValueEventListener(openSOSRequestListener);
-            }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            };
+
+            openSOSRequest.addValueEventListener(openSOSRequestListener);
         }
 
         // Inflate the layout for this fragment
