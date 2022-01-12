@@ -480,7 +480,7 @@ public class HomeFragment extends Fragment implements SOSRequestListAdapter.OnRe
         // Confirm accept SOS request
         AlertDialog.Builder builder = new AlertDialog.Builder(fragmentActivity);
         builder.setTitle("Confirm accept SOS request");
-        builder.setMessage("Do you want to confirm helping this user?");
+        builder.setMessage("Are you sure accepting this request?");
         builder.setPositiveButton("Confirm", (dialog, id)
                 -> BookingHandler.acceptSOSRequest(
                 vendorsBookings,
@@ -497,8 +497,15 @@ public class HomeFragment extends Fragment implements SOSRequestListAdapter.OnRe
                             vendorId,
                             requestId,
                             startProgressTracking, () -> {
+                                // progress dialog
+                                cpd.changeText("Starting progress tracking ... ");
+                                cpd.show();
+
                                 // Delay to make sure the progress has been initialized on db
                                 new Handler().postDelayed(() -> {
+                                    // dismiss progress dialog
+                                    cpd.dismiss();
+
                                     Intent i = new Intent(fragmentActivity, SOSProgressActivity.class);
                                     i.putExtra("vendorId", vendorId);
                                     i.putExtra("requestId", requestId);

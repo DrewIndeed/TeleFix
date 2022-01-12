@@ -1,5 +1,6 @@
 package com.example.telefixmain.Util;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,7 +59,7 @@ public class BookingHandler {
         vendorRef.child("sos").child("request").child(requestId).child("mechanicId").setValue(mechanicId)
                 .addOnCompleteListener(task -> {
                     Toast.makeText(context,
-                            "REQUEST ACCEPTED BY MECHANIC ID " + mechanicId, Toast.LENGTH_SHORT).show();
+                            "Request accepted by Mechanic: " + mechanicId, Toast.LENGTH_SHORT).show();
                     callback.run();
                 })
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
@@ -81,12 +82,12 @@ public class BookingHandler {
     }
 
     // method for MECHANIC create SOS progress tracking
-    public static void createProgressTracking (FirebaseDatabase rootNode,
-                                               Context context,
-                                               String vendorId,
-                                               String requestId,
-                                               long timeAccepted,
-                                               Runnable callback) {
+    public static void createProgressTracking(FirebaseDatabase rootNode,
+                                              Context context,
+                                              String vendorId,
+                                              String requestId,
+                                              long timeAccepted,
+                                              Runnable callback) {
         DatabaseReference vendorRef = rootNode.getReference(vendorId);
 
         // initialize sosProgress object
@@ -96,7 +97,7 @@ public class BookingHandler {
         vendorRef.child("sos").child("progress").child(requestId).setValue(sosProgress)
                 .addOnCompleteListener(task -> {
                     Toast.makeText(context,
-                            "Progress tracking has been initialized successfully!", Toast.LENGTH_SHORT).show();
+                            "Initializing progress tracking ... ", Toast.LENGTH_SHORT).show();
                     callback.run();
                 })
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
@@ -104,40 +105,40 @@ public class BookingHandler {
     }
 
     // method for MECHANIC to update progress
-    public static void updateProgressFromMechanic (FirebaseDatabase rootNode,
-                                       Context context,
-                                       String vendorId,
-                                       String requestId,
-                                       long timeStamp,
-                                       String type) {
+    public static void updateProgressFromMechanic(FirebaseDatabase rootNode,
+                                                  Context context,
+                                                  String vendorId,
+                                                  String requestId,
+                                                  long timeStamp,
+                                                  String type) {
         DatabaseReference progressRef = rootNode.getReference(vendorId).child("sos").child("progress").child(requestId);
 
         switch (type) {
             case "arrived":
                 progressRef.child("startFixingTimestamp").setValue(timeStamp)
-                    .addOnCompleteListener(task -> Toast.makeText(context,
-                            "Mechanic has arrived. Start fixing.", Toast.LENGTH_SHORT).show())
-                    .addOnFailureListener(e -> Toast.makeText(context, "" +
-                            e.getMessage(), Toast.LENGTH_SHORT).show());
+                        .addOnCompleteListener(task -> Toast.makeText(context,
+                                "Mechanic has arrived. Start inspecting.", Toast.LENGTH_SHORT).show())
+                        .addOnFailureListener(e -> Toast.makeText(context, "" +
+                                e.getMessage(), Toast.LENGTH_SHORT).show());
                 break;
             case "fixed":
                 progressRef.child("startBillingTimestamp").setValue(timeStamp)
-                    .addOnCompleteListener(task -> Toast.makeText(context,
-                            "Mechanic has finished fixing. Start issue billing.", Toast.LENGTH_SHORT).show())
-                    .addOnFailureListener(e -> Toast.makeText(context, "" +
-                            e.getMessage(), Toast.LENGTH_SHORT).show());
+                        .addOnCompleteListener(task -> Toast.makeText(context,
+                                "Mechanic has finished fixing. Start issuing bill.", Toast.LENGTH_SHORT).show())
+                        .addOnFailureListener(e -> Toast.makeText(context, "" +
+                                e.getMessage(), Toast.LENGTH_SHORT).show());
                 break;
         }
     }
 
     // method for MECHANIC to upload billing
     public static void uploadSOSBilling(FirebaseDatabase rootNode,
-                                         Context context,
-                                         String vendorId,
-                                         String requestId,
-                                         ArrayList<SOSBilling> currentBilling,
-                                         int total,
-                                         Runnable callback) {
+                                        Context context,
+                                        String vendorId,
+                                        String requestId,
+                                        ArrayList<SOSBilling> currentBilling,
+                                        int total,
+                                        Runnable callback) {
         DatabaseReference billingRef = rootNode.getReference(vendorId).child("sos").child("billing").child(requestId);
 
         Map<String, Integer> billingData = new HashMap<>();
@@ -147,13 +148,13 @@ public class BookingHandler {
             billingData.put(bill.getItem(), bill.getQuantity());
         }
 
-        billingRef.child("timestamp").setValue(System.currentTimeMillis()/1000L);
+        billingRef.child("timestamp").setValue(System.currentTimeMillis() / 1000L);
         billingRef.child("paidTime").setValue(0);
         billingRef.child("total").setValue(total);
         billingRef.child("data").setValue(billingData)
                 .addOnCompleteListener(task -> {
                     Toast.makeText(context,
-                            "CURRENT BILL UPLOADED", Toast.LENGTH_SHORT).show();
+                            "Inspection bill uploaded!", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
                         e.getMessage(), Toast.LENGTH_SHORT).show());
@@ -162,6 +163,7 @@ public class BookingHandler {
     }
 
     // method for USER to view current uploaded bill
+    @SuppressLint({"SetTextI18n", "DefaultLocale"})
     public static void viewSOSBilling(FirebaseDatabase rootNode,
                                       Context context,
                                       String vendorId,
@@ -174,11 +176,12 @@ public class BookingHandler {
         billingRef.get()
                 .addOnSuccessListener(dataSnapshot -> {
                     // Get billing data
-                    GenericTypeIndicator<Map<String, Integer>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Integer>>() {};
+                    GenericTypeIndicator<Map<String, Integer>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Integer>>() {
+                    };
                     Map<String, Integer> data = dataSnapshot.child("data").getValue(genericTypeIndicator);
 
                     ArrayList<SOSBilling> tmpBillList = new ArrayList<>();
-                    for (Map.Entry<String,Integer> entry : Objects.requireNonNull(data).entrySet()) {
+                    for (Map.Entry<String, Integer> entry : Objects.requireNonNull(data).entrySet()) {
                         SOSBilling tmpBilling = new SOSBilling(entry.getKey(), entry.getValue());
                         tmpBillList.add(tmpBilling);
                     }
@@ -189,26 +192,26 @@ public class BookingHandler {
 
                     // Get total
                     int currentTotal = dataSnapshot.child("total").getValue(Integer.class);
-                    tvTotal.setText("Total: " + String.format("%,d",currentTotal) + ",000 VND");
+                    tvTotal.setText("Total: " + String.format("%,d", currentTotal) + ",000 VND");
                 })
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
                         e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     // method for USER to confirm/abort progress after view 1st bill
-    public static void confirmProgressFromUser (FirebaseDatabase rootNode,
-                                           Context context,
-                                           String vendorId,
-                                           String requestId,
-                                           long timeStamp,
-                                           String type) {
+    public static void confirmProgressFromUser(FirebaseDatabase rootNode,
+                                               Context context,
+                                               String vendorId,
+                                               String requestId,
+                                               long timeStamp,
+                                               String type) {
         DatabaseReference progressRef = rootNode.getReference(vendorId).child("sos").child("progress").child(requestId);
 
         switch (type) {
             case "aborted":
                 progressRef.child("abortTime").setValue(timeStamp)
                         .addOnCompleteListener(task -> Toast.makeText(context,
-                                "User has refused fixing request", Toast.LENGTH_SHORT).show())
+                                "Customer has refused fixing request.", Toast.LENGTH_SHORT).show())
                         .addOnFailureListener(e -> Toast.makeText(context, "" +
                                 e.getMessage(), Toast.LENGTH_SHORT).show());
                 break;
@@ -224,18 +227,18 @@ public class BookingHandler {
 
     // method for MECHANIC to confirm receiving payment
     public static void confirmSOSBilling(FirebaseDatabase rootNode,
-                                        Context context,
-                                        String vendorId,
-                                        String requestId,
-                                        long timestamp,
-                                        Runnable callback) {
+                                         Context context,
+                                         String vendorId,
+                                         String requestId,
+                                         long timestamp,
+                                         Runnable callback) {
         DatabaseReference vendorRef = rootNode.getReference(vendorId);
 
         // Set value to "mechanicId"
         vendorRef.child("sos").child("billing").child(requestId).child("paidTime").setValue(timestamp)
                 .addOnCompleteListener(task -> {
                     Toast.makeText(context,
-                            "PAID AT: " + timestamp, Toast.LENGTH_SHORT).show();
+                            "Payment transaction completed at: " + timestamp, Toast.LENGTH_SHORT).show();
                     callback.run();
                 })
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
