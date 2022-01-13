@@ -19,12 +19,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -244,7 +242,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                                 vendorsMarkersContainer);
                                     }
                                 }));
-                        if (isFromMechanic != null && isFromMechanic.equals("true")){
+                        if (isFromMechanic != null && isFromMechanic.equals("true")) {
                             // From Maintenance
                             LatLng currentVendorLocation = new LatLng(Double.parseDouble(currentVendor.getLat()), Double.parseDouble(currentVendor.getLng()));
 
@@ -257,9 +255,8 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                             bottomDialogView.findViewById(R.id.ll_sos_options).setVisibility(View.GONE);
                             bottomDialogView.findViewById(R.id.btn_schedule_maintenance).setVisibility(View.VISIBLE);
 
-                            bottomDialogView.findViewById(R.id.btn_schedule_maintenance).setOnClickListener(view -> {
-                                openScheduleMaintenanceDialog();
-                            });
+                            bottomDialogView.findViewById(R.id.btn_schedule_maintenance)
+                                    .setOnClickListener(view -> openScheduleMaintenanceDialog());
                         }
                     }
                 });
@@ -284,11 +281,9 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                 bottomDialogView.findViewById(R.id.ll_sos_options).setVisibility(View.GONE);
                 bottomDialogView.findViewById(R.id.btn_schedule_maintenance).setVisibility(View.VISIBLE);
 
-                bottomDialogView.findViewById(R.id.btn_schedule_maintenance).setOnClickListener(view -> {
-                    openScheduleMaintenanceDialog();
-                });
-            }
-            else {
+                bottomDialogView.findViewById(R.id.btn_schedule_maintenance)
+                        .setOnClickListener(view -> openScheduleMaintenanceDialog());
+            } else {
                 // Traditional SOS Activity
 
                 // get to vendor support
@@ -468,7 +463,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                 }
                             }, 10000);
                         });
-                }
+            }
             return false;
         });
     }
@@ -486,18 +481,12 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
         datePicker.setInputType(InputType.TYPE_NULL);
         timePicker.setInputType(InputType.TYPE_NULL);
 
-        datePicker.setOnClickListener(view -> {
-            showDatePickerDialog(datePicker);
-        });
+        datePicker.setOnClickListener(view -> showDatePickerDialog(datePicker));
 
-        timePicker.setOnClickListener(view -> {
-            showTimePickerDialog(timePicker);
+        timePicker.setOnClickListener(view -> showTimePickerDialog(timePicker));
 
-        });
+        cancelBtn.setOnClickListener(view -> scheduleDialog.dismiss());
 
-        cancelBtn.setOnClickListener(view -> {
-            scheduleDialog.dismiss();
-        });
 
         confirmBtn.setOnClickListener(view -> {
             String dateValue = datePicker.getText().toString();
@@ -505,28 +494,30 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
             if (dateValue.equals("") || timeValue.equals("")) {
                 Toast.makeText(this, "Please input all information", Toast.LENGTH_SHORT).show();
-            }
-            else {
+            } else {
+                @SuppressLint("SimpleDateFormat")
                 DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+                @SuppressLint("SimpleDateFormat")
                 DateFormat timeFormat = new SimpleDateFormat("HH:mm");
                 try {
-                    Date date = (Date)dateFormat.parse(dateValue);
-                    Date time = (Date)timeFormat.parse(timeValue);
+                    Date date = (Date) dateFormat.parse(dateValue);
+                    Date time = (Date) timeFormat.parse(timeValue);
 
                     // Add to maintenance booking
-                    currentRequestId = UUID.randomUUID().toString();
+                    currentRequestId = UUID.randomUUID().toString();<<<<<<< minh_final
                     BookingHandler.sendMaintenanceRequest(vendorsBookings, this, currentVendor.getId(), userTracker.getId(), currentRequestId,
                             date.getTime()/1000L, time.getTime()/1000L,
+
                             () -> {
 
 
-                        Intent backToHome = new Intent(this, MainActivity.class);
-                        backToHome.putExtra("loggedInUser", userTracker);
-                        backToHome.putExtra("vehiclesHashMapList", vehiclesHashMapList);
-                        startActivity(backToHome);
-                        finish();
+                                Intent backToHome = new Intent(this, MainActivity.class);
+                                backToHome.putExtra("loggedInUser", userTracker);
+                                backToHome.putExtra("vehiclesHashMapList", vehiclesHashMapList);
+                                startActivity(backToHome);
+                                finish();
 
-                    });
+                            });
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -537,16 +528,14 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void showDatePickerDialog(EditText date_in) {
         final Calendar calendar = Calendar.getInstance();
-        DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                calendar.set(Calendar.YEAR, year);
-                calendar.set(Calendar.MONTH, month);
-                calendar.set(Calendar.DAY_OF_MONTH, day);
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
-                String data = simpleDateFormat.format(calendar.getTime());
-                date_in.setText(data);
-            }
+        DatePickerDialog.OnDateSetListener dateSetListener = (datePicker, year, month, day) -> {
+            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.MONTH, month);
+            calendar.set(Calendar.DAY_OF_MONTH, day);
+            @SuppressLint("SimpleDateFormat")
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+            String data = simpleDateFormat.format(calendar.getTime());
+            date_in.setText(data);
         };
         DatePickerDialog dialog = new DatePickerDialog(SosActivity.this, dateSetListener,
                 calendar.get(Calendar.YEAR),
@@ -554,7 +543,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                 calendar.get(Calendar.DAY_OF_MONTH));
 
 
-        dialog.getDatePicker().setMinDate(System.currentTimeMillis()+24*60*60*1000);
+        dialog.getDatePicker().setMinDate(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
         calendar.add(Calendar.DAY_OF_MONTH, 7);
         Date result = calendar.getTime();
         dialog.getDatePicker().setMaxDate(result.getTime());
@@ -563,21 +552,20 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void showTimePickerDialog(EditText time_in) {
         final Calendar calendar = Calendar.getInstance();
-        TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                calendar.set(Calendar.HOUR_OF_DAY, hour);
-                calendar.set(Calendar.MINUTE, minute);
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
-                String data = simpleDateFormat.format(calendar.getTime());
-                time_in.setText(data);
-            }
+        TimePickerDialog.OnTimeSetListener timeSetListener = (timePicker, hour, minute) -> {
+            calendar.set(Calendar.HOUR_OF_DAY, hour);
+            calendar.set(Calendar.MINUTE, minute);
+            @SuppressLint("SimpleDateFormat")
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+            String data = simpleDateFormat.format(calendar.getTime());
+            time_in.setText(data);
         };
-         TimePickerDialog dialog = new TimePickerDialog(SosActivity.this, android.R.style.Theme_Holo_Light_Dialog_MinWidth,
+        TimePickerDialog dialog = new TimePickerDialog(SosActivity.this,
+                android.R.style.Theme_Holo_Light_Dialog_MinWidth,
                 timeSetListener,
                 calendar.get(Calendar.HOUR_OF_DAY),
                 calendar.get(Calendar.MINUTE), false);
-         dialog.show();
+        dialog.show();
     }
 
     /**
