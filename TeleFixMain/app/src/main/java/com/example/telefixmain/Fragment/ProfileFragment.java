@@ -34,6 +34,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class ProfileFragment extends Fragment {
@@ -63,9 +64,11 @@ public class ProfileFragment extends Fragment {
     // global User container
     User userTracker;
     ArrayList<String> vehiclesIdList;
+    ArrayList<HashMap<String, String>> vehiclesHashMapList;
 
-    public ProfileFragment(ArrayList<String> vehiclesIdList) {
+    public ProfileFragment(ArrayList<String> vehiclesIdList, ArrayList<HashMap<String, String>> vehiclesHashMapList) {
         this.vehiclesIdList = vehiclesIdList;
+        this.vehiclesHashMapList = vehiclesHashMapList;
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -239,9 +242,12 @@ public class ProfileFragment extends Fragment {
                                                 cpd.dismiss();
 
                                                 // refresh Main Activity
-                                                startActivity(new Intent(fragmentActivity,
-                                                        MainActivity.class));
-                                                fragmentActivity.finish();
+                                                // intent to jump to main activity
+                                                Intent toMainActivity = new Intent(fragmentActivity, MainActivity.class);
+                                                toMainActivity.putExtra("loggedInUser", userTracker);
+                                                toMainActivity.putExtra("vehiclesHashMapList", vehiclesHashMapList);
+                                                toMainActivity.putExtra("vehiclesIdList", vehiclesIdList);
+                                                startActivity(toMainActivity);
                                             }, 1000);
                                         }, 1000);
                                     }

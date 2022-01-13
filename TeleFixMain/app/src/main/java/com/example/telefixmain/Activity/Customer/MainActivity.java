@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                 case R.id.nav_profile:
-                    fragmentContainer = new ProfileFragment(vehiclesIdResult);
+                    fragmentContainer = new ProfileFragment(vehiclesIdResult, vehiclesHashMapList);
                     break;
             }
 
