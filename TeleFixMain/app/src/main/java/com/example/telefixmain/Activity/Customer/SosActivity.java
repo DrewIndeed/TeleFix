@@ -276,11 +276,11 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
             double clickedMarkerLng = clickedMarkerLocation.longitude;
 
             // From Maintenance activity
-            if (isFromMechanic != null && isFromMechanic.equals("true")) {
-                View bottomDialogView = openBottomSheetDialog(
-                        R.layout.bottom_dialog_vendor_details, R.id.sheet_close_icon,
-                        Double.parseDouble(currentVendor.getLat()), Double.parseDouble(currentVendor.getLng()));
+            View bottomDialogView = openBottomSheetDialog(
+                    R.layout.bottom_dialog_vendor_details, R.id.sheet_close_icon,
+                    clickedMarkerLat, clickedMarkerLng);
 
+            if (isFromMechanic != null && isFromMechanic.equals("true")) {
                 bottomDialogView.findViewById(R.id.ll_sos_options).setVisibility(View.GONE);
                 bottomDialogView.findViewById(R.id.btn_schedule_maintenance).setVisibility(View.VISIBLE);
 
@@ -290,9 +290,6 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
             }
             else {
                 // Traditional SOS Activity
-                View bottomDialogView = openBottomSheetDialog(
-                        R.layout.bottom_dialog_vendor_details, R.id.sheet_close_icon,
-                        clickedMarkerLat, clickedMarkerLng);
 
                 // get to vendor support
                 bottomDialogView.findViewById(R.id.btn_get_there).setOnClickListener(view -> {
@@ -519,7 +516,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                     // Add to maintenance booking
                     currentRequestId = UUID.randomUUID().toString();
                     BookingHandler.sendMaintenanceRequest(vendorsBookings, this, currentVendor.getId(), userTracker.getId(), currentRequestId,
-                            date.getTime(), time.getTime(),
+                            date.getTime()/1000L, time.getTime()/1000L,
                             () -> {
 
 

@@ -3,7 +3,6 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="../../../../../../layout/custom_preview.xml" value="0.45123537061118335" />
         <entry key="app/src/main/res/drawable-anydpi/ic_login_email.xml" value="0.4425925925925926" />
         <entry key="app/src/main/res/drawable-anydpi/ic_login_name.xml" value="0.4425925925925926" />
         <entry key="app/src/main/res/drawable-hdpi/custom_btn_bg_2.xml" value="0.3104166666666667" />
@@ -42,7 +41,7 @@
         <entry key="app/src/main/res/layout/activity_signup.xml" value="0.375" />
         <entry key="app/src/main/res/layout/activity_sos.xml" value="0.2554054054054054" />
         <entry key="app/src/main/res/layout/activity_splash_screen.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/activity_user_maintenance.xml" value="0.14895833333333333" />
+        <entry key="app/src/main/res/layout/activity_user_maintenance.xml" value="0.3260698043624831" />
         <entry key="app/src/main/res/layout/bottom_dialog_change_password.xml" value="0.375" />
         <entry key="app/src/main/res/layout/bottom_dialog_mechanic_waiting.xml" value="0.5765625" />
         <entry key="app/src/main/res/layout/bottom_dialog_vehicle_register.xml" value="0.39594594594594595" />
@@ -53,6 +52,7 @@
         <entry key="app/src/main/res/layout/custom_progress_dialog.xml" value="0.2554054054054054" />
         <entry key="app/src/main/res/layout/fragment_history.xml" value="0.2554054054054054" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.23688846865998162" />
+        <entry key="app/src/main/res/layout/fragment_home_mechanic.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.375" />
         <entry key="app/src/main/res/layout/fragment_vehicle_register.xml" value="0.5" />
         <entry key="app/src/main/res/layout/loading_progress.xml" value="0.5078755725825527" />
@@ -61,7 +61,7 @@
         <entry key="app/src/main/res/layout/row_billing.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/row_price_item.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/row_sos_request_item.xml" value="0.335" />
-        <entry key="app/src/main/res/layout/row_vendor_list_item.xml" value="1.3630215768856244" />
+        <entry key="app/src/main/res/layout/row_vendor_list_item.xml" value="1.825449735325954" />
         <entry key="app/src/main/res/menu/item_menu.xml" value="0.2554054054054054" />
         <entry key="app/src/main/res/menu/search_menu.xml" value="0.27794871794871795" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.371875" />
