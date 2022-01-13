@@ -9,13 +9,14 @@
 
     <TextView
         android:id="@+id/tv_vendor_name"
-        android:layout_width="362dp"
-        android:layout_height="22dp"
+        android:layout_width="327dp"
+        android:layout_height="24dp"
         android:text="Vendor Name"
         android:textColor="@color/bmw_dark_blue"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.326"
+        app:layout_constraintHorizontal_bias="0.19"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,13 +24,26 @@
         android:id="@+id/tv_vendor_distance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="--"
         android:gravity="center"
+        android:text="--"
+        android:textColor="@color/bmw_light_blue"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.954"
+        app:layout_constraintHorizontal_bias="0.91"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/rating_star_icon"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:src="@drawable/star"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.666"
+        app:layout_constraintStart_toEndOf="@+id/tv_vendor_distance"
         app:layout_constraintTop_toTopOf="parent"
-        android:textColor="@color/bmw_light_blue"
-        app:layout_constraintVertical_bias="0.516" />
+        app:layout_constraintVertical_bias="0.514"
+        tools:ignore="ContentDescription,ImageContrastCheck" />
 </androidx.constraintlayout.widget.ConstraintLayout>

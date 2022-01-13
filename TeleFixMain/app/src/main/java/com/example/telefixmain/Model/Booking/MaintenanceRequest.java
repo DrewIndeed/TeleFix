@@ -9,6 +9,8 @@ public class MaintenanceRequest {
     private long time;
     String status;
 
+    public MaintenanceRequest() {}
+
     public MaintenanceRequest(String requestId, String userId, String vendorId, long date, long time) {
         this.requestId = requestId;
         this.userId = userId;

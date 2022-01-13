@@ -268,4 +268,33 @@ public class BookingHandler {
                         e.getMessage(), Toast.LENGTH_SHORT).show());
         callback.run();
     }
+
+    public static void respondMaintenanceRequest (FirebaseDatabase rootNode,
+                                                  Context context,
+                                                  String vendorId,
+                                                  String requestId,
+                                                  String mechanicId,
+                                                  String respond) {
+        // Get the root reference of chosen vendor
+        DatabaseReference bookingRef = rootNode.getReference(vendorId).child("maintenance").child("progress").child(requestId);
+
+        // Respond to maintenance booking
+        switch (respond) {
+            case "accepted":
+                bookingRef.child("mechanicId").setValue(mechanicId);
+                bookingRef.child("status").setValue("accepted")
+                        .addOnCompleteListener(task -> Toast.makeText(context,
+                                "MAINTENANCE BOOKING ACCEPTED!", Toast.LENGTH_SHORT).show())
+                        .addOnFailureListener(e -> Toast.makeText(context, "" +
+                                e.getMessage(), Toast.LENGTH_SHORT).show());
+                break;
+            case "rejected":
+                bookingRef.child("status").setValue("rejected")
+                        .addOnCompleteListener(task -> Toast.makeText(context,
+                                "MAINTENANCE BOOKING REJECTED!", Toast.LENGTH_SHORT).show())
+                        .addOnFailureListener(e -> Toast.makeText(context, "" +
+                                e.getMessage(), Toast.LENGTH_SHORT).show());
+                break;
+        }
+    }
 }

@@ -9,7 +9,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,16 +24,19 @@ import android.widget.Toast;
 
 import com.example.telefixmain.Activity.Customer.MainActivity;
 import com.example.telefixmain.Activity.Customer.MaintenanceActivity;
+import com.example.telefixmain.Adapter.MaintenanceRequestListAdapter;
 import com.example.telefixmain.Adapter.SOSRequestListAdapter;
 import com.example.telefixmain.Adapter.VehicleListAdapter;
 
 import com.example.telefixmain.Dialog.CustomProgressDialog;
+import com.example.telefixmain.Model.Booking.MaintenanceRequest;
 import com.example.telefixmain.Model.Booking.SOSRequest;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vehicle;
 import com.example.telefixmain.Model.Vendor;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Activity.Customer.SosActivity;
+import com.example.telefixmain.Util.Comparator.SOSTimeStampComparator;
 import com.example.telefixmain.Util.DatabaseHandler;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -48,6 +50,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
@@ -86,6 +89,7 @@ public class HomeFragment extends Fragment {
     ArrayList<Vehicle> vehiclesResult;
 
     ArrayList<SOSRequest> sosRequests = new ArrayList<>();
+    ArrayList<MaintenanceRequest> maintenanceRequests = new ArrayList<>();
     Location currentLocation = new Location("");
 
     // fragment root layout
@@ -300,9 +304,10 @@ public class HomeFragment extends Fragment {
                 // Get vendor's location
                 getVendorLocation();
 
+                // SOS request booking
                 // recyclerview settings
-                RecyclerView recyclerView = root.findViewById(R.id.rv_sos_pending_requests);
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(fragmentActivity);
+                RecyclerView sosRecyclerView = root.findViewById(R.id.rv_sos_pending_requests);
+                LinearLayoutManager sosLLM = new LinearLayoutManager(fragmentActivity);
                 SOSRequestListAdapter sosRequestAdapter = new SOSRequestListAdapter(fragmentActivity,
                         currentLocation,
                         sosRequests,
@@ -310,11 +315,9 @@ public class HomeFragment extends Fragment {
                         mechanicId,
                         userTracker,
                         vehiclesHashMapList);
-                RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(
-                        fragmentActivity, DividerItemDecoration.VERTICAL);
-                recyclerView.setLayoutManager(linearLayoutManager);
-                recyclerView.setAdapter(sosRequestAdapter);
-                recyclerView.addItemDecoration(itemDecoration);
+
+                sosRecyclerView.setLayoutManager(sosLLM);
+                sosRecyclerView.setAdapter(sosRequestAdapter);
 
                 // listen for db reference
                 DatabaseReference openSOSRequest = vendorsBookings.getReference()
@@ -334,11 +337,11 @@ public class HomeFragment extends Fragment {
                                 tmp.add(request);
                             }
 
-                            // Sort collections by time created
-//                            Collections.sort(tmp, new RequestTimeStampComparator());
-                            sosRequests.addAll(tmp);
-                            sosRequestAdapter.notifyDataSetChanged();
                         }
+//                         Sort collections by time created
+                        Collections.sort(tmp, new SOSTimeStampComparator());
+                        sosRequests.addAll(tmp);
+                        sosRequestAdapter.notifyDataSetChanged();
 
                     }
 
@@ -347,8 +350,49 @@ public class HomeFragment extends Fragment {
 
                     }
                 };
-
                 openSOSRequest.addValueEventListener(openSOSRequestListener);
+
+                // Maintenance request booking
+                RecyclerView maintenanceRecyclerView = root.findViewById(R.id.rv_maintenance_pending_requests);
+                LinearLayoutManager maintenanceLLM = new LinearLayoutManager(fragmentActivity);
+                MaintenanceRequestListAdapter maintenanceRequestListAdapter = new MaintenanceRequestListAdapter(fragmentActivity,
+                        maintenanceRequests);
+
+                maintenanceRecyclerView.setLayoutManager(maintenanceLLM);
+                maintenanceRecyclerView.setAdapter(maintenanceRequestListAdapter);
+
+                // listen for db reference
+                DatabaseReference openMaintenanceRequests = vendorsBookings.getReference()
+                        .child(vendorId).child("maintenance").child("request");
+                // set ValueEventListener that delay the onDataChange
+                ValueEventListener openMaintenanceRequestsListener = new ValueEventListener() {
+                    @SuppressLint("NotifyDataSetChanged")
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        // Clear current request list & add again
+                        Toast.makeText(fragmentActivity, "DATA CHANGE DETECTED", Toast.LENGTH_SHORT).show();
+                        maintenanceRequests.clear();
+                        ArrayList<MaintenanceRequest> tmp = new ArrayList<>();
+                        for (DataSnapshot ds : snapshot.getChildren()) {
+                            MaintenanceRequest request = ds.getValue(MaintenanceRequest.class);
+                            if (Objects.requireNonNull(request).getStatus().equals("on-going")) {
+                                tmp.add(request);
+                            }
+
+                            // Sort collections by time created
+//                            Collections.sort(tmp, new RequestTimeStampComparator());
+                        }
+                        maintenanceRequests.addAll(tmp);
+                        maintenanceRequestListAdapter.notifyDataSetChanged();
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                };
+                openMaintenanceRequests.addValueEventListener(openMaintenanceRequestsListener);
             }
         }
 
