@@ -519,7 +519,17 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                     // Add to maintenance booking
                     currentRequestId = UUID.randomUUID().toString();
                     BookingHandler.sendMaintenanceRequest(vendorsBookings, this, currentVendor.getId(), userTracker.getId(), currentRequestId,
-                            date.getTime(), time.getTime(), scheduleDialog::dismiss);
+                            date.getTime(), time.getTime(),
+                            () -> {
+
+
+                        Intent backToHome = new Intent(this, MainActivity.class);
+                        backToHome.putExtra("loggedInUser", userTracker);
+                        backToHome.putExtra("vehiclesHashMapList", vehiclesHashMapList);
+                        startActivity(backToHome);
+                        finish();
+
+                    });
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -547,7 +557,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                 calendar.get(Calendar.DAY_OF_MONTH));
 
 
-        dialog.getDatePicker().setMinDate(new Date().getTime() + 1);
+        dialog.getDatePicker().setMinDate(System.currentTimeMillis()+24*60*60*1000);
         calendar.add(Calendar.DAY_OF_MONTH, 7);
         Date result = calendar.getTime();
         dialog.getDatePicker().setMaxDate(result.getTime());
