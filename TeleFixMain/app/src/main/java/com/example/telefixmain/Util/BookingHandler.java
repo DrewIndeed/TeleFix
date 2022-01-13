@@ -95,11 +95,7 @@ public class BookingHandler {
 
         // send init object to database
         vendorRef.child("sos").child("progress").child(requestId).setValue(sosProgress)
-                .addOnCompleteListener(task -> {
-                    Toast.makeText(context,
-                            "Initializing progress tracking ... ", Toast.LENGTH_SHORT).show();
-                    callback.run();
-                })
+                .addOnCompleteListener(task -> callback.run())
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
                         e.getMessage(), Toast.LENGTH_SHORT).show());
     }
@@ -152,10 +148,8 @@ public class BookingHandler {
         billingRef.child("paidTime").setValue(0);
         billingRef.child("total").setValue(total);
         billingRef.child("data").setValue(billingData)
-                .addOnCompleteListener(task -> {
-                    Toast.makeText(context,
-                            "Inspection bill uploaded!", Toast.LENGTH_SHORT).show();
-                })
+                .addOnCompleteListener(task -> Toast.makeText(context,
+                        "Inspection bill uploaded!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
                         e.getMessage(), Toast.LENGTH_SHORT).show());
 

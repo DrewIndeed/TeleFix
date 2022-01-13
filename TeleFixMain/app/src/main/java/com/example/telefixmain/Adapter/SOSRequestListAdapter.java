@@ -99,7 +99,7 @@ public class SOSRequestListAdapter extends RecyclerView.Adapter<SOSRequestItemVi
         // the format of your date
         @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm:ss");
         // give a timezone reference for formatting (see comment at the bottom)
-        sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT-5"));
+        sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT+7"));
         return sdf.format(date);
     }
 
