@@ -6,19 +6,25 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -55,7 +61,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
@@ -243,6 +254,12 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                     R.layout.bottom_dialog_vendor_details, R.id.sheet_close_icon,
                                     Double.parseDouble(currentVendor.getLat()), Double.parseDouble(currentVendor.getLng()));
 
+                            bottomDialogView.findViewById(R.id.ll_sos_options).setVisibility(View.GONE);
+                            bottomDialogView.findViewById(R.id.btn_schedule_maintenance).setVisibility(View.VISIBLE);
+
+                            bottomDialogView.findViewById(R.id.btn_schedule_maintenance).setOnClickListener(view -> {
+                                openScheduleMaintenanceDialog();
+                            });
                         }
                     }
                 });
@@ -253,82 +270,137 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // on markers clicked listener
         mMap.setOnMarkerClickListener(clickedMarker -> {
-
             // get marker location info
             LatLng clickedMarkerLocation = clickedMarker.getPosition();
             double clickedMarkerLat = clickedMarkerLocation.latitude;
             double clickedMarkerLng = clickedMarkerLocation.longitude;
 
-            View bottomDialogView = openBottomSheetDialog(
-                    R.layout.bottom_dialog_vendor_details, R.id.sheet_close_icon,
-                    clickedMarkerLat, clickedMarkerLng);
+            // From Maintenance activity
+            if (isFromMechanic != null && isFromMechanic.equals("true")) {
+                View bottomDialogView = openBottomSheetDialog(
+                        R.layout.bottom_dialog_vendor_details, R.id.sheet_close_icon,
+                        Double.parseDouble(currentVendor.getLat()), Double.parseDouble(currentVendor.getLng()));
 
-            // get to vendor support
-            bottomDialogView.findViewById(R.id.btn_get_there).setOnClickListener(view -> {
-                // create URI with current location and destination vendor latitude and longitude
-                String uri = "http://maps.google.com/maps?saddr=" +
-                        currentLocation.latitude + "," + currentLocation.longitude + "&daddr=" +
-                        clickedMarkerLat + "," + clickedMarkerLng;
+                bottomDialogView.findViewById(R.id.ll_sos_options).setVisibility(View.GONE);
+                bottomDialogView.findViewById(R.id.btn_schedule_maintenance).setVisibility(View.VISIBLE);
 
-                // create intent
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-                intent.setPackage("com.google.android.apps.maps");
+                bottomDialogView.findViewById(R.id.btn_schedule_maintenance).setOnClickListener(view -> {
+                    openScheduleMaintenanceDialog();
+                });
+            }
+            else {
+                // Traditional SOS Activity
+                View bottomDialogView = openBottomSheetDialog(
+                        R.layout.bottom_dialog_vendor_details, R.id.sheet_close_icon,
+                        clickedMarkerLat, clickedMarkerLng);
 
-                // start intent to jump to google map app
-                startActivity(intent);
-            });
+                // get to vendor support
+                bottomDialogView.findViewById(R.id.btn_get_there).setOnClickListener(view -> {
+                    // create URI with current location and destination vendor latitude and longitude
+                    String uri = "http://maps.google.com/maps?saddr=" +
+                            currentLocation.latitude + "," + currentLocation.longitude + "&daddr=" +
+                            clickedMarkerLat + "," + clickedMarkerLng;
+
+                    // create intent
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                    intent.setPackage("com.google.android.apps.maps");
+
+                    // start intent to jump to google map app
+                    startActivity(intent);
+                });
 
 
-            // get on site support
-            bottomDialogView.findViewById(R.id.btn_on_site_support)
-                    .setOnClickListener(view -> {
-                        // dismiss dialog before open a new one to avoid window leak
-                        sosBottomDialog.dismiss();
+                // get on site support
+                bottomDialogView.findViewById(R.id.btn_on_site_support)
+                        .setOnClickListener(view -> {
+                            // dismiss dialog before open a new one to avoid window leak
+                            sosBottomDialog.dismiss();
 
-                        // Create request
-                        currentRequestId = UUID.randomUUID().toString();
-                        long createdTimestamp = System.currentTimeMillis() / 1000L;
+                            // Create request
+                            currentRequestId = UUID.randomUUID().toString();
+                            long createdTimestamp = System.currentTimeMillis() / 1000L;
 
-                        // waiting bottom dialog
-                        View waitDialog = openBottomSheetDialog(
-                                R.layout.bottom_dialog_mechanic_waiting, R.id.mechanic_wait_close_icon,
-                                0.0, 0.0);
-                        TextView dialogMsg = waitDialog.findViewById(R.id.mechanic_wait_msg);
-                        ImageView closeDialogBtn = waitDialog.findViewById(R.id.mechanic_wait_close_icon);
+                            // waiting bottom dialog
+                            View waitDialog = openBottomSheetDialog(
+                                    R.layout.bottom_dialog_mechanic_waiting, R.id.mechanic_wait_close_icon,
+                                    0.0, 0.0);
+                            TextView dialogMsg = waitDialog.findViewById(R.id.mechanic_wait_msg);
+                            ImageView closeDialogBtn = waitDialog.findViewById(R.id.mechanic_wait_close_icon);
 
-                        // init waiting anim
-                        lotteAboveMsg = waitDialog.findViewById(R.id.done_waiting_anim);
-                        waitGif = waitDialog.findViewById(R.id.mechanic_wait_gif);
+                            // init waiting anim
+                            lotteAboveMsg = waitDialog.findViewById(R.id.done_waiting_anim);
+                            waitGif = waitDialog.findViewById(R.id.mechanic_wait_gif);
 
-                        // Create sos booking request on Realtime Database
-                        BookingHandler.sendSOSRequest(vendorsBookings, SosActivity.this,
-                                currentVendorId, mUser.getUid(), currentRequestId, createdTimestamp,
-                                currentLocation.latitude, currentLocation.longitude,
-                                () -> {
-                                    // animate msg
-                                    dialogMsg.startAnimation(AnimationUtils
-                                            .loadAnimation(this, R.anim.fade_in));
+                            // Create sos booking request on Realtime Database
+                            BookingHandler.sendSOSRequest(vendorsBookings, SosActivity.this,
+                                    currentVendorId, mUser.getUid(), currentRequestId, createdTimestamp,
+                                    currentLocation.latitude, currentLocation.longitude,
+                                    () -> {
+                                        // animate msg
+                                        dialogMsg.startAnimation(AnimationUtils
+                                                .loadAnimation(this, R.anim.fade_in));
 
-                                    // Update current requested vendor
-                                    currentVendorRef = vendorsBookings.getReference(currentVendorId)
-                                            .child("sos").child("request").child(currentRequestId);
+                                        // Update current requested vendor
+                                        currentVendorRef = vendorsBookings.getReference(currentVendorId)
+                                                .child("sos").child("request").child(currentRequestId);
 
-                                    // log msg
-                                    System.out.println("Current Vendor DatabaseReference has been updated!");
-                                });
+                                        // log msg
+                                        System.out.println("Current Vendor DatabaseReference has been updated!");
+                                    });
 
-                        // set timeout handle variable
-                        final boolean[] gotResult = new boolean[1];
+                            // set timeout handle variable
+                            final boolean[] gotResult = new boolean[1];
 
-                        // set ValueEventListener that delay the onDataChange
-                        sosRequestListener = new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                // get SOSRequest object and use the values to update the UI
-                                SOSRequest sosRequest = dataSnapshot.getValue(SOSRequest.class);
-                                // animate when found mechanic
-                                // hide dialog dismiss ability
-                                if (!Objects.requireNonNull(sosRequest).getMechanicId().equals("")) {
+                            // set ValueEventListener that delay the onDataChange
+                            sosRequestListener = new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    // get SOSRequest object and use the values to update the UI
+                                    SOSRequest sosRequest = dataSnapshot.getValue(SOSRequest.class);
+                                    // animate when found mechanic
+                                    // hide dialog dismiss ability
+                                    if (!Objects.requireNonNull(sosRequest).getMechanicId().equals("")) {
+                                        gotResult[0] = true;
+                                        closeDialogBtn.setEnabled(false);
+                                        closeDialogBtn.setVisibility(View.INVISIBLE);
+                                        sosBottomDialog.setCancelable(false);
+
+                                        // hide waiting gif
+                                        waitGif.startAnimation(AnimationUtils.loadAnimation(
+                                                SosActivity.this, R.anim.fade_out));
+
+                                        // lottie done anim
+                                        lotteAboveMsg.setVisibility(View.VISIBLE);
+                                        lotteAboveMsg.startAnimation(AnimationUtils.loadAnimation(
+                                                SosActivity.this, R.anim.fade_in));
+
+                                        // change msg
+                                        dialogMsg.startAnimation(AnimationUtils.loadAnimation(
+                                                SosActivity.this, R.anim.fade_out));
+                                        dialogMsg.setText("Your mechanic is on his/her way!");
+                                        dialogMsg.startAnimation(AnimationUtils.loadAnimation(
+                                                SosActivity.this, R.anim.fade_in));
+
+                                        // jump to mechanic arrival tracking activity
+                                        new Handler().postDelayed(() -> {
+                                            // dismiss dialog before open a new one to avoid window leak
+                                            sosBottomDialog.dismiss();
+
+                                            // start intent
+                                            Intent i = new Intent(SosActivity.this,
+                                                    RequestProcessingActivity.class);
+                                            i.putExtra("currentVendorId", currentVendorId);
+                                            i.putExtra("currentRequestId", currentRequestId);
+                                            startActivity(i);
+                                            finish();
+
+                                        }, 4000);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    // Getting Post failed, log a message
                                     gotResult[0] = true;
                                     closeDialogBtn.setEnabled(false);
                                     closeDialogBtn.setVisibility(View.INVISIBLE);
@@ -367,50 +439,148 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
                                     }, 4000);
                                 }
-                            }
+                            };
+                            System.out.println("Done setting up ValueEventListener");
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                                // Getting Post failed, log a message
-                                gotResult[0] = true;
-                                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                            }
-                        };
-                        System.out.println("Done setting up ValueEventListener");
+                            // Add listener to vendor with timeout
+                            currentVendorRef.addValueEventListener(sosRequestListener);
 
-                        // Add listener to vendor with timeout
-                        currentVendorRef.addValueEventListener(sosRequestListener);
+                            // create expired time for sos request
+                            handlerTracker = new Handler();
+                            handlerTracker.postDelayed(() -> {
 
-                        // create expired time for sos request
-                        handlerTracker = new Handler();
-                        handlerTracker.postDelayed(() -> {
+                                System.out.println("<><><><><> IN TESTING DELAY <><><><><>");
 
-                            System.out.println("<><><><><> IN TESTING DELAY <><><><><>");
+                                if (!gotResult[0]) { //  Timeout
 
-                            if (!gotResult[0]) { //  Timeout
+                                    // handle real-time database request cancellation
+                                    if (currentVendorRef != null && currentRequestId != null) {
+                                        currentVendorRef.removeEventListener(sosRequestListener);
+                                        System.out.println("VENDOR ID IN DELAY: " + currentVendorId);
+                                        System.out.println("REQUEST ID IN DELAY: " + currentRequestId);
+                                        BookingHandler.removeSOSRequest(
+                                                vendorsBookings,
+                                                SosActivity.this,
+                                                currentVendorId,
+                                                currentRequestId);
+                                        currentVendorId = null;
+                                    }
 
-                                // handle real-time database request cancellation
-                                if (currentVendorRef != null && currentRequestId != null) {
-                                    currentVendorRef.removeEventListener(sosRequestListener);
-                                    System.out.println("VENDOR ID IN DELAY: " + currentVendorId);
-                                    System.out.println("REQUEST ID IN DELAY: " + currentRequestId);
-                                    BookingHandler.removeSOSRequest(
-                                            vendorsBookings,
-                                            SosActivity.this,
-                                            currentVendorId,
-                                            currentRequestId);
-                                    currentVendorId = null;
+                                    // dismiss waiting dialog
+                                    sosBottomDialog.dismiss();
                                 }
-
-                                // dismiss waiting dialog
-                                sosBottomDialog.dismiss();
-                            }
-                        }, 10000);
-                    });
-
-
+                            }, 10000);
+                        });
+                }
             return false;
         });
+    }
+
+    private void openScheduleMaintenanceDialog() {
+        CustomProgressDialog scheduleDialog = new CustomProgressDialog(this, R.style.SheetDialog, R.layout.center_dialog_maintenance_booking);
+        View root = scheduleDialog.getDialogRootView();
+
+        EditText datePicker = root.findViewById(R.id.edit_date_picker);
+        EditText timePicker = root.findViewById(R.id.edit_time_picker);
+        Button cancelBtn = root.findViewById(R.id.btn_cancel_maintenance);
+        Button confirmBtn = root.findViewById(R.id.btn_confirm_maintenance_user);
+
+
+        datePicker.setInputType(InputType.TYPE_NULL);
+        timePicker.setInputType(InputType.TYPE_NULL);
+
+        datePicker.setOnClickListener(view -> {
+            showDatePickerDialog(datePicker);
+        });
+
+        timePicker.setOnClickListener(view -> {
+            showTimePickerDialog(timePicker);
+
+        });
+
+        cancelBtn.setOnClickListener(view -> {
+            scheduleDialog.dismiss();
+        });
+
+        confirmBtn.setOnClickListener(view -> {
+            String dateValue = datePicker.getText().toString();
+            String timeValue = timePicker.getText().toString();
+
+            if (dateValue.equals("") || timeValue.equals("")) {
+                Toast.makeText(this, "Please input all information", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+                DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+                try {
+                    Date date = (Date)dateFormat.parse(dateValue);
+                    Date time = (Date)timeFormat.parse(timeValue);
+
+                    // Add to maintenance booking
+                    currentRequestId = UUID.randomUUID().toString();
+                    BookingHandler.sendMaintenanceRequest(vendorsBookings, this, currentVendor.getId(), userTracker.getId(), currentRequestId,
+                            date.getTime(), time.getTime(),
+                            () -> {
+
+
+                        Intent backToHome = new Intent(this, MainActivity.class);
+                        backToHome.putExtra("loggedInUser", userTracker);
+                        backToHome.putExtra("vehiclesHashMapList", vehiclesHashMapList);
+                        startActivity(backToHome);
+                        finish();
+
+                    });
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        scheduleDialog.show();
+    }
+
+    private void showDatePickerDialog(EditText date_in) {
+        final Calendar calendar = Calendar.getInstance();
+        DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, month);
+                calendar.set(Calendar.DAY_OF_MONTH, day);
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+                String data = simpleDateFormat.format(calendar.getTime());
+                date_in.setText(data);
+            }
+        };
+        DatePickerDialog dialog = new DatePickerDialog(SosActivity.this, dateSetListener,
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH));
+
+
+        dialog.getDatePicker().setMinDate(System.currentTimeMillis()+24*60*60*1000);
+        calendar.add(Calendar.DAY_OF_MONTH, 7);
+        Date result = calendar.getTime();
+        dialog.getDatePicker().setMaxDate(result.getTime());
+        dialog.show();
+    }
+
+    private void showTimePickerDialog(EditText time_in) {
+        final Calendar calendar = Calendar.getInstance();
+        TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+                calendar.set(Calendar.HOUR_OF_DAY, hour);
+                calendar.set(Calendar.MINUTE, minute);
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+                String data = simpleDateFormat.format(calendar.getTime());
+                time_in.setText(data);
+            }
+        };
+         TimePickerDialog dialog = new TimePickerDialog(SosActivity.this, android.R.style.Theme_Holo_Light_Dialog_MinWidth,
+                timeSetListener,
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE), false);
+         dialog.show();
     }
 
     /**
