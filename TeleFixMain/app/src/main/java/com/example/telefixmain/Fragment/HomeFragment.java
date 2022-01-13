@@ -37,6 +37,7 @@ import com.example.telefixmain.Model.Vehicle;
 import com.example.telefixmain.Model.Vendor;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Activity.Customer.SosActivity;
+import com.example.telefixmain.Util.Comparator.RequestTimeStampComparator;
 import com.example.telefixmain.Util.DatabaseHandler;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -50,6 +51,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
@@ -336,9 +338,9 @@ public class HomeFragment extends Fragment {
                                 tmp.add(request);
                             }
 
-                            // Sort collections by time created
-//                            Collections.sort(tmp, new RequestTimeStampComparator());
                         }
+//                         Sort collections by time created
+                        Collections.sort(tmp, new RequestTimeStampComparator());
                         sosRequests.addAll(tmp);
                         sosRequestAdapter.notifyDataSetChanged();
 
