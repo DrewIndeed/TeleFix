@@ -30,7 +30,8 @@ public class MainActivity extends AppCompatActivity {
 
     // intent data receivers
     User userTracker;
-    ArrayList<HashMap<String, String>> vehiclesHashMapList = new ArrayList<>();
+    ArrayList<HashMap<String, String>> vehiclesHashMapList;
+    ArrayList<String> vehiclesIdResult;
 
     @SuppressLint("NonConstantResourceId")
     @SuppressWarnings("unchecked")
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         // get data from intent sent from Login Activity
         Intent intent = getIntent();
         userTracker = (User) intent.getSerializableExtra("loggedInUser");
+        vehiclesIdResult = (ArrayList<String>) intent.getSerializableExtra("vehiclesIdList");
         vehiclesHashMapList = (ArrayList<HashMap<String, String>>)
                 intent.getSerializableExtra("vehiclesHashMapList");
 
@@ -54,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
         // set default fragment
         getSupportFragmentManager().beginTransaction().replace(R.id.rl_main,
-                new HomeFragment(userTracker, vehiclesHashMapList)).commit();
+                new HomeFragment(userTracker, vehiclesHashMapList, vehiclesIdResult)).commit();
         botNav.setSelectedItemId(R.id.nav_home);
 
         // on nav bar item selected listener
@@ -66,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
             // return fragment instances according to item's id
             switch (item.getItemId()) {
                 case R.id.nav_home:
-                    fragmentContainer = new HomeFragment(userTracker, vehiclesHashMapList);
+                    fragmentContainer = new HomeFragment(userTracker, vehiclesHashMapList, vehiclesIdResult);
                     break;
 
                 case R.id.nav_history:
@@ -74,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                 case R.id.nav_profile:
-                    fragmentContainer = new ProfileFragment();
+                    fragmentContainer = new ProfileFragment(vehiclesIdResult);
                     break;
             }
 

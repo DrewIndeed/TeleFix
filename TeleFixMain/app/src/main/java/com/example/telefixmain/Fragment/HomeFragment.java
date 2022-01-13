@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.telefixmain.Activity.Customer.MainActivity;
 import com.example.telefixmain.Activity.Customer.MaintenanceActivity;
 import com.example.telefixmain.Adapter.SOSRequestListAdapter;
 import com.example.telefixmain.Adapter.VehicleListAdapter;
@@ -49,6 +50,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.UUID;
 
 public class HomeFragment extends Fragment {
     LinearLayout homeContent, jumpToSos, jumpToMaintenance;
@@ -89,9 +91,10 @@ public class HomeFragment extends Fragment {
     // fragment root layout
     ViewGroup root;
 
-    public HomeFragment(User userTracker, ArrayList<HashMap<String, String>> vehiclesHashMapList) {
+    public HomeFragment(User userTracker, ArrayList<HashMap<String, String>> vehiclesHashMapList, ArrayList<String> vehiclesIdResult) {
         this.userTracker = userTracker;
         this.vehiclesHashMapList = vehiclesHashMapList;
+        this.vehiclesIdResult = vehiclesIdResult;
     }
 
     @SuppressLint("ResourceType")
@@ -179,9 +182,13 @@ public class HomeFragment extends Fragment {
                             cpd.changeText("Registering vehicle ...");
                             cpd.show();
 
+                            String vehicleId = UUID.randomUUID().toString();
+
+
                             // create new vehicle on database
                             DatabaseHandler.createVehicle(db,
                                     fragmentActivity, mUser.getUid(),
+                                    vehicleId,
                                     vBrand.getText().toString(),
                                     vModel.getText().toString(),
                                     vYear.getText().toString(),
@@ -191,151 +198,41 @@ public class HomeFragment extends Fragment {
                                         bottomSheetDialog.dismiss();
 
                                         // init vehicles data containers
-                                        vehiclesIdResult = new ArrayList<>();
                                         vehiclesResult = new ArrayList<>();
-                                        vehiclesHashMapList = new ArrayList<>();
 
                                         // progress dialog
                                         cpd.changeText("Refreshing ...");
                                         cpd.show();
 
-                                        // get user's vehicle list
-                                        DatabaseHandler.getUserVehicleList(db, fragmentActivity, mUser.getUid(),
-                                                vehiclesIdResult, vehiclesResult, () -> {
-                                                    // do only if there is any vehicle id, otherwise cut short the process
-                                                    if (vehiclesResult.size() > 0) {
-                                                        // populate here
-                                                        for (Vehicle currentVehicle : vehiclesResult) {
-                                                            // single vehicle hash map
-                                                            HashMap<String, String> tempContainer = new HashMap<>();
+                                        ArrayList<Vehicle> tempVehicleContainer = new ArrayList<>();
+                                        DatabaseHandler.getSingleVehicle(db, vehicleId, tempVehicleContainer, () -> {
+                                            // single vehicle hash map
+                                            HashMap<String, String> tempContainer = new HashMap<>();
 
-                                                            // inject vehicle data
-                                                            tempContainer.put("vehicleTitle",
-                                                                    currentVehicle.getVehicleBrand() + " "
-                                                                            + currentVehicle.getVehicleModel() + " "
-                                                                            + currentVehicle.getVehicleYear());
-                                                            tempContainer.put("vehicleColor",
-                                                                    currentVehicle.getVehicleColor());
-                                                            tempContainer.put("vehicleNumberPlate",
-                                                                    currentVehicle.getVehicleNumberPlate());
+                                            // inject vehicle data
+                                            tempContainer.put("vehicleTitle",
+                                                    tempVehicleContainer.get(0).getVehicleBrand() + " "
+                                                            + tempVehicleContainer.get(0).getVehicleModel() + " "
+                                                            + tempVehicleContainer.get(0).getVehicleYear());
+                                            tempContainer.put("vehicleColor",
+                                                    tempVehicleContainer.get(0).getVehicleColor());
+                                            tempContainer.put("vehicleNumberPlate",
+                                                    tempVehicleContainer.get(0).getVehicleNumberPlate());
 
-                                                            // add to vehicle hash map list
-                                                            vehiclesHashMapList.add(tempContainer);
+                                            // add to vehicle hash map list
+                                            vehiclesIdResult.add(vehicleId);
+                                            vehiclesHashMapList.add(tempContainer);
 
-                                                            // if the last item has been added
-                                                            if (vehiclesResult.indexOf(currentVehicle) == vehiclesResult.size() - 1) {
-                                                                cpd.dismiss();
-                                                                vehicleListAdapter = new VehicleListAdapter(
-                                                                        fragmentActivity, vehiclesHashMapList);
-                                                                vehicleListRV.setAdapter(vehicleListAdapter);
-                                                            }
-                                                        }
-                                                    }
-                                                });
-                                    });
+                                            System.out.println(vehiclesIdResult);
+                                            System.out.println(vehiclesHashMapList);
 
-                        }
-                    });
-                });
-
-                // open register vehicle dialog
-                openVehicleRegister = root.findViewById(R.id.btn_register_vehicle);
-                openVehicleRegister.setOnClickListener(view -> {
-                    // layout inflater
-                    @SuppressLint("InflateParams")
-                    View viewDialog = getLayoutInflater().inflate(
-                            R.layout.bottom_dialog_vehicle_register, null);
-
-                    // construct bottom dialog
-                    BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(
-                            fragmentActivity, R.style.SheetDialog);
-                    bottomSheetDialog.setContentView(viewDialog);
-                    bottomSheetDialog.show();
-
-                    // expand bottom dialog as default state
-                    BottomSheetBehavior.from((View) viewDialog.getParent())
-                            .setState(BottomSheetBehavior.STATE_EXPANDED);
-                    BottomSheetBehavior.from((View) viewDialog.getParent()).setDraggable(false);
-
-                    // when the close button is clicked
-                    viewDialog.findViewById(R.id.vehicle_register_close_icon)
-                            .setOnClickListener(innerView -> bottomSheetDialog.dismiss());
-
-                    // handle register input and logic
-                    viewDialog.findViewById(R.id.btn_register_vehicle).setOnClickListener(innerView -> {
-                        // xml bindings
-                        EditText vBrand, vModel, vYear, vColor, vNumberPlate;
-                        vBrand = viewDialog.findViewById(R.id.et_brand);
-                        vModel = viewDialog.findViewById(R.id.et_model);
-                        vYear = viewDialog.findViewById(R.id.et_year);
-                        vColor = viewDialog.findViewById(R.id.et_color);
-                        vNumberPlate = viewDialog.findViewById(R.id.et_number_plate);
-
-                        if (vBrand.getText().toString().equals("")
-                                || vModel.getText().toString().equals("")
-                                || vYear.getText().toString().equals("")
-                                || vColor.getText().toString().equals("")
-                                || vNumberPlate.getText().toString().equals("")) {
-                            Toast.makeText(fragmentActivity, "Please fill in all information!",
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            // progress dialog
-                            cpd.changeText("Registering vehicle ...");
-                            cpd.show();
-
-                            // create new vehicle on database
-                            DatabaseHandler.createVehicle(db,
-                                    fragmentActivity, mUser.getUid(),
-                                    vBrand.getText().toString(),
-                                    vModel.getText().toString(),
-                                    vYear.getText().toString(),
-                                    vColor.getText().toString(),
-                                    vNumberPlate.getText().toString(), () -> {
-                                        cpd.dismiss();
-                                        bottomSheetDialog.dismiss();
-
-                                        // init vehicles data containers
-                                        vehiclesIdResult = new ArrayList<>();
-                                        vehiclesResult = new ArrayList<>();
-                                        vehiclesHashMapList = new ArrayList<>();
-
-                                        // progress dialog
-                                        cpd.changeText("Refreshing ...");
-                                        cpd.show();
-
-                                        // get user's vehicle list
-                                        DatabaseHandler.getUserVehicleList(db, fragmentActivity, mUser.getUid(),
-                                                vehiclesIdResult, vehiclesResult, () -> {
-                                                    // do only if there is any vehicle id, otherwise cut short the process
-                                                    if (vehiclesResult.size() > 0) {
-                                                        // populate here
-                                                        for (Vehicle currentVehicle : vehiclesResult) {
-                                                            // single vehicle hash map
-                                                            HashMap<String, String> tempContainer = new HashMap<>();
-
-                                                            // inject vehicle data
-                                                            tempContainer.put("vehicleTitle",
-                                                                    currentVehicle.getVehicleBrand() + " "
-                                                                            + currentVehicle.getVehicleModel() + " "
-                                                                            + currentVehicle.getVehicleYear());
-                                                            tempContainer.put("vehicleColor",
-                                                                    currentVehicle.getVehicleColor());
-                                                            tempContainer.put("vehicleNumberPlate",
-                                                                    currentVehicle.getVehicleNumberPlate());
-
-                                                            // add to vehicle hash map list
-                                                            vehiclesHashMapList.add(tempContainer);
-                                                        }
-                                                    }
-
-                                                    // progress dialog
-                                                    new Handler().postDelayed(() -> {
-                                                        cpd.dismiss();
-                                                        vehicleListAdapter = new VehicleListAdapter(
-                                                                fragmentActivity, vehiclesHashMapList);
-                                                        vehicleListRV.setAdapter(vehicleListAdapter);
-                                                    }, 750);
-                                                });
+                                            // intent to jump to main activity
+                                            Intent toMainActivity = new Intent(fragmentActivity, MainActivity.class);
+                                            toMainActivity.putExtra("loggedInUser", userTracker);
+                                            toMainActivity.putExtra("vehiclesHashMapList", vehiclesHashMapList);
+                                            toMainActivity.putExtra("vehiclesIdList", vehiclesIdResult);
+                                            startActivity(toMainActivity);
+                                        });
                                     });
 
                         }

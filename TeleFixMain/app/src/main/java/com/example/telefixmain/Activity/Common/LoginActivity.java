@@ -177,6 +177,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                                             // attach vehicle list before going to Main Activity
                                                             toMainActivity.putExtra("vehiclesHashMapList", vehiclesHashMapList);
+                                                            toMainActivity.putExtra("vehiclesIdList", vehiclesIdResult);
 
                                                             // jump into main activity
                                                             // show msg and hide progress dialog

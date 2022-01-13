@@ -98,6 +98,7 @@ public class DatabaseHandler {
                                   String email,
                                   String isMechanic,
                                   String vendorId,
+                                  ArrayList<String> vehiclesIdList,
                                   Runnable callback) {
 
         // Updated data container
@@ -110,6 +111,7 @@ public class DatabaseHandler {
         updatedData.put("email", email);
         updatedData.put("isMechanic", isMechanic);
         updatedData.put("vendorId", vendorId);
+        updatedData.put("registerVehicles", vehiclesIdList);
 
         // search from database
         db.collection("users")
@@ -240,6 +242,7 @@ public class DatabaseHandler {
      */
     public static void createVehicle(FirebaseFirestore db, Context context,
                                      String userId,
+                                     String vehicleId,
                                      String vehicleBrand,
                                      String vehicleModel,
                                      String vehicleYear,
@@ -250,7 +253,6 @@ public class DatabaseHandler {
         HashMap<String, Object> data = new HashMap<>();
 
         // inject new vehicle data
-        String vehicleId = UUID.randomUUID().toString();
         data.put("userId", userId);
         data.put("vehicleId", vehicleId);
         data.put("vehicleBrand", vehicleBrand);

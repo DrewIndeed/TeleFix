@@ -62,9 +62,10 @@ public class ProfileFragment extends Fragment {
 
     // global User container
     User userTracker;
+    ArrayList<String> vehiclesIdList;
 
-    public ProfileFragment() {
-        // Required empty public constructor
+    public ProfileFragment(ArrayList<String> vehiclesIdList) {
+        this.vehiclesIdList = vehiclesIdList;
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -214,6 +215,7 @@ public class ProfileFragment extends Fragment {
                     profileEmail.getText().toString().trim(),
                     userTracker.getIsMechanic(),
                     userTracker.getVendorId().trim(),
+                    vehiclesIdList,
                     () -> {
                         // update user email on Firebase Auth
                         mUser.updateEmail(profileEmail.getText().toString().trim())
