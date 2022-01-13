@@ -2,7 +2,6 @@ package com.example.telefixmain.Fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -25,7 +24,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.telefixmain.Activity.Customer.MaintenanceActivity;
-import com.example.telefixmain.Activity.Mechanic.SOSProgressActivity;
 import com.example.telefixmain.Adapter.SOSRequestListAdapter;
 import com.example.telefixmain.Adapter.VehicleListAdapter;
 
@@ -36,8 +34,6 @@ import com.example.telefixmain.Model.Vehicle;
 import com.example.telefixmain.Model.Vendor;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Activity.Customer.SosActivity;
-import com.example.telefixmain.Util.BookingHandler;
-import com.example.telefixmain.Util.Comparator.RequestTimeStampComparator;
 import com.example.telefixmain.Util.DatabaseHandler;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -51,11 +47,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class HomeFragment extends Fragment implements SOSRequestListAdapter.OnRequestListener {
+public class HomeFragment extends Fragment {
     LinearLayout homeContent, jumpToSos, jumpToMaintenance;
     Activity fragmentActivity;
     TextView userName;
@@ -412,11 +407,12 @@ public class HomeFragment extends Fragment implements SOSRequestListAdapter.OnRe
                 RecyclerView recyclerView = root.findViewById(R.id.rv_sos_pending_requests);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(fragmentActivity);
                 SOSRequestListAdapter sosRequestAdapter = new SOSRequestListAdapter(fragmentActivity,
-                        this,
                         currentLocation,
                         sosRequests,
                         vendorId,
-                        mechanicId);
+                        mechanicId,
+                        userTracker,
+                        vehiclesHashMapList);
                 RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(
                         fragmentActivity, DividerItemDecoration.VERTICAL);
                 recyclerView.setLayoutManager(linearLayoutManager);
@@ -432,6 +428,7 @@ public class HomeFragment extends Fragment implements SOSRequestListAdapter.OnRe
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         // Clear current request list & add again
+                        Toast.makeText(fragmentActivity, "DATA CHANGE DETECTED", Toast.LENGTH_SHORT).show();
                         sosRequests.clear();
                         ArrayList<SOSRequest> tmp = new ArrayList<>();
                         for (DataSnapshot ds : snapshot.getChildren()) {
@@ -441,7 +438,7 @@ public class HomeFragment extends Fragment implements SOSRequestListAdapter.OnRe
                             }
 
                             // Sort collections by time created
-                            Collections.sort(tmp, new RequestTimeStampComparator());
+//                            Collections.sort(tmp, new RequestTimeStampComparator());
                             sosRequests.addAll(tmp);
                             sosRequestAdapter.notifyDataSetChanged();
                         }
@@ -473,51 +470,4 @@ public class HomeFragment extends Fragment implements SOSRequestListAdapter.OnRe
         });
     }
 
-    @Override
-    public void onRequestClick(int position) {
-        String requestId = sosRequests.get(position).getRequestId();
-        String customerId = sosRequests.get(position).getUserId();
-        long startTime = sosRequests.get(position).getTimestampCreated();
-        // Confirm accept SOS request
-        AlertDialog.Builder builder = new AlertDialog.Builder(fragmentActivity);
-        builder.setTitle("Confirm accept SOS request");
-        builder.setMessage("Are you sure accepting this request?");
-        builder.setPositiveButton("Confirm", (dialog, id)
-                -> BookingHandler.acceptSOSRequest(
-                vendorsBookings,
-                fragmentActivity,
-                vendorId,
-                sosRequests.get(position).getRequestId(),
-                mechanicId,
-                () -> {
-                    // initialize progress tracking
-                    long startProgressTracking = System.currentTimeMillis() / 1000L;
-                    BookingHandler.createProgressTracking(
-                            vendorsBookings,
-                            fragmentActivity,
-                            vendorId,
-                            requestId,
-                            startProgressTracking, () -> {
-                                // progress dialog
-                                cpd.changeText("Starting progress tracking ... ");
-                                cpd.show();
-
-                                // Delay to make sure the progress has been initialized on db
-                                new Handler().postDelayed(() -> {
-                                    // dismiss progress dialog
-                                    cpd.dismiss();
-
-                                    Intent i = new Intent(fragmentActivity, SOSProgressActivity.class);
-                                    i.putExtra("vendorId", vendorId);
-                                    i.putExtra("requestId", requestId);
-                                    i.putExtra("customerId", customerId);
-                                    i.putExtra("startTime", startTime);
-                                    startActivity(i);
-                                }, 3000);
-                            });
-                }));
-        builder.setNegativeButton("Cancel", (dialog, id) -> dialog.dismiss());
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
 }

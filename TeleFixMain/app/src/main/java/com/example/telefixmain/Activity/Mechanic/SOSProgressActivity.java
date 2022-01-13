@@ -18,9 +18,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.telefixmain.Activity.Customer.MainActivity;
 import com.example.telefixmain.Adapter.BillingListAdapter;
 import com.example.telefixmain.Model.Booking.SOSBilling;
 import com.example.telefixmain.Model.Booking.SOSProgress;
+import com.example.telefixmain.Model.User;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.BookingHandler;
 import com.example.telefixmain.Util.DatabaseHandler;
@@ -74,7 +76,12 @@ public class SOSProgressActivity extends AppCompatActivity {
     private boolean isUploaded = false;
     private boolean isAborted = false;
 
+    // intent data receivers
+    User userTracker;
+    ArrayList<HashMap<String, String>> vehiclesHashMapList = new ArrayList<>();
+
     @SuppressLint({"DefaultLocale", "SetTextI18n"})
+    @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +89,10 @@ public class SOSProgressActivity extends AppCompatActivity {
 
         // get intent
         Intent intent = getIntent();
+        // get data from intent sent from Login Activity
+        userTracker = (User) intent.getSerializableExtra("loggedInUser");
+        vehiclesHashMapList = (ArrayList<HashMap<String, String>>)
+                intent.getSerializableExtra("vehiclesHashMapList");
         String requestId = (String) intent.getExtras().get("requestId");
         String vendorId = (String) intent.getExtras().get("vendorId");
         String customerId = (String) intent.getExtras().get("customerId");
@@ -256,7 +267,9 @@ public class SOSProgressActivity extends AppCompatActivity {
                         }
 
                         // Return to home activity
-                        Intent i = new Intent(SOSProgressActivity.this, SOSProgressActivity.class);
+                        Intent i = new Intent(SOSProgressActivity.this, MainActivity.class);
+                        i.putExtra("loggedInUser", userTracker);
+                        i.putExtra("vehiclesHashMapList", vehiclesHashMapList);
                         startActivity(i);
                     });
                     builder.setNegativeButton("Cancel", (dialog, id) -> dialog.dismiss());

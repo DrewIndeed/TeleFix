@@ -194,9 +194,9 @@ public class RequestProcessingActivity extends AppCompatActivity {
             // DUMMY
             userBackToHome.setOnClickListener(view1 -> {
                 Intent backToHome = new Intent(RequestProcessingActivity.this, MainActivity.class);
-                startActivity(backToHome);
                 backToHome.putExtra("loggedInUser", userTracker);
                 backToHome.putExtra("vehiclesHashMapList", vehiclesHashMapList);
+                startActivity(backToHome);
                 finish();
             });
         });
@@ -231,9 +231,9 @@ public class RequestProcessingActivity extends AppCompatActivity {
             // DUMMY
             userBackToHome.setOnClickListener(view1 -> {
                 Intent backToHome = new Intent(RequestProcessingActivity.this, MainActivity.class);
-                startActivity(backToHome);
                 backToHome.putExtra("loggedInUser", userTracker);
                 backToHome.putExtra("vehiclesHashMapList", vehiclesHashMapList);
+                startActivity(backToHome);
                 finish();
             });
         });
