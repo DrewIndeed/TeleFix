@@ -9,7 +9,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,7 +36,7 @@ import com.example.telefixmain.Model.Vehicle;
 import com.example.telefixmain.Model.Vendor;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Activity.Customer.SosActivity;
-import com.example.telefixmain.Util.Comparator.RequestTimeStampComparator;
+import com.example.telefixmain.Util.Comparator.SOSTimeStampComparator;
 import com.example.telefixmain.Util.DatabaseHandler;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -340,7 +339,7 @@ public class HomeFragment extends Fragment {
 
                         }
 //                         Sort collections by time created
-                        Collections.sort(tmp, new RequestTimeStampComparator());
+                        Collections.sort(tmp, new SOSTimeStampComparator());
                         sosRequests.addAll(tmp);
                         sosRequestAdapter.notifyDataSetChanged();
 
