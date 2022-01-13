@@ -123,8 +123,8 @@ public class HomeFragment extends Fragment {
                 homeContent.startAnimation(AnimationUtils.loadAnimation(fragmentActivity, R.anim.fade_in));
 
                 // render to recycler view
+                vehicleListRV = root.findViewById(R.id.rv_vehicle_list);
                 if (vehiclesHashMapList.size() > 0) {
-                    vehicleListRV = root.findViewById(R.id.rv_vehicle_list);
                     vehicleListRV.setVisibility(View.VISIBLE);
                     vehicleListRV.setHasFixedSize(true);
                     vehicleListLayoutManager = new LinearLayoutManager(fragmentActivity);
@@ -221,16 +221,16 @@ public class HomeFragment extends Fragment {
 
                                                             // add to vehicle hash map list
                                                             vehiclesHashMapList.add(tempContainer);
+
+                                                            // if the last item has been added
+                                                            if (vehiclesResult.indexOf(currentVehicle) == vehiclesResult.size() - 1) {
+                                                                cpd.dismiss();
+                                                                vehicleListAdapter = new VehicleListAdapter(
+                                                                        fragmentActivity, vehiclesHashMapList);
+                                                                vehicleListRV.setAdapter(vehicleListAdapter);
+                                                            }
                                                         }
                                                     }
-
-                                                    // progress dialog
-                                                    new Handler().postDelayed(() -> {
-                                                        cpd.dismiss();
-                                                        vehicleListAdapter = new VehicleListAdapter(
-                                                                fragmentActivity, vehiclesHashMapList);
-                                                        vehicleListRV.setAdapter(vehicleListAdapter);
-                                                    }, 750);
                                                 });
                                     });
 
