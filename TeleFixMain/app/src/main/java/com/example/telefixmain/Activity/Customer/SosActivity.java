@@ -360,6 +360,8 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                                 RequestProcessingActivity.class);
                                         i.putExtra("currentVendorId", currentVendorId);
                                         i.putExtra("currentRequestId", currentRequestId);
+                                        i.putExtra("loggedInUser", userTracker);
+                                        i.putExtra("vehiclesHashMapList", vehiclesHashMapList);
                                         startActivity(i);
                                         finish();
 

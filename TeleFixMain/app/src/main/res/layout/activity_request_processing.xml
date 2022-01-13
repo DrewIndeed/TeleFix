@@ -154,7 +154,7 @@
         app:sv_stepPadding="5dp" />
 
     <Button
-        android:id="@+id/to_payment_button"
+        android:id="@+id/btn_back_home_at_request_process"
         android:layout_width="300dp"
         android:layout_height="75dp"
         android:background="@drawable/custom_btn_bg_7"

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.telefixmain.Adapter.SOSRequestListAdapter;
 import com.example.telefixmain.Model.Booking.SOSBilling;
 import com.example.telefixmain.Model.Booking.SOSRequest;
 import com.example.telefixmain.Model.Booking.SOSProgress;
@@ -59,7 +60,7 @@ public class BookingHandler {
         vendorRef.child("sos").child("request").child(requestId).child("mechanicId").setValue(mechanicId)
                 .addOnCompleteListener(task -> {
                     Toast.makeText(context,
-                            "Request accepted by Mechanic: " + mechanicId, Toast.LENGTH_SHORT).show();
+                            "Request accepted by selected vendor", Toast.LENGTH_SHORT).show();
                     callback.run();
                 })
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
@@ -120,7 +121,7 @@ public class BookingHandler {
             case "fixed":
                 progressRef.child("startBillingTimestamp").setValue(timeStamp)
                         .addOnCompleteListener(task -> Toast.makeText(context,
-                                "Mechanic has finished fixing. Start issuing bill.", Toast.LENGTH_SHORT).show())
+                                "Finished fixing. Start issuing bill.", Toast.LENGTH_SHORT).show())
                         .addOnFailureListener(e -> Toast.makeText(context, "" +
                                 e.getMessage(), Toast.LENGTH_SHORT).show());
                 break;
@@ -232,7 +233,8 @@ public class BookingHandler {
         vendorRef.child("sos").child("billing").child(requestId).child("paidTime").setValue(timestamp)
                 .addOnCompleteListener(task -> {
                     Toast.makeText(context,
-                            "Payment transaction completed at: " + timestamp, Toast.LENGTH_SHORT).show();
+                            "Transaction completed at: " +
+                                    SOSRequestListAdapter.timestampConverter(timestamp), Toast.LENGTH_SHORT).show();
                     callback.run();
                 })
                 .addOnFailureListener(e -> Toast.makeText(context, "" +

@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.example.telefixmain.Adapter.BillingListAdapter;
 import com.example.telefixmain.Model.Booking.SOSBilling;
 import com.example.telefixmain.Model.Booking.SOSProgress;
+import com.example.telefixmain.Model.User;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.BookingHandler;
 import com.google.firebase.database.DataSnapshot;
@@ -28,6 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.shuhart.stepview.StepView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -55,11 +57,22 @@ public class RequestProcessingActivity extends AppCompatActivity {
     // billing
     ArrayList<SOSBilling> billings = new ArrayList<>();
 
+    // intent data receivers
+    User userTracker;
+    ArrayList<HashMap<String, String>> vehiclesHashMapList = new ArrayList<>();
+
     @SuppressLint("NotifyDataSetChanged")
+    @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_processing);
+
+        // get data from intent sent from Login Activity
+        Intent intent = getIntent();
+        userTracker = (User) intent.getSerializableExtra("loggedInUser");
+        vehiclesHashMapList = (ArrayList<HashMap<String, String>>)
+                intent.getSerializableExtra("vehiclesHashMapList");
 
         // Check total price:
         currentPrice = findViewById(R.id.tv_current_total_user);
@@ -69,12 +82,11 @@ public class RequestProcessingActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        billingAdapter = new BillingListAdapter(RequestProcessingActivity.this,billings);
+        billingAdapter = new BillingListAdapter(RequestProcessingActivity.this, billings);
         recyclerView.setAdapter(billingAdapter);
 
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(itemDecoration);
-
 
         // binding with xml
         stepView = findViewById(R.id.step_view_on_way);
@@ -87,10 +99,12 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
         System.out.println("RequestID: " + requestId + " ------------------ " + "VendorID: " + vendorId);
 
+        // xml bindings
         Button userBtnDraftPayment = findViewById(R.id.btn_draft_billing);
         Button userBtnProceedPayment = findViewById(R.id.btn_accept_billing);
         Button userBtnCancelProgress = findViewById(R.id.btn_cancel_progress);
         Button userBtnAcceptProgress = findViewById(R.id.btn_confirm_progress);
+        Button userBackToHome = findViewById(R.id.btn_back_home_at_request_process);
 
         // add steps for step view
         List<String> steps = new ArrayList<>();
@@ -103,8 +117,8 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
         stepView.go(1, true);
 
-         currentBilling = vendorsBookings.getReference(vendorId).child("sos").child("billing").child(requestId);
-         sosBillingListener = new ValueEventListener() {
+        currentBilling = vendorsBookings.getReference(vendorId).child("sos").child("billing").child(requestId);
+        sosBillingListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -134,8 +148,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
                         && Objects.requireNonNull(sosProgress).getAbortTime() == 0) {
                     currentStep = 2;
                     stepView.go(currentStep, true);
-                }
-                else if (Objects.requireNonNull(sosProgress).getStartFixingTimestamp() != 0
+                } else if (Objects.requireNonNull(sosProgress).getStartFixingTimestamp() != 0
                         && Objects.requireNonNull(sosProgress).getStartBillingTimestamp() != 0) {
                     userBtnProceedPayment.setVisibility(View.VISIBLE);
                 }
@@ -162,7 +175,8 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
         userBtnCancelProgress.setOnClickListener(view -> {
             isApproved = false;
-            BookingHandler.confirmProgressFromUser(vendorsBookings, this, vendorId, requestId, System.currentTimeMillis()/1000L, "aborted");
+            BookingHandler.confirmProgressFromUser(vendorsBookings, this, vendorId, requestId,
+                    System.currentTimeMillis() / 1000L, "aborted");
             currentStep = 4;
             stepView.go(currentStep, true);
             stepView.done(true);
@@ -173,13 +187,16 @@ public class RequestProcessingActivity extends AppCompatActivity {
             userBtnDraftPayment.setVisibility(View.GONE);
             userBtnCancelProgress.setVisibility(View.GONE);
 
-            findViewById(R.id.to_payment_button).setVisibility(View.VISIBLE);
-            findViewById(R.id.to_payment_button).startAnimation(
+            userBackToHome.setVisibility(View.VISIBLE);
+            userBackToHome.startAnimation(
                     AnimationUtils.loadAnimation(RequestProcessingActivity.this, R.anim.fade_in));
 
             // DUMMY
-            findViewById(R.id.to_payment_button).setOnClickListener(view1 -> {
-                startActivity(new Intent(RequestProcessingActivity.this, MainActivity.class));
+            userBackToHome.setOnClickListener(view1 -> {
+                Intent backToHome = new Intent(RequestProcessingActivity.this, MainActivity.class);
+                startActivity(backToHome);
+                backToHome.putExtra("loggedInUser", userTracker);
+                backToHome.putExtra("vehiclesHashMapList", vehiclesHashMapList);
                 finish();
             });
         });
@@ -187,7 +204,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
         userBtnAcceptProgress.setOnClickListener(view -> {
             isApproved = true;
             BookingHandler.confirmProgressFromUser(vendorsBookings, this,
-                    vendorId, requestId, System.currentTimeMillis()/1000L, "confirmed");
+                    vendorId, requestId, System.currentTimeMillis() / 1000L, "confirmed");
             currentStep = 4;
             stepView.go(currentStep, true);
 
@@ -207,13 +224,16 @@ public class RequestProcessingActivity extends AppCompatActivity {
             findViewById(R.id.processing_request_gif).setVisibility(View.GONE);
             userBtnProceedPayment.setVisibility(View.GONE);
 
-            findViewById(R.id.to_payment_button).setVisibility(View.VISIBLE);
-            findViewById(R.id.to_payment_button).startAnimation(
+            userBackToHome.setVisibility(View.VISIBLE);
+            userBackToHome.startAnimation(
                     AnimationUtils.loadAnimation(RequestProcessingActivity.this, R.anim.fade_in));
 
             // DUMMY
-            findViewById(R.id.to_payment_button).setOnClickListener(view1 -> {
-                startActivity(new Intent(RequestProcessingActivity.this, MainActivity.class));
+            userBackToHome.setOnClickListener(view1 -> {
+                Intent backToHome = new Intent(RequestProcessingActivity.this, MainActivity.class);
+                startActivity(backToHome);
+                backToHome.putExtra("loggedInUser", userTracker);
+                backToHome.putExtra("vehiclesHashMapList", vehiclesHashMapList);
                 finish();
             });
         });

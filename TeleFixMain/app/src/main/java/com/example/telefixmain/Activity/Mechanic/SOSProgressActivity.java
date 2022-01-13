@@ -176,8 +176,8 @@ public class SOSProgressActivity extends AppCompatActivity {
         issueBillingButton.setOnClickListener(view -> {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(SOSProgressActivity.this);
-            builder.setTitle("Confirm upload billing");
-            builder.setMessage("Do you want to upload this bill to user ?");
+            builder.setTitle("Finalizing billing");
+            builder.setMessage("Do you want to upload this bill to user?");
             builder.setPositiveButton("Confirm", (dialog, id) ->
                     BookingHandler.uploadSOSBilling(vendorBookings,
                             SOSProgressActivity.this, vendorId, requestId, billings,
@@ -241,8 +241,8 @@ public class SOSProgressActivity extends AppCompatActivity {
                 BookingHandler.confirmSOSBilling(vendorBookings, SOSProgressActivity.this, vendorId, requestId, System.currentTimeMillis() / 1000L, () -> {
                     // Add to events database and exit
                     AlertDialog.Builder builder = new AlertDialog.Builder(SOSProgressActivity.this);
-                    builder.setTitle("Confirm end SOS progress");
-                    builder.setMessage("Please make sure the user has paid for the request properly.");
+                    builder.setTitle("Closing SOS request");
+                    builder.setMessage("Please make sure the user has paid properly.");
                     builder.setPositiveButton("Confirm", (dialog, id) -> {
                         // if aborted
                         if (isAborted) {
