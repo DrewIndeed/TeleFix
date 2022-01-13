@@ -399,7 +399,42 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                 public void onCancelled(@NonNull DatabaseError databaseError) {
                                     // Getting Post failed, log a message
                                     gotResult[0] = true;
-                                    Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                                    closeDialogBtn.setEnabled(false);
+                                    closeDialogBtn.setVisibility(View.INVISIBLE);
+                                    sosBottomDialog.setCancelable(false);
+
+                                    // hide waiting gif
+                                    waitGif.startAnimation(AnimationUtils.loadAnimation(
+                                            SosActivity.this, R.anim.fade_out));
+
+                                    // lottie done anim
+                                    lotteAboveMsg.setVisibility(View.VISIBLE);
+                                    lotteAboveMsg.startAnimation(AnimationUtils.loadAnimation(
+                                            SosActivity.this, R.anim.fade_in));
+
+                                    // change msg
+                                    dialogMsg.startAnimation(AnimationUtils.loadAnimation(
+                                            SosActivity.this, R.anim.fade_out));
+                                    dialogMsg.setText("Your mechanic is on his/her way!");
+                                    dialogMsg.startAnimation(AnimationUtils.loadAnimation(
+                                            SosActivity.this, R.anim.fade_in));
+
+                                    // jump to mechanic arrival tracking activity
+                                    new Handler().postDelayed(() -> {
+                                        // dismiss dialog before open a new one to avoid window leak
+                                        sosBottomDialog.dismiss();
+
+                                        // start intent
+                                        Intent i = new Intent(SosActivity.this,
+                                                RequestProcessingActivity.class);
+                                        i.putExtra("currentVendorId", currentVendorId);
+                                        i.putExtra("currentRequestId", currentRequestId);
+                                        i.putExtra("loggedInUser", userTracker);
+                                        i.putExtra("vehiclesHashMapList", vehiclesHashMapList);
+                                        startActivity(i);
+                                        finish();
+
+                                    }, 4000);
                                 }
                             };
                             System.out.println("Done setting up ValueEventListener");

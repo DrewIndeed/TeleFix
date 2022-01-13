@@ -1,8 +1,8 @@
 package com.example.telefixmain.Adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,35 +13,27 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.telefixmain.Activity.Customer.SosActivity;
+import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vendor;
 import com.example.telefixmain.R;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashMap;
 
 public class VendorListAdapter extends RecyclerView.Adapter<VendorItemViewHolder> implements Filterable {
-    private Context activityContext;
-    private ArrayList<Vendor> vendorsList;
-    private ArrayList<Vendor> vendorsListOld;
-    private Location customerLocation;
+    Context activityContext;
+    ArrayList<Vendor> vendorsList;
+    ArrayList<Vendor> vendorsListOld;
+    ArrayList<HashMap<String, String>> vehiclesHashMapList;
+    User userTracker;
 
-    public VendorListAdapter(Context activityContext, ArrayList<Vendor> vendorsList) {
+    public VendorListAdapter(Context activityContext, ArrayList<Vendor> vendorsList,
+                             User userTracker, ArrayList<HashMap<String, String>> vehiclesHashMapList) {
         this.activityContext = activityContext;
-//        this.customerLocation = customerLocation;
         this.vendorsList = vendorsList;
         this.vendorsListOld = vendorsList;
-
-        // Sort by distance away
-//        Collections.sort(vendorsList, new Comparator<Vendor>() {
-//            @Override
-//            public int compare(Vendor v1, Vendor v2) {
-//                return Double.compare((Math.round(getDistanceFromCurrentLocation(Double.parseDouble(v1.getLat()), customerLocation.getLatitude(),
-//                        Double.parseDouble(v1.getLng()), customerLocation.getLongitude()) * 100.0) / 100.0),
-//                        (Math.round(getDistanceFromCurrentLocation(Double.parseDouble(v2.getLat()), customerLocation.getLatitude(),
-//                                Double.parseDouble(v2.getLng()), customerLocation.getLongitude()) * 100.0) / 100.0));
-//            }
-//        });
+        this.userTracker = userTracker;
+        this.vehiclesHashMapList = vehiclesHashMapList;
     }
 
     @NonNull
@@ -57,26 +49,23 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorItemViewHolder
     public void onBindViewHolder(@NonNull VendorItemViewHolder holder, int position) {
         Vendor vendor = vendorsList.get(position);
 
-        if (vendor == null) { return; }
-
-        // Calculate distance from VENDOR to USER
-//        String distanceAwayValue = Double.toString(
-//                Math.round(getDistanceFromCurrentLocation(
-//                        Double.parseDouble(vendor.getLat()), customerLocation.getLatitude(),
-//                        Double.parseDouble(vendor.getLng()), customerLocation.getLongitude()) * 100.0) / 100.0);
+        if (vendor == null) {
+            return;
+        }
 
         holder.vendorName.setText(vendor.getName());
 
         if (vendor.getRating().equals("")) {
             holder.vendorDistance.setText("--");
-        }
-        else {
+        } else {
             holder.vendorDistance.setText(vendor.getRating());
         }
 
         holder.layout.setOnClickListener(view -> {
             Intent i = new Intent(activityContext, SosActivity.class);
+            i.putExtra("loggedInUser", userTracker);
             i.putExtra("currentVendor", vendorsList.get(position));
+            i.putExtra("vehiclesHashMapList", vehiclesHashMapList);
             i.putExtra("isFromMaintenance", "true");
             activityContext.startActivity(i);
         });
@@ -98,8 +87,7 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorItemViewHolder
                 String strSearch = charSequence.toString();
                 if (strSearch.isEmpty()) {
                     vendorsList = vendorsListOld;
-                }
-                else {
+                } else {
                     ArrayList<Vendor> list = new ArrayList<>();
                     for (Vendor v : vendorsListOld) {
                         if (v.getName().toLowerCase().contains(strSearch.toLowerCase())) {
@@ -115,7 +103,9 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorItemViewHolder
                 return filterResults;
             }
 
+            @SuppressLint("NotifyDataSetChanged")
             @Override
+            @SuppressWarnings("unchecked")
             protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
                 vendorsList = (ArrayList<Vendor>) filterResults.values;
                 notifyDataSetChanged();

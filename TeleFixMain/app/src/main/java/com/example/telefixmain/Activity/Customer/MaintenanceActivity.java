@@ -1,24 +1,16 @@
 package com.example.telefixmain.Activity.Customer;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.SearchView;
 
 import com.example.telefixmain.Adapter.VendorListAdapter;
@@ -26,9 +18,6 @@ import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vendor;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.DatabaseHandler;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -37,8 +26,9 @@ import java.util.Objects;
 
 public class MaintenanceActivity extends AppCompatActivity {
 
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private ArrayList<Vendor> vendors = new ArrayList<>();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    ArrayList<Vendor> vendors = new ArrayList<>();
+    ArrayList<HashMap<String, String>> vehiclesHashMapList = new ArrayList<>();
 
     private RecyclerView recyclerView;
     private VendorListAdapter vendorListAdapter;
@@ -47,6 +37,7 @@ public class MaintenanceActivity extends AppCompatActivity {
     private User userTracker;
 
     @SuppressLint("MissingPermission")
+    @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +47,8 @@ public class MaintenanceActivity extends AppCompatActivity {
         // get data from intent sent from Login Activity
         Intent intent = getIntent();
         userTracker = (User) intent.getSerializableExtra("loggedInUser");
+        vehiclesHashMapList = (ArrayList<HashMap<String, String>>)
+                intent.getSerializableExtra("vehiclesHashMapList");
 
         DatabaseHandler.getAllVendors(db, vendors, () -> {
             // recyclerview settings
@@ -63,10 +56,12 @@ public class MaintenanceActivity extends AppCompatActivity {
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
             recyclerView.setLayoutManager(linearLayoutManager);
 
-            vendorListAdapter = new VendorListAdapter(MaintenanceActivity.this, vendors);
+            vendorListAdapter = new VendorListAdapter(MaintenanceActivity.this,
+                    vendors, userTracker, vehiclesHashMapList);
             recyclerView.setAdapter(vendorListAdapter);
 
-            RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+            RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(
+                    this, DividerItemDecoration.VERTICAL);
             recyclerView.addItemDecoration(itemDecoration);
         });
 
@@ -95,24 +90,17 @@ public class MaintenanceActivity extends AppCompatActivity {
             }
         });
 
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                //Clear query
-                searchView.setQuery("", false);
-                //Collapse the action view
-                searchView.onActionViewCollapsed();
-                return false;
-            }
+        searchView.setOnCloseListener(() -> {
+            //Clear query
+            searchView.setQuery("", false);
+            //Collapse the action view
+            searchView.onActionViewCollapsed();
+            return false;
         });
         return true;
     }
 
     @Override
     public void onBackPressed() {
-        if (!searchView.isIconified()) {
-            searchView.setIconified(true);
-        }
-        super.onBackPressed();
     }
 }

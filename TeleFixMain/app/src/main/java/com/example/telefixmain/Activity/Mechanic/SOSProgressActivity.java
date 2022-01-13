@@ -18,9 +18,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.telefixmain.Activity.Customer.MainActivity;
 import com.example.telefixmain.Adapter.BillingListAdapter;
 import com.example.telefixmain.Model.Booking.SOSBilling;
 import com.example.telefixmain.Model.Booking.SOSProgress;
+import com.example.telefixmain.Model.User;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.BookingHandler;
 import com.example.telefixmain.Util.DatabaseHandler;
@@ -74,7 +76,12 @@ public class SOSProgressActivity extends AppCompatActivity {
     private boolean isUploaded = false;
     private boolean isAborted = false;
 
+    // intent data receivers
+    User userTracker;
+    ArrayList<HashMap<String, String>> vehiclesHashMapList = new ArrayList<>();
+
     @SuppressLint({"DefaultLocale", "SetTextI18n"})
+    @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +89,10 @@ public class SOSProgressActivity extends AppCompatActivity {
 
         // get intent
         Intent intent = getIntent();
+        // get data from intent sent from Login Activity
+        userTracker = (User) intent.getSerializableExtra("loggedInUser");
+        vehiclesHashMapList = (ArrayList<HashMap<String, String>>)
+                intent.getSerializableExtra("vehiclesHashMapList");
         String requestId = (String) intent.getExtras().get("requestId");
         String vendorId = (String) intent.getExtras().get("vendorId");
         String customerId = (String) intent.getExtras().get("customerId");
@@ -176,8 +187,8 @@ public class SOSProgressActivity extends AppCompatActivity {
         issueBillingButton.setOnClickListener(view -> {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(SOSProgressActivity.this);
-            builder.setTitle("Confirm upload billing");
-            builder.setMessage("Do you want to upload this bill to user ?");
+            builder.setTitle("Finalizing billing");
+            builder.setMessage("Do you want to upload this bill to user?");
             builder.setPositiveButton("Confirm", (dialog, id) ->
                     BookingHandler.uploadSOSBilling(vendorBookings,
                             SOSProgressActivity.this, vendorId, requestId, billings,
@@ -241,8 +252,8 @@ public class SOSProgressActivity extends AppCompatActivity {
                 BookingHandler.confirmSOSBilling(vendorBookings, SOSProgressActivity.this, vendorId, requestId, System.currentTimeMillis() / 1000L, () -> {
                     // Add to events database and exit
                     AlertDialog.Builder builder = new AlertDialog.Builder(SOSProgressActivity.this);
-                    builder.setTitle("Confirm end SOS progress");
-                    builder.setMessage("Please make sure the user has paid for the request properly.");
+                    builder.setTitle("Closing SOS request");
+                    builder.setMessage("Please make sure the user has paid properly.");
                     builder.setPositiveButton("Confirm", (dialog, id) -> {
                         // if aborted
                         if (isAborted) {
@@ -256,7 +267,9 @@ public class SOSProgressActivity extends AppCompatActivity {
                         }
 
                         // Return to home activity
-                        Intent i = new Intent(SOSProgressActivity.this, SOSProgressActivity.class);
+                        Intent i = new Intent(SOSProgressActivity.this, MainActivity.class);
+                        i.putExtra("loggedInUser", userTracker);
+                        i.putExtra("vehiclesHashMapList", vehiclesHashMapList);
                         startActivity(i);
                     });
                     builder.setNegativeButton("Cancel", (dialog, id) -> dialog.dismiss());

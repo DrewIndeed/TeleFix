@@ -429,11 +429,11 @@ public class DatabaseHandler {
         db.collection("events").document(requestId).set(data)
                 .addOnSuccessListener(documentReference -> {
                     // this will be called when data added successfully
-                    Toast.makeText(context, "EVENT CREATED SUCCESSFULLY", Toast.LENGTH_SHORT).show();
+                    System.out.println("EVENT CREATED SUCCESSFULLY!");
                 })
                 .addOnFailureListener(e -> {
                     // this will be called when there is an error while adding
-                    Toast.makeText(context, "EVENT CREATED FAILED!", Toast.LENGTH_SHORT).show();
+                    System.out.println("EVENT CREATED FAILED!");
                 });
     }
 }

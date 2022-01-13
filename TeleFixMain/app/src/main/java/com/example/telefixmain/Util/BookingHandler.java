@@ -5,6 +5,7 @@ import android.content.Context;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.telefixmain.Adapter.SOSRequestListAdapter;
 import com.example.telefixmain.Model.Booking.SOSBilling;
 import com.example.telefixmain.Model.Booking.SOSRequest;
 import com.example.telefixmain.Model.Booking.SOSProgress;
@@ -59,7 +60,7 @@ public class BookingHandler {
         vendorRef.child("sos").child("request").child(requestId).child("mechanicId").setValue(mechanicId)
                 .addOnCompleteListener(task -> {
                     Toast.makeText(context,
-                            "Request accepted by Mechanic: " + mechanicId, Toast.LENGTH_SHORT).show();
+                            "Request accepted by selected vendor", Toast.LENGTH_SHORT).show();
                     callback.run();
                 })
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
@@ -95,11 +96,7 @@ public class BookingHandler {
 
         // send init object to database
         vendorRef.child("sos").child("progress").child(requestId).setValue(sosProgress)
-                .addOnCompleteListener(task -> {
-                    Toast.makeText(context,
-                            "Initializing progress tracking ... ", Toast.LENGTH_SHORT).show();
-                    callback.run();
-                })
+                .addOnCompleteListener(task -> callback.run())
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
                         e.getMessage(), Toast.LENGTH_SHORT).show());
     }
@@ -124,7 +121,7 @@ public class BookingHandler {
             case "fixed":
                 progressRef.child("startBillingTimestamp").setValue(timeStamp)
                         .addOnCompleteListener(task -> Toast.makeText(context,
-                                "Mechanic has finished fixing. Start issuing bill.", Toast.LENGTH_SHORT).show())
+                                "Finished fixing. Start issuing bill.", Toast.LENGTH_SHORT).show())
                         .addOnFailureListener(e -> Toast.makeText(context, "" +
                                 e.getMessage(), Toast.LENGTH_SHORT).show());
                 break;
@@ -152,10 +149,8 @@ public class BookingHandler {
         billingRef.child("paidTime").setValue(0);
         billingRef.child("total").setValue(total);
         billingRef.child("data").setValue(billingData)
-                .addOnCompleteListener(task -> {
-                    Toast.makeText(context,
-                            "Inspection bill uploaded!", Toast.LENGTH_SHORT).show();
-                })
+                .addOnCompleteListener(task -> Toast.makeText(context,
+                        "Inspection bill uploaded!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
                         e.getMessage(), Toast.LENGTH_SHORT).show());
 
@@ -238,7 +233,8 @@ public class BookingHandler {
         vendorRef.child("sos").child("billing").child(requestId).child("paidTime").setValue(timestamp)
                 .addOnCompleteListener(task -> {
                     Toast.makeText(context,
-                            "Payment transaction completed at: " + timestamp, Toast.LENGTH_SHORT).show();
+                            "Transaction completed at: " +
+                                    SOSRequestListAdapter.timestampConverter(timestamp), Toast.LENGTH_SHORT).show();
                     callback.run();
                 })
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
