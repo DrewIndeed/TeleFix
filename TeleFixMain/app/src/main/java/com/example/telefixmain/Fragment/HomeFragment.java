@@ -112,8 +112,10 @@ public class HomeFragment extends Fragment implements SOSRequestListAdapter.OnRe
 
         // if there is a logged in user
         if (userTracker != null) {
+            System.out.println("HOME LAYOUT!");
             // if user is a Customer
             if (!Boolean.parseBoolean(userTracker.getIsMechanic())) {
+                System.out.println("CUSTOMER HOME LAYOUT!");
                 // root
                 root = (ViewGroup) inflater.inflate(R.layout.fragment_home, container, false);
 
@@ -381,16 +383,13 @@ public class HomeFragment extends Fragment implements SOSRequestListAdapter.OnRe
                             Intent jumpToMaintenance = new Intent(fragmentActivity, MaintenanceActivity.class);
                             jumpToMaintenance.putExtra("loggedInUser", userTracker);
                             jumpToMaintenance.putExtra("vehiclesHashMapList", vehiclesHashMapList);
-
                             startActivity(jumpToMaintenance);
                         }, 500);
 
                     }, 1500);
                 });
-            }
-
-            // MECHANIC POV
-            else {
+            } else {
+                System.out.println("MECHANIC HOME LAYOUT!");
                 // root
                 root = (ViewGroup) inflater.inflate(R.layout.fragment_home_mechanic, container, false);
 

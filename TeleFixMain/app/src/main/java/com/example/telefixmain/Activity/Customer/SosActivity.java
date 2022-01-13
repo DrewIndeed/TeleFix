@@ -235,9 +235,6 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                 }));
                         if (isFromMechanic != null && isFromMechanic.equals("true")){
                             // From Maintenance
-//                            Toast.makeText(this, "HELLOOOOOO" + vendorsResultContainer,Toast.LENGTH_SHORT).show();
-//                            System.out.println("HELLOOOOOO" + vendorsResultContainer);
-//                            System.out.println("LATLNGGGGG" + currentVendor.getLat() + "--------" + currentVendor.getLng());
                             LatLng currentVendorLocation = new LatLng(Double.parseDouble(currentVendor.getLat()), Double.parseDouble(currentVendor.getLng()));
 
                             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentVendorLocation, 16));
