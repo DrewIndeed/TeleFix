@@ -6,6 +6,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.telefixmain.Adapter.SOSRequestListAdapter;
+import com.example.telefixmain.Model.Booking.MaintenanceRequest;
 import com.example.telefixmain.Model.Booking.SOSBilling;
 import com.example.telefixmain.Model.Booking.SOSRequest;
 import com.example.telefixmain.Model.Booking.SOSProgress;
@@ -239,5 +240,32 @@ public class BookingHandler {
                 })
                 .addOnFailureListener(e -> Toast.makeText(context, "" +
                         e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+    //-------------------//------------------//-------------------//-------------------//-------------------
+    // Booking MAINTENANCE service
+
+    public static void sendMaintenanceRequest (FirebaseDatabase rootNode,
+                                               Context context,
+                                               String vendorId,
+                                               String userId,
+                                               String requestId,
+                                               long dateRequest,
+                                               long timeRequest,
+                                               Runnable callback) {
+        System.out.println(vendorId + " " + userId);
+
+        // Get the root reference of chosen vendor
+        DatabaseReference vendorRef = rootNode.getReference(vendorId);
+
+        // Initialize sosRequest object
+        MaintenanceRequest maintenanceRequest = new MaintenanceRequest(requestId, userId, vendorId, dateRequest, timeRequest);
+
+        // Send request object to db
+        vendorRef.child("maintenance").child("request").child(requestId).setValue(maintenanceRequest)
+                .addOnCompleteListener(task -> Toast.makeText(context,
+                        "Request sent!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(context, "" +
+                        e.getMessage(), Toast.LENGTH_SHORT).show());
+        callback.run();
     }
 }

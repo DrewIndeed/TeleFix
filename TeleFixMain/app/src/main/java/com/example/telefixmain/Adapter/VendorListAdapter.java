@@ -49,9 +49,7 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorItemViewHolder
     public void onBindViewHolder(@NonNull VendorItemViewHolder holder, int position) {
         Vendor vendor = vendorsList.get(position);
 
-        if (vendor == null) {
-            return;
-        }
+        if (vendor == null) { return; }
 
         holder.vendorName.setText(vendor.getName());
 
@@ -67,6 +65,7 @@ public class VendorListAdapter extends RecyclerView.Adapter<VendorItemViewHolder
             i.putExtra("currentVendor", vendorsList.get(position));
             i.putExtra("vehiclesHashMapList", vehiclesHashMapList);
             i.putExtra("isFromMaintenance", "true");
+            i.putExtra("loggedInUser", userTracker);
             activityContext.startActivity(i);
         });
     }

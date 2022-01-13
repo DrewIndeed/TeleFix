@@ -6,26 +6,25 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Dialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.InputType;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -62,7 +61,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
@@ -281,7 +285,6 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                 bottomDialogView.findViewById(R.id.btn_schedule_maintenance).setVisibility(View.VISIBLE);
 
                 bottomDialogView.findViewById(R.id.btn_schedule_maintenance).setOnClickListener(view -> {
-
                     openScheduleMaintenanceDialog();
                 });
             }
@@ -474,32 +477,100 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void openScheduleMaintenanceDialog() {
-        final Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.center_dialog_maintenance_booking);
+        CustomProgressDialog scheduleDialog = new CustomProgressDialog(this, R.style.SheetDialog, R.layout.center_dialog_maintenance_booking);
+        View root = scheduleDialog.getDialogRootView();
 
-        Window window = dialog.getWindow();
-        if (window == null) {
-            return;
-        }
+        EditText datePicker = root.findViewById(R.id.edit_date_picker);
+        EditText timePicker = root.findViewById(R.id.edit_time_picker);
+        Button cancelBtn = root.findViewById(R.id.btn_cancel_maintenance);
+        Button confirmBtn = root.findViewById(R.id.btn_confirm_maintenance_user);
 
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
 
-        WindowManager.LayoutParams windowAttributes = window.getAttributes();
-        windowAttributes.gravity = Gravity.CENTER;
-        window.setAttributes(windowAttributes);
+        datePicker.setInputType(InputType.TYPE_NULL);
+        timePicker.setInputType(InputType.TYPE_NULL);
 
-        dialog.setCancelable(true);
+        datePicker.setOnClickListener(view -> {
+            showDatePickerDialog(datePicker);
+        });
 
-        EditText datePicker = dialog.findViewById(R.id.edit_date_picker);
-        EditText timePicker = dialog.findViewById(R.id.edit_time_picker);
-        Button scheduleCancel = dialog.findViewById(R.id.btn_cancel_maintenance);
-        Button scheduleConfirm = dialog.findViewById(R.id.btn_confirm_maintenance_user);
+        timePicker.setOnClickListener(view -> {
+            showTimePickerDialog(timePicker);
 
-        scheduleCancel.setOnClickListener(view -> Toast.makeText(this, "Cancel button clicked", Toast.LENGTH_SHORT).show());
-        scheduleConfirm.setOnClickListener(view -> Toast.makeText(this, "Confirm button clicked", Toast.LENGTH_SHORT).show());
+        });
 
+        cancelBtn.setOnClickListener(view -> {
+            scheduleDialog.dismiss();
+        });
+
+        confirmBtn.setOnClickListener(view -> {
+            String dateValue = datePicker.getText().toString();
+            String timeValue = timePicker.getText().toString();
+
+            if (dateValue.equals("") || timeValue.equals("")) {
+                Toast.makeText(this, "Please input all information", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+                DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+                try {
+                    Date date = (Date)dateFormat.parse(dateValue);
+                    Date time = (Date)timeFormat.parse(timeValue);
+
+                    // Add to maintenance booking
+                    currentRequestId = UUID.randomUUID().toString();
+                    BookingHandler.sendMaintenanceRequest(vendorsBookings, this, currentVendor.getId(), userTracker.getId(), currentRequestId,
+                            date.getTime(), time.getTime(), scheduleDialog::dismiss);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        scheduleDialog.show();
+    }
+
+    private void showDatePickerDialog(EditText date_in) {
+        final Calendar calendar = Calendar.getInstance();
+        DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, month);
+                calendar.set(Calendar.DAY_OF_MONTH, day);
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+                String data = simpleDateFormat.format(calendar.getTime());
+                date_in.setText(data);
+            }
+        };
+        DatePickerDialog dialog = new DatePickerDialog(SosActivity.this, dateSetListener,
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH));
+
+
+        dialog.getDatePicker().setMinDate(new Date().getTime() + 1);
+        calendar.add(Calendar.DAY_OF_MONTH, 7);
+        Date result = calendar.getTime();
+        dialog.getDatePicker().setMaxDate(result.getTime());
         dialog.show();
+    }
+
+    private void showTimePickerDialog(EditText time_in) {
+        final Calendar calendar = Calendar.getInstance();
+        TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+                calendar.set(Calendar.HOUR_OF_DAY, hour);
+                calendar.set(Calendar.MINUTE, minute);
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+                String data = simpleDateFormat.format(calendar.getTime());
+                time_in.setText(data);
+            }
+        };
+         TimePickerDialog dialog = new TimePickerDialog(SosActivity.this, android.R.style.Theme_Holo_Light_Dialog_MinWidth,
+                timeSetListener,
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE), false);
+         dialog.show();
     }
 
     /**

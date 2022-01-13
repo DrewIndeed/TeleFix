@@ -35,6 +35,10 @@ public class CustomProgressDialog extends Dialog {
         setContentView(view);
     }
 
+    public View getDialogRootView() {
+        return view;
+    }
+
     @Override
     public void setOnDismissListener(OnDismissListener listener) {
         super.setOnDismissListener(listener);
