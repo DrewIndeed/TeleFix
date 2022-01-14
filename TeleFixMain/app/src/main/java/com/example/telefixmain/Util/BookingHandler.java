@@ -249,8 +249,7 @@ public class BookingHandler {
                                                String vendorId,
                                                String userId,
                                                String requestId,
-                                               long dateRequest,
-                                               long timeRequest,
+                                               long datetime,
                                                Runnable callback) {
         System.out.println(vendorId + " " + userId);
 
@@ -258,7 +257,7 @@ public class BookingHandler {
         DatabaseReference vendorRef = rootNode.getReference(vendorId);
 
         // Initialize sosRequest object
-        MaintenanceRequest maintenanceRequest = new MaintenanceRequest(requestId, userId, vendorId, dateRequest, timeRequest);
+        MaintenanceRequest maintenanceRequest = new MaintenanceRequest(requestId, userId, vendorId, datetime);
 
         // Send request object to db
         vendorRef.child("maintenance").child("request").child(requestId).setValue(maintenanceRequest)

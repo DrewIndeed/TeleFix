@@ -5,19 +5,17 @@ public class MaintenanceRequest {
     private String userId;
     private String vendorId;
     private String mechanicId;
-    private long date;
-    private long time;
-    String status;
+    private long datetime;
+    private String status;
 
     public MaintenanceRequest() {}
 
-    public MaintenanceRequest(String requestId, String userId, String vendorId, long date, long time) {
+    public MaintenanceRequest(String requestId, String userId, String vendorId, long datetime) {
         this.requestId = requestId;
         this.userId = userId;
         this.vendorId = vendorId;
         this.mechanicId = "";
-        this.date = date;
-        this.time = time;
+        this.datetime = datetime;
         this.status = "on-going";
     }
 
@@ -53,20 +51,12 @@ public class MaintenanceRequest {
         this.mechanicId = mechanicId;
     }
 
-    public long getDate() {
-        return date;
+    public long getDatetime() {
+        return datetime;
     }
 
-    public void setDate(long date) {
-        this.date = date;
-    }
-
-    public long getTime() {
-        return time;
-    }
-
-    public void setTime(long time) {
-        this.time = time;
+    public void setDatetime(long datetime) {
+        this.datetime = datetime;
     }
 
     public String getStatus() {

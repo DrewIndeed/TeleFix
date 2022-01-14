@@ -494,20 +494,16 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
             if (dateValue.equals("") || timeValue.equals("")) {
                 Toast.makeText(this, "Please input all information", Toast.LENGTH_SHORT).show();
             } else {
-                @SuppressLint("SimpleDateFormat")
-                DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-                @SuppressLint("SimpleDateFormat")
-                DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+                String datetime = dateValue + " " + timeValue;
+                DateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
                 try {
-                    Date date = (Date) dateFormat.parse(dateValue);
-                    Date time = (Date) timeFormat.parse(timeValue);
+                    Date dt = (Date) sdf.parse(datetime);
 
                     // Add to maintenance booking
                     currentRequestId = UUID.randomUUID().toString();
                     BookingHandler.sendMaintenanceRequest(vendorsBookings, this,
                             currentVendor.getId(), userTracker.getId(), currentRequestId,
-                            Objects.requireNonNull(date).getTime() / 1000L,
-                            Objects.requireNonNull(time).getTime() / 1000L,
+                            Objects.requireNonNull(dt).getTime() / 1000L,
                             () -> {
                                 Intent backToHome = new Intent(this, MainActivity.class);
                                 backToHome.putExtra("loggedInUser", userTracker);
