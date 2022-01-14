@@ -123,12 +123,12 @@
                         tools:ignore="ContentDescription,ImageContrastCheck" />
 
                     <TextView
-                        android:layout_width="100dp"
+                        android:layout_width="120dp"
                         android:layout_height="30dp"
                         android:gravity="center"
-                        android:text="Maintain"
+                        android:text="Maintenance"
                         android:textColor="@color/orange"
-                        android:textSize="22sp"
+                        android:textSize="20sp"
                         android:textStyle="bold"
                         tools:ignore="HardcodedText,TextContrastCheck" />
                 </LinearLayout>

@@ -305,6 +305,7 @@ public class HomeFragment extends Fragment {
 
                 // SOS request booking
                 // recyclerview settings
+                // recycler view usage and display
                 RecyclerView sosRecyclerView = root.findViewById(R.id.rv_sos_pending_requests);
                 LinearLayoutManager sosLLM = new LinearLayoutManager(fragmentActivity);
                 SOSRequestListAdapter sosRequestAdapter = new SOSRequestListAdapter(fragmentActivity,
@@ -340,6 +341,15 @@ public class HomeFragment extends Fragment {
 //                         Sort collections by time created
                         Collections.sort(tmp, new SOSTimeStampComparator());
                         sosRequests.addAll(tmp);
+
+                        if (sosRequests.size() > 0) {
+                            // hide empty msg
+                            root.findViewById(R.id.cv_no_sos_request).setVisibility(View.GONE);
+                            sosRecyclerView.setVisibility(View.VISIBLE);
+                        } else {
+                            root.findViewById(R.id.cv_no_sos_request).setVisibility(View.VISIBLE);
+                            sosRecyclerView.setVisibility(View.GONE);
+                        }
                         sosRequestAdapter.notifyDataSetChanged();
 
                     }
@@ -351,7 +361,9 @@ public class HomeFragment extends Fragment {
                 };
                 openSOSRequest.addValueEventListener(openSOSRequestListener);
 
+
                 // Maintenance request booking
+                // recycler view usage and display
                 RecyclerView maintenanceRecyclerView = root.findViewById(R.id.rv_maintenance_pending_requests);
                 LinearLayoutManager maintenanceLLM = new LinearLayoutManager(fragmentActivity);
                 MaintenanceRequestListAdapter maintenanceRequestListAdapter = new MaintenanceRequestListAdapter(fragmentActivity,
@@ -382,6 +394,14 @@ public class HomeFragment extends Fragment {
 //                            Collections.sort(tmp, new RequestTimeStampComparator());
                         }
                         maintenanceRequests.addAll(tmp);
+                        if (maintenanceRequests.size() > 0) {
+                            // hide empty msg
+                            root.findViewById(R.id.cv_no_maintain_request).setVisibility(View.GONE);
+                            maintenanceRecyclerView.setVisibility(View.VISIBLE);
+                        } else {
+                            root.findViewById(R.id.cv_no_maintain_request).setVisibility(View.VISIBLE);
+                            maintenanceRecyclerView.setVisibility(View.GONE);
+                        }
                         maintenanceRequestListAdapter.notifyDataSetChanged();
 
                     }
@@ -392,6 +412,7 @@ public class HomeFragment extends Fragment {
                     }
                 };
                 openMaintenanceRequests.addValueEventListener(openMaintenanceRequestsListener);
+
             }
         }
 

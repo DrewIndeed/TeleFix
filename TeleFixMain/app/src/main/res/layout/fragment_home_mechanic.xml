@@ -57,26 +57,31 @@
             android:textStyle="bold"
             tools:ignore="HardcodedText,TextContrastCheck" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_sos_pending_requests"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="15dp"
-                android:background="@drawable/custom_btn_bg_14"
-                android:padding="15dp"
-                android:visibility="visible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHeight_default="wrap"
-                app:layout_constraintHeight_max="300dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_sos_pending_requests"
+            android:layout_width="match_parent"
+            android:layout_height="225dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="15dp"
+            android:background="@drawable/custom_btn_bg_14"
+            android:padding="15dp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/cv_no_sos_request"
+            android:layout_width="match_parent"
+            android:layout_height="225dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:background="@drawable/custom_btn_bg_2"
+            android:gravity="center"
+            android:text="No SOS request"
+            android:textColor="@color/bmw_white"
+            android:textSize="18sp"
+            tools:ignore="HardcodedText" />
+
 
         <TextView
             android:id="@+id/tv_maintenance_pending_requests"
@@ -93,28 +98,31 @@
             android:textStyle="bold"
             tools:ignore="HardcodedText,TextContrastCheck" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_maintenance_pending_requests"
             android:layout_width="match_parent"
-            android:layout_marginBottom="200dp"
-            android:layout_height="wrap_content">
+            android:layout_height="225dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="150dp"
+            android:background="@drawable/custom_btn_bg_14"
+            android:padding="15dp"
+            android:visibility="gone" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_maintenance_pending_requests"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="15dp"
-                android:background="@drawable/custom_btn_bg_14"
-                android:padding="15dp"
-                android:visibility="visible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHeight_default="wrap"
-                app:layout_constraintHeight_max="550dp"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/cv_no_maintain_request"
+            android:layout_width="match_parent"
+            android:layout_height="225dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:background="@drawable/custom_btn_bg_2"
+            android:gravity="center"
+            android:text="No Maintenance request"
+            android:textColor="@color/bmw_white"
+            android:textSize="18sp"
+            android:layout_marginBottom="150dp"
+            tools:ignore="HardcodedText" />
 
     </LinearLayout>
 
