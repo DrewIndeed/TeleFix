@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.telefixmain.Model.Booking.SOSBilling;
+import com.example.telefixmain.Model.Booking.Billing;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.DatabaseHandler;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -20,14 +20,14 @@ import java.util.Objects;
 
 public class BillingListAdapter extends RecyclerView.Adapter<BillingItemViewHolder> {
     private Context issueBillingActivity;
-    private ArrayList<SOSBilling> currentBilling;
+    private ArrayList<Billing> currentBilling;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     // init pricelist
     private HashMap<String, String> inspectionPriceContainer = new HashMap<>();
     private HashMap<String, String> repairPriceContainer = new HashMap<>();
 
-    public BillingListAdapter(Context issueBillingActivity, ArrayList<SOSBilling> currentBilling) {
+    public BillingListAdapter(Context issueBillingActivity, ArrayList<Billing> currentBilling) {
         this.issueBillingActivity = issueBillingActivity;
         this.currentBilling = currentBilling;
         getPriceList();

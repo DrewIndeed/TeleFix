@@ -20,7 +20,7 @@ import android.widget.Toast;
 
 import com.example.telefixmain.Activity.Customer.MainActivity;
 import com.example.telefixmain.Adapter.BillingListAdapter;
-import com.example.telefixmain.Model.Booking.SOSBilling;
+import com.example.telefixmain.Model.Booking.Billing;
 import com.example.telefixmain.Model.Booking.SOSProgress;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.R;
@@ -66,7 +66,7 @@ public class SOSProgressActivity extends AppCompatActivity {
     HashMap<String, String> repairPriceContainer = new HashMap<>();
 
     //current billing
-    ArrayList<SOSBilling> billings = new ArrayList<>();
+    ArrayList<Billing> billings = new ArrayList<>();
     private int currentTotal;
 
     // current progress
@@ -143,7 +143,7 @@ public class SOSProgressActivity extends AppCompatActivity {
                     boolean isRemoved = false;
 
                     if (billings.size() == 0) {
-                        billings.add(new SOSBilling(billingItem.getText().toString(), Integer.parseInt(billingQuantity.getText().toString())));
+                        billings.add(new Billing(billingItem.getText().toString(), Integer.parseInt(billingQuantity.getText().toString())));
                     } else {
                         for (int i = 0; i < billings.size(); i++) {
                             index = i;
@@ -154,13 +154,13 @@ public class SOSProgressActivity extends AppCompatActivity {
                                     isRemoved = true;
                                     Toast.makeText(this, "Removed the existed service", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    billings.set(i, new SOSBilling(billingItem.getText().toString(), Integer.parseInt(billingQuantity.getText().toString())));
+                                    billings.set(i, new Billing(billingItem.getText().toString(), Integer.parseInt(billingQuantity.getText().toString())));
                                     Toast.makeText(this, "Update existed service's quantity", Toast.LENGTH_SHORT).show();
                                 }
                                 break;
                             }
                             if (i == billings.size() - 1) {
-                                billings.add(new SOSBilling(billingItem.getText().toString(), Integer.parseInt(billingQuantity.getText().toString())));
+                                billings.add(new Billing(billingItem.getText().toString(), Integer.parseInt(billingQuantity.getText().toString())));
                             }
                         }
                     }
@@ -301,7 +301,7 @@ public class SOSProgressActivity extends AppCompatActivity {
 
     private void calculateTotal() {
         currentTotal = 0;
-        for (SOSBilling bill : billings) {
+        for (Billing bill : billings) {
             String currentItem = bill.getItem();
             if (inspectionPriceContainer.containsKey(bill.getItem())) {
                 currentTotal += bill.getQuantity() * Integer.parseInt(Objects.requireNonNull(inspectionPriceContainer.get(currentItem)));

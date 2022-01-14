@@ -3,7 +3,8 @@ package com.example.telefixmain.Util;
 import android.content.Context;
 import android.widget.Toast;
 
-import com.example.telefixmain.Model.Booking.SOSBilling;
+import com.example.telefixmain.Model.Booking.Billing;
+import com.example.telefixmain.Model.Event;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vehicle;
 import com.example.telefixmain.Model.Vendor;
@@ -15,7 +16,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.UUID;
 
 public class DatabaseHandler {
     private static int completeCount;
@@ -438,34 +438,53 @@ public class DatabaseHandler {
                                    String status,
                                    long startTime,
                                    long endTime,
-                                   ArrayList<SOSBilling> billingData,
+                                   ArrayList<Billing> billingData,
                                    int total) {
 
-        // Create a new user
-        HashMap<String, Object> data = new HashMap<>();
-
-        // put zone data into temp data HashMap
-        data.put("requestId", requestId);
-        data.put("userId", userId);
-        data.put("vendorId", vendorId);
-        data.put("mechanicId", mechanicId);
-        data.put("type", type);
-        data.put("status", status);
-        data.put("startTime", startTime);
-        data.put("endTime", endTime);
-        data.put("billingData", billingData);
-        data.put("total", total);
-
+        Event event = new Event(requestId, userId, vendorId, mechanicId, type, status, startTime, endTime, billingData, total);
 
         // Add a new document with a generated ID
-        db.collection("events").document(requestId).set(data)
+        db.collection("events").document(requestId).set(event)
                 .addOnSuccessListener(documentReference -> {
                     // this will be called when data added successfully
-                    System.out.println("EVENT CREATED SUCCESSFULLY!");
+                    Toast.makeText(context, "EVENT CREATED SUCCESSFULLY!", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
                     // this will be called when there is an error while adding
-                    System.out.println("EVENT CREATED FAILED!");
+                    Toast.makeText(context, "EVENT CREATED FAILED!", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    /**
+     * Method to get event belongs to single userId
+     */
+    public static void getEvents(FirebaseFirestore db,
+                                 String userId,
+                                 ArrayList<Event> resultContainer,
+                                 Runnable callback) {
+        // target "events" collection
+        db.collection("events")
+                .get() // Get data from Firestore
+                .addOnCompleteListener(task -> {
+
+                    // Loop through document and add into vendors container
+                    for (DocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
+                        Event event = doc.toObject(Event.class);
+                        if (Objects.requireNonNull(event).getUserId().equals(userId)) {
+                            resultContainer.add(event);
+                        }
+
+                    }
+                    // run call back function
+                    callback.run();
+
+                    // success msg
+                    System.out.println("FETCH USER'S EVENTS SUCCESSFULLY!");
+                })
+                .addOnFailureListener(e -> {
+                    // fail msg
+                    System.out.println("FETCH USER'S EVENTS FAILED!");
+                    System.out.println("FETCH USER'S EVENTS ERROR: " + e.getMessage());
                 });
     }
 }

@@ -9,7 +9,7 @@ public class SOSHistory {
     private String mechanicId;
     private long startTime;
     private long endTime;
-    private ArrayList<SOSBilling> data;
+    private ArrayList<Billing> data;
     private int total;
     private String type;  // sos or maintenance
     private String status; // successful or aborted
