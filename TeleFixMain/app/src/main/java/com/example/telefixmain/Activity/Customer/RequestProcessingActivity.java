@@ -2,12 +2,16 @@ package com.example.telefixmain.Activity.Customer;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -21,6 +25,8 @@ import com.example.telefixmain.Model.Booking.SOSProgress;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.BookingHandler;
+import com.example.telefixmain.Util.NotificationHandler;
+import com.example.telefixmain.Util.NotificationInstance;
 import com.example.telefixmain.Util.DatabaseHandler;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,6 +39,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.shuhart.stepview.StepView;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -137,15 +144,15 @@ public class RequestProcessingActivity extends AppCompatActivity {
         stepView.setSteps(steps);
         stepView.go(1, true);
 
-        currentBilling = vendorsBookings.getReference(vendorId).child("sos").child("billing").child(requestId);
+        currentBilling = vendorsBookings.getReference(vendorId).child("sos").child("billing").child(requestId).child("timestamp");
         sosBillingListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     if (!isApproved) {
-                        userBtnDraftPayment.setVisibility(View.VISIBLE);
-                        userBtnCancelProgress.setVisibility(View.VISIBLE);
-                        userBtnAcceptProgress.setVisibility(View.VISIBLE);
+                        // Send notification when MECHANIC has issued the bill
+                        String content = "Mechanic has issued the inspecting bill. Please approve to continue!";
+                        NotificationHandler.sendProgressTrackingNotification(RequestProcessingActivity.this, "TeleFix - SOS Request", content);
                         userBtnDraftPayment.startAnimation(AnimationUtils.loadAnimation(
                                 RequestProcessingActivity.this, R.anim.fade_in));
                         userBtnCancelProgress.startAnimation(AnimationUtils.loadAnimation(
@@ -174,9 +181,18 @@ public class RequestProcessingActivity extends AppCompatActivity {
                         && Objects.requireNonNull(sosProgress).getAbortTime() == 0) {
                     currentStep = 2;
                     stepView.go(currentStep, true);
+
+                    // Send notification when MECHANIC arrived
+                    String content = "Mechanic has arrived at your location";
+                    NotificationHandler.sendProgressTrackingNotification(RequestProcessingActivity.this, "TeleFix - SOS Request", content);
+
                 } else if (Objects.requireNonNull(sosProgress).getStartFixingTimestamp() != 0
                         && Objects.requireNonNull(sosProgress).getStartBillingTimestamp() != 0) {
                     userBtnProceedPayment.setVisibility(View.VISIBLE);
+
+                    // Send notification when MECHANIC has updated the final bill
+                    String content = "Mechanic has updated the finalized bill!";
+                    NotificationHandler.sendProgressTrackingNotification(RequestProcessingActivity.this, "TeleFix - SOS Request", content);
                 }
             }
 

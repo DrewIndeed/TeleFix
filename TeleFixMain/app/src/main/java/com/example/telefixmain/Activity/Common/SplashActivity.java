@@ -13,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
-import com.example.telefixmain.Activity.Common.SignUpActivity;
 import com.example.telefixmain.R;
 import com.github.ybq.android.spinkit.style.CubeGrid;
 

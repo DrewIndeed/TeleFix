@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
+        android:name=".Util.NotificationInstance"
         android:allowBackup="true"
         android:fullBackupContent="true"
         android:icon="@drawable/app_icon"
@@ -53,6 +54,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>
