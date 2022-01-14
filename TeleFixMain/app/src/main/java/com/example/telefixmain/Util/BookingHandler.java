@@ -272,15 +272,15 @@ public class BookingHandler {
                                                   Context context,
                                                   String vendorId,
                                                   String requestId,
-                                                  String mechanicId,
-                                                  String respond) {
+                                                  String respond,
+                                                  String type) {
         // Get the root reference of chosen vendor
         DatabaseReference bookingRef = rootNode.getReference(vendorId).child("maintenance").child("request").child(requestId);
 
         // Respond to maintenance booking
-        switch (respond) {
+        switch (type) {
             case "accepted":
-                bookingRef.child("respond").setValue(mechanicId);
+                bookingRef.child("respond").setValue(respond);
                 bookingRef.child("status").setValue("accepted")
                         .addOnCompleteListener(task -> Toast.makeText(context,
                                 "MAINTENANCE BOOKING ACCEPTED!", Toast.LENGTH_SHORT).show())
