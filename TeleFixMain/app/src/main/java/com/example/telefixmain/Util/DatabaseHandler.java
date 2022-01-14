@@ -129,6 +129,33 @@ public class DatabaseHandler {
     }
 
     /**
+     * Method to check if vendor exists based on id
+     */
+    public static void isVendorExistsById(FirebaseFirestore db, Context context,
+                                          String vendorId,
+                                          Runnable callback1,
+                                          Runnable callback2) {
+        DocumentReference docIdRef = db.collection("vendors").document(vendorId);
+        docIdRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (!document.exists()) {
+                    callback1.run();
+                    Toast.makeText(context, "Vendor ID does not exist!", Toast.LENGTH_SHORT).show();
+                } else {
+                    callback2.run();
+                }
+                // log msg
+                System.out.println("CHECK VENDOR EXISTENCE SUCCESSFULLY!");
+            }
+        })
+                .addOnFailureListener(e -> {
+                    System.out.println(e.getMessage());
+                    System.out.println("CHECK VENDOR EXISTENCE FAILED!");
+                });
+    }
+
+    /**
      * Method to get vendors' info
      */
     public static void getAllVendors(FirebaseFirestore db,
@@ -334,7 +361,7 @@ public class DatabaseHandler {
                             completeCount = 0;
                             for (int i = 0; i < vehiclesIdResult.size(); i++) {
                                 getSingleVehicle(db, vehiclesIdResult.get(i), vehiclesResult, ()
-                                        -> populateVehicleObjectList(completeCount,
+                                        -> launchCallbackGetUserVehicleList(completeCount,
                                         vehiclesIdResult.size(), callback));
                             }
                         } else {
@@ -351,9 +378,9 @@ public class DatabaseHandler {
     /**
      * Method to identify if all async tasks from getting vehicles are completed
      */
-    private static void populateVehicleObjectList(int count, int idListSize, Runnable callback) {
+    private static void launchCallbackGetUserVehicleList(int count, int idListSize, Runnable callback) {
         // print to keep track of completed async tasks
-        System.out.println(completeCount);
+        System.out.println("COMPLETED COUNT FOR getUserVehicleList(): " + completeCount);
 
         // if number of completed tasks equals to number of provided ids
         if (count == idListSize) {
@@ -398,6 +425,9 @@ public class DatabaseHandler {
                 });
     }
 
+    /**
+     * Method to create event object on Firestore database
+     */
     public static void createEvent(FirebaseFirestore db,
                                    Context context,
                                    String requestId,
