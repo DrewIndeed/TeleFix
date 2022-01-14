@@ -2,12 +2,19 @@ package com.example.telefixmain.Activity.Customer;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -21,6 +28,7 @@ import com.example.telefixmain.Model.Booking.SOSProgress;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.BookingHandler;
+import com.example.telefixmain.Util.NotificationHandler;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,6 +37,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.shuhart.stepview.StepView;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -60,6 +69,8 @@ public class RequestProcessingActivity extends AppCompatActivity {
     // intent data receivers
     User userTracker;
     ArrayList<HashMap<String, String>> vehiclesHashMapList = new ArrayList<>();
+
+    //
 
     @SuppressLint("NotifyDataSetChanged")
     @SuppressWarnings("unchecked")
@@ -117,7 +128,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
         stepView.go(1, true);
 
-        currentBilling = vendorsBookings.getReference(vendorId).child("sos").child("billing").child(requestId);
+        currentBilling = vendorsBookings.getReference(vendorId).child("sos").child("billing").child(requestId).child("timestamp");
         sosBillingListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -126,6 +137,9 @@ public class RequestProcessingActivity extends AppCompatActivity {
                         userBtnDraftPayment.setVisibility(View.VISIBLE);
                         userBtnCancelProgress.setVisibility(View.VISIBLE);
                         userBtnAcceptProgress.setVisibility(View.VISIBLE);
+                        // Send notification when MECHANIC has issued the bill
+                        String content = "Mechanic has issued the inspecting bill. Please approve to continue!";
+                        sendProgressTrackingNotification(content);
                     }
                 }
             }
@@ -148,9 +162,18 @@ public class RequestProcessingActivity extends AppCompatActivity {
                         && Objects.requireNonNull(sosProgress).getAbortTime() == 0) {
                     currentStep = 2;
                     stepView.go(currentStep, true);
+
+                    // Send notification when MECHANIC arrived
+                    String content = "Mechanic has arrived at your location";
+                    sendProgressTrackingNotification(content);
+
                 } else if (Objects.requireNonNull(sosProgress).getStartFixingTimestamp() != 0
                         && Objects.requireNonNull(sosProgress).getStartBillingTimestamp() != 0) {
                     userBtnProceedPayment.setVisibility(View.VISIBLE);
+
+                    // Send notification when MECHANIC has updated the final bill
+                    String content = "Mechanic has updated the finalized bill!";
+                    sendProgressTrackingNotification(content);
                 }
             }
 
@@ -242,5 +265,24 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+    }
+
+    private void sendProgressTrackingNotification(String content) {
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.app_icon);
+
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(this, NotificationHandler.CHANNEL_ID)
+                .setContentTitle("TeleFix - SOS Progress")
+                .setContentText(content)
+                .setSmallIcon(R.drawable.app_icon)
+                .setLargeIcon(bitmap)
+                .setPriority(NotificationCompat.PRIORITY_MAX);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        // notificationId is a unique int for each notification that you must define
+        notificationManager.notify(getNotificationId(), notification.build());
+    }
+
+    private int getNotificationId() {
+        return (int) new Date().getTime();
     }
 }
