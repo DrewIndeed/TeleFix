@@ -386,6 +386,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                             i.putExtra("currentVendorId", currentVendorId);
                                             i.putExtra("currentRequestId", currentRequestId);
                                             i.putExtra("loggedInUser", userTracker);
+                                            i.putExtra("acceptedMechanicId", Objects.requireNonNull(sosRequest).getMechanicId());
                                             i.putExtra("vehiclesHashMapList", vehiclesHashMapList);
                                             startActivity(i);
                                             finish();

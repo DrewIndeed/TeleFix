@@ -105,11 +105,65 @@
         app:layout_constraintVertical_bias="0.83"
         tools:ignore="HardcodedText" />
 
+    <LinearLayout
+        android:layout_width="260dp"
+        android:layout_height="260dp"
+        android:background="@drawable/custom_btn_bg_18"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.172">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            app:cardCornerRadius="100dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/holder_profile"
+                tools:ignore="ContentDescription,ImageContrastCheck" />
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/tv_mechanic_name_at_request_processing"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:letterSpacing="0.05"
+            android:text="Mechanic's name "
+            android:textColor="@color/bmw_dark_blue"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/tv_mechanic_phone_at_request_processing"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:gravity="center"
+            android:letterSpacing="0.05"
+            android:text="Mechanic's phone"
+            android:textColor="@color/bmw_dark_blue"
+            android:textSize="14sp"
+            tools:ignore="HardcodedText" />
+
+    </LinearLayout>
+
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/processing_request_gif"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:src="@drawable/fixing_sos"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"

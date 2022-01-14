@@ -21,11 +21,15 @@ import com.example.telefixmain.Model.Booking.SOSProgress;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.BookingHandler;
+import com.example.telefixmain.Util.DatabaseHandler;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.shuhart.stepview.StepView;
 
 import java.util.ArrayList;
@@ -34,8 +38,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class RequestProcessingActivity extends AppCompatActivity {
-    // xml
-    StepView stepView;
+    // database objects
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseUser mUser = mAuth.getCurrentUser();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     // Realtime Database
     private final FirebaseDatabase vendorsBookings = FirebaseDatabase.getInstance();
@@ -48,6 +54,8 @@ public class RequestProcessingActivity extends AppCompatActivity {
     private int currentStep = 0;
 
     // xml
+    // xml
+    StepView stepView;
     LinearLayout billingLayout;
     RecyclerView recyclerView;
     private BillingListAdapter billingAdapter;
@@ -60,6 +68,9 @@ public class RequestProcessingActivity extends AppCompatActivity {
     // intent data receivers
     User userTracker;
     ArrayList<HashMap<String, String>> vehiclesHashMapList = new ArrayList<>();
+
+    // user result container
+    ArrayList<User> acceptedMechanicResult = new ArrayList<>();
 
     @SuppressLint("NotifyDataSetChanged")
     @SuppressWarnings("unchecked")
@@ -96,6 +107,15 @@ public class RequestProcessingActivity extends AppCompatActivity {
         Intent i = getIntent();
         String requestId = (String) i.getExtras().get("currentRequestId");
         String vendorId = (String) i.getExtras().get("currentVendorId");
+        String acceptedMechanicId = intent.getStringExtra("acceptedMechanicId");
+
+        // get accepted mechanic info and display on ui
+        DatabaseHandler.getSingleUser(db, acceptedMechanicId, acceptedMechanicResult, () -> {
+            ((TextView) findViewById(R.id.tv_mechanic_name_at_request_processing))
+                    .setText(acceptedMechanicResult.get(0).getName());
+            ((TextView) findViewById(R.id.tv_mechanic_phone_at_request_processing))
+                    .setText(acceptedMechanicResult.get(0).getPhone());
+        });
 
         System.out.println("RequestID: " + requestId + " ------------------ " + "VendorID: " + vendorId);
 
