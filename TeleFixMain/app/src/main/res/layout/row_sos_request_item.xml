@@ -5,19 +5,18 @@
     android:id="@+id/sos_request_viewholder"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="15dp"
-    android:paddingRight="15dp"
     android:layout_marginTop="5dp"
     android:layout_marginBottom="5dp"
     android:background="@drawable/custom_btn_bg_15"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp">
 
     <TextView
         android:id="@+id/tv_sos_user_info"
-        android:layout_width="378dp"
+        android:layout_width="match_parent"
         android:layout_height="35dp"
-        android:layout_marginTop="10dp"
         android:gravity="center"
         android:text="Name + any info?"
         android:textColor="@color/bmw_dark_blue"
@@ -25,10 +24,8 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.484"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.076"
         tools:ignore="HardcodedText" />
 
     <TextView
@@ -51,10 +48,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+
         android:text="Time created: "
         android:textColor="@color/bmw_red"
         android:textSize="16sp"
-        android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.948"
@@ -63,11 +60,4 @@
         app:layout_constraintVertical_bias="0.641"
         tools:ignore="HardcodedText,TextContrastCheck" />
 
-    <TextView
-        android:id="@+id/tv_hidden_request"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 </LinearLayout>

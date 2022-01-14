@@ -4,6 +4,7 @@
     android:id="@+id/dialog_maintenance_booking"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="20dp"
     android:background="@drawable/custom_btn_bg_16"
     android:orientation="vertical"
     android:padding="20dp">
@@ -18,7 +19,6 @@
         android:textColor="@color/bmw_dark_blue"
         android:textSize="20sp"
         android:textStyle="bold" />
-
 
     <LinearLayout
         android:id="@+id/ll_datetime_info"
@@ -87,7 +87,6 @@
         android:textColor="@color/bmw_red"
         android:textSize="15sp"
         android:visibility="gone" />
-
     <EditText
         android:id="@+id/tv_maintenance_response"
         android:layout_width="match_parent"
@@ -98,8 +97,6 @@
         android:visibility="gone"
         android:hint="Rationale" />
 
-    <LinearLayout
-        android:id="@+id/ll_maintenance_actions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="15dp"
