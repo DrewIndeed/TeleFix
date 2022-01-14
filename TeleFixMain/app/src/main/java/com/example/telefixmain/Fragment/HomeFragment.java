@@ -36,6 +36,7 @@ import com.example.telefixmain.Model.Vehicle;
 import com.example.telefixmain.Model.Vendor;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Activity.Customer.SosActivity;
+import com.example.telefixmain.Util.Comparator.MaintenanceTimeStampComparator;
 import com.example.telefixmain.Util.Comparator.SOSTimeStampComparator;
 import com.example.telefixmain.Util.DatabaseHandler;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -393,6 +394,7 @@ public class HomeFragment extends Fragment {
                             // Sort collections by time created
 //                            Collections.sort(tmp, new RequestTimeStampComparator());
                         }
+                        Collections.sort(tmp, new MaintenanceTimeStampComparator());
                         maintenanceRequests.addAll(tmp);
                         if (maintenanceRequests.size() > 0) {
                             // hide empty msg
