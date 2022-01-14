@@ -381,7 +381,7 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         // Clear current request list & add again
-                        Toast.makeText(fragmentActivity, "DATA CHANGE DETECTED", Toast.LENGTH_SHORT).show();
+                        // Toast.makeText(fragmentActivity, "DATA CHANGE DETECTED", Toast.LENGTH_SHORT).show();
                         maintenanceRequests.clear();
                         ArrayList<MaintenanceRequest> tmp = new ArrayList<>();
                         for (DataSnapshot ds : snapshot.getChildren()) {

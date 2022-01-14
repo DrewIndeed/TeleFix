@@ -244,6 +244,9 @@ public class ProfileFragment extends Fragment {
                                                 // refresh Main Activity
                                                 // intent to jump to main activity
                                                 Intent toMainActivity = new Intent(fragmentActivity, MainActivity.class);
+                                                userTracker.setName(profileName.getText().toString().trim());
+                                                userTracker.setPhone(profilePhone.getText().toString().trim());
+                                                userTracker.setEmail(profileEmail.getText().toString().trim());
                                                 toMainActivity.putExtra("loggedInUser", userTracker);
                                                 toMainActivity.putExtra("vehiclesHashMapList", vehiclesHashMapList);
                                                 toMainActivity.putExtra("vehiclesIdList", vehiclesIdList);

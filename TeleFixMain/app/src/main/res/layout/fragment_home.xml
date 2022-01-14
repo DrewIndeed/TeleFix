@@ -82,18 +82,19 @@
                     tools:ignore="UseCompoundDrawables">
 
                     <ImageView
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
+                        android:layout_width="95dp"
+                        android:layout_height="95dp"
                         android:src="@drawable/sos"
                         tools:ignore="ContentDescription" />
 
                     <TextView
                         android:layout_width="100dp"
                         android:layout_height="30dp"
+                        android:layout_marginTop="5dp"
                         android:gravity="center"
                         android:text="SOS"
                         android:textColor="@color/bmw_red"
-                        android:textSize="22sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
                         tools:ignore="HardcodedText" />
                 </LinearLayout>
