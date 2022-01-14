@@ -19,6 +19,8 @@
         <entry key="app/src/main/res/drawable/custom_btn_bg_15.xml" value="0.5927083333333333" />
         <entry key="app/src/main/res/drawable/custom_btn_bg_16.xml" value="0.5708333333333333" />
         <entry key="app/src/main/res/drawable/custom_btn_bg_18.xml" value="0.5708333333333333" />
+        <entry key="app/src/main/res/drawable/custom_btn_bg_19.xml" value="0.5708333333333333" />
+        <entry key="app/src/main/res/drawable/custom_btn_bg_20.xml" value="0.5708333333333333" />
         <entry key="app/src/main/res/drawable/custom_btn_bg_3.xml" value="0.3104166666666667" />
         <entry key="app/src/main/res/drawable/custom_btn_bg_4.xml" value="0.2693693693693694" />
         <entry key="app/src/main/res/drawable/custom_btn_bg_5.xml" value="0.4425925925925926" />
@@ -62,7 +64,7 @@
         <entry key="app/src/main/res/layout/loading_progress.xml" value="0.5078755725825527" />
         <entry key="app/src/main/res/layout/map_bottom_sheet.xml" value="0.3404255319148936" />
         <entry key="app/src/main/res/layout/mechanic_waiting.xml" value="0.41388888888888886" />
-        <entry key="app/src/main/res/layout/row_billing.xml" value="0.28229166666666666" />
+        <entry key="app/src/main/res/layout/row_billing.xml" value="0.5" />
         <entry key="app/src/main/res/layout/row_price_item.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/row_sos_request_item.xml" value="0.335" />
         <entry key="app/src/main/res/layout/row_vehicle_item.xml" value="0.5398365679264555" />

@@ -45,67 +45,88 @@
 
     </LinearLayout>
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_draft_billing"
-        android:layout_width="301dp"
-        android:layout_height="75dp"
-        android:backgroundTint="@color/bmw_light_blue"
+        android:layout_width="320dp"
+        android:layout_height="60dp"
+        android:background="@drawable/custom_btn_bg_19"
         android:text="View Draft Bill"
+        android:textColor="@color/white"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.489"
+        app:layout_constraintHorizontal_bias="0.481"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.832"
-        tools:ignore="HardcodedText" />
+        app:layout_constraintVertical_bias="0.758"
+        tools:ignore="HardcodedText,TextContrastCheck" />
 
-    <Button
-        android:id="@+id/btn_cancel_progress"
-        android:layout_width="147dp"
-        android:layout_height="74dp"
-        android:backgroundTint="@color/bmw_dark_gray"
-        android:text="Cancel SOS Request"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.204"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.955"
-        tools:ignore="HardcodedText" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_back_home_at_request_process">
 
-    <Button
-        android:id="@+id/btn_confirm_progress"
-        android:layout_width="153dp"
-        android:layout_height="74dp"
-        android:backgroundTint="@color/bmw_dark_gray"
-        android:text="Confirm Inspecting Billing"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.779"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.957"
-        tools:ignore="HardcodedText" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_cancel_progress"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/custom_btn_bg_20"
+            android:text="Cancel Request"
+            android:textColor="@color/bmw_white"
+            android:textSize="12sp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.143"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.931"
+            tools:ignore="HardcodedText,TextContrastCheck" />
 
-    <Button
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_confirm_progress"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:background="@drawable/custom_btn_bg_8"
+            android:text="Confirm Inspection"
+            android:textColor="@color/bmw_white"
+            android:textSize="12sp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.779"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.929"
+            tools:ignore="HardcodedText,TextContrastCheck" />
+
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_accept_billing"
-        android:layout_width="300dp"
-        android:layout_height="75dp"
-        android:backgroundTint="@color/bmw_red"
+        android:layout_width="320dp"
+        android:layout_height="60dp"
+        android:background="@drawable/custom_btn_bg_20"
         android:text="View Finalized Bill"
+        android:textColor="@color/bmw_white"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.83"
+        app:layout_constraintVertical_bias="0.756"
         tools:ignore="HardcodedText" />
 
     <LinearLayout
+        android:id="@+id/ll_mechanic_info_at_request_processing"
         android:layout_width="260dp"
         android:layout_height="260dp"
         android:background="@drawable/custom_btn_bg_18"
@@ -116,7 +137,7 @@
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.172">
+        app:layout_constraintVertical_bias="0.13">
 
         <androidx.cardview.widget.CardView
             android:layout_width="100dp"
@@ -158,19 +179,6 @@
 
     </LinearLayout>
 
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/processing_request_gif"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:src="@drawable/fixing_sos"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.29" />
-
     <com.shuhart.stepview.StepView
         android:id="@+id/step_view_on_way"
         android:layout_width="match_parent"
@@ -184,7 +192,7 @@
         app:layout_constraintStart_toStartOf="parent"
 
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.644"
+        app:layout_constraintVertical_bias="0.588"
 
         app:sv_animationDuration="1000"
         app:sv_animationType="All"
@@ -207,16 +215,18 @@
 
     <Button
         android:id="@+id/btn_back_home_at_request_process"
-        android:layout_width="300dp"
-        android:layout_height="75dp"
-        android:background="@drawable/custom_btn_bg_7"
+        android:layout_width="320dp"
+        android:layout_height="60dp"
+        android:background="@drawable/custom_btn_bg_20"
         android:text="Back to Home"
+        android:textColor="@color/bmw_white"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.486"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.83"
+        app:layout_constraintVertical_bias="0.755"
         tools:ignore="HardcodedText,TextContrastCheck" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

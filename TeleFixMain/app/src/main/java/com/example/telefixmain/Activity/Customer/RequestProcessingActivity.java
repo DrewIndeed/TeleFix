@@ -123,6 +123,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
         Button userBtnDraftPayment = findViewById(R.id.btn_draft_billing);
         Button userBtnProceedPayment = findViewById(R.id.btn_accept_billing);
         Button userBtnCancelProgress = findViewById(R.id.btn_cancel_progress);
+
         Button userBtnAcceptProgress = findViewById(R.id.btn_confirm_progress);
         Button userBackToHome = findViewById(R.id.btn_back_home_at_request_process);
 
@@ -145,6 +146,12 @@ public class RequestProcessingActivity extends AppCompatActivity {
                         userBtnDraftPayment.setVisibility(View.VISIBLE);
                         userBtnCancelProgress.setVisibility(View.VISIBLE);
                         userBtnAcceptProgress.setVisibility(View.VISIBLE);
+                        userBtnDraftPayment.startAnimation(AnimationUtils.loadAnimation(
+                                RequestProcessingActivity.this, R.anim.fade_in));
+                        userBtnCancelProgress.startAnimation(AnimationUtils.loadAnimation(
+                                RequestProcessingActivity.this, R.anim.fade_in));
+                        userBtnAcceptProgress.startAnimation(AnimationUtils.loadAnimation(
+                                RequestProcessingActivity.this, R.anim.fade_in));
                     }
                 }
             }
@@ -185,9 +192,19 @@ public class RequestProcessingActivity extends AppCompatActivity {
         userBtnDraftPayment.setOnClickListener(view -> {
             // Set billing visible
             billingLayout.setVisibility(View.VISIBLE);
+            billingLayout.startAnimation(
+                    AnimationUtils.loadAnimation(RequestProcessingActivity.this, R.anim.fade_in));
+
+            findViewById(R.id.ll_mechanic_info_at_request_processing).setVisibility(View.GONE);
+            findViewById(R.id.ll_mechanic_info_at_request_processing).startAnimation(
+                    AnimationUtils.loadAnimation(RequestProcessingActivity.this, R.anim.fade_out));
+
+            userBtnDraftPayment.startAnimation(
+                    AnimationUtils.loadAnimation(RequestProcessingActivity.this, R.anim.fade_out));
+            userBtnDraftPayment.setVisibility(View.GONE);
+
             BookingHandler.viewSOSBilling(vendorsBookings, this, vendorId, requestId,
                     billings, currentPrice, () -> billingAdapter.notifyDataSetChanged());
-            findViewById(R.id.processing_request_gif).setVisibility(View.GONE);
             currentStep = 3;
             stepView.go(currentStep, true);
         });
@@ -201,7 +218,6 @@ public class RequestProcessingActivity extends AppCompatActivity {
             stepView.done(true);
 
             billingLayout.setVisibility(View.GONE);
-            findViewById(R.id.processing_request_gif).setVisibility(View.VISIBLE);
             userBtnAcceptProgress.setVisibility(View.GONE);
             userBtnDraftPayment.setVisibility(View.GONE);
             userBtnCancelProgress.setVisibility(View.GONE);
@@ -210,7 +226,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
             userBackToHome.startAnimation(
                     AnimationUtils.loadAnimation(RequestProcessingActivity.this, R.anim.fade_in));
 
-            // DUMMY
+            // back home
             userBackToHome.setOnClickListener(view1 -> {
                 Intent backToHome = new Intent(RequestProcessingActivity.this, MainActivity.class);
                 backToHome.putExtra("loggedInUser", userTracker);
@@ -228,7 +244,6 @@ public class RequestProcessingActivity extends AppCompatActivity {
             stepView.go(currentStep, true);
 
             billingLayout.setVisibility(View.GONE);
-            findViewById(R.id.processing_request_gif).setVisibility(View.VISIBLE);
             userBtnAcceptProgress.setVisibility(View.GONE);
             userBtnDraftPayment.setVisibility(View.GONE);
             userBtnCancelProgress.setVisibility(View.GONE);
@@ -240,14 +255,13 @@ public class RequestProcessingActivity extends AppCompatActivity {
             billingLayout.setVisibility(View.VISIBLE);
             BookingHandler.viewSOSBilling(vendorsBookings, this, vendorId, requestId,
                     billings, currentPrice, () -> billingAdapter.notifyDataSetChanged());
-            findViewById(R.id.processing_request_gif).setVisibility(View.GONE);
             userBtnProceedPayment.setVisibility(View.GONE);
 
             userBackToHome.setVisibility(View.VISIBLE);
             userBackToHome.startAnimation(
                     AnimationUtils.loadAnimation(RequestProcessingActivity.this, R.anim.fade_in));
 
-            // DUMMY
+            // back home
             userBackToHome.setOnClickListener(view1 -> {
                 Intent backToHome = new Intent(RequestProcessingActivity.this, MainActivity.class);
                 backToHome.putExtra("loggedInUser", userTracker);
