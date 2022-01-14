@@ -9,9 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -29,6 +26,7 @@ import com.example.telefixmain.Model.User;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.BookingHandler;
 import com.example.telefixmain.Util.NotificationHandler;
+import com.example.telefixmain.Util.NotificationInstance;
 import com.example.telefixmain.Util.DatabaseHandler;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -154,7 +152,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
                     if (!isApproved) {
                         // Send notification when MECHANIC has issued the bill
                         String content = "Mechanic has issued the inspecting bill. Please approve to continue!";
-                        sendProgressTrackingNotification(content);
+                        NotificationHandler.sendProgressTrackingNotification(RequestProcessingActivity.this, "TeleFix - SOS Request", content);
                         userBtnDraftPayment.startAnimation(AnimationUtils.loadAnimation(
                                 RequestProcessingActivity.this, R.anim.fade_in));
                         userBtnCancelProgress.startAnimation(AnimationUtils.loadAnimation(
@@ -186,7 +184,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
                     // Send notification when MECHANIC arrived
                     String content = "Mechanic has arrived at your location";
-                    sendProgressTrackingNotification(content);
+                    NotificationHandler.sendProgressTrackingNotification(RequestProcessingActivity.this, "TeleFix - SOS Request", content);
 
                 } else if (Objects.requireNonNull(sosProgress).getStartFixingTimestamp() != 0
                         && Objects.requireNonNull(sosProgress).getStartBillingTimestamp() != 0) {
@@ -194,7 +192,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
                     // Send notification when MECHANIC has updated the final bill
                     String content = "Mechanic has updated the finalized bill!";
-                    sendProgressTrackingNotification(content);
+                    NotificationHandler.sendProgressTrackingNotification(RequestProcessingActivity.this, "TeleFix - SOS Request", content);
                 }
             }
 
@@ -293,24 +291,5 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-    }
-
-    private void sendProgressTrackingNotification(String content) {
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.app_icon);
-
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(this, NotificationHandler.CHANNEL_ID)
-                .setContentTitle("TeleFix - SOS Progress")
-                .setContentText(content)
-                .setSmallIcon(R.drawable.app_icon)
-                .setLargeIcon(bitmap)
-                .setPriority(NotificationCompat.PRIORITY_MAX);
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        // notificationId is a unique int for each notification that you must define
-        notificationManager.notify(getNotificationId(), notification.build());
-    }
-
-    private int getNotificationId() {
-        return (int) new Date().getTime();
     }
 }

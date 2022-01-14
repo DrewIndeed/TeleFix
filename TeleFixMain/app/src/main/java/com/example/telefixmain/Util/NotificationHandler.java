@@ -1,40 +1,33 @@
 package com.example.telefixmain.Util;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
-import android.app.Application;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.os.Build;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.example.telefixmain.R;
 
-public class NotificationHandler extends Application {
+import java.util.Date;
 
-    public static final String CHANNEL_ID = "99";
+public class NotificationHandler {
+    public static void sendProgressTrackingNotification(Context context, String title, String content) {
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.app_icon);
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(context, NotificationInstance.CHANNEL_ID)
+                .setContentTitle(title)
+                .setContentText(content)
+                .setSmallIcon(R.drawable.app_icon)
+                .setLargeIcon(bitmap)
+                .setPriority(NotificationCompat.PRIORITY_MAX);
 
-        createNotificationChannel();
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        // notificationId is a unique int for each notification that you must define
+        notificationManager.notify(getNotificationId(), notification.build());
     }
 
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-
-            if (notificationManager != null) {
-                notificationManager.createNotificationChannel(channel);
-            }
-        }
+    public static int getNotificationId() {
+        return (int) new Date().getTime();
     }
 }

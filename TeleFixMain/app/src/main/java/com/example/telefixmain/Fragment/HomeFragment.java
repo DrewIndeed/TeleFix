@@ -39,6 +39,7 @@ import com.example.telefixmain.Activity.Customer.SosActivity;
 import com.example.telefixmain.Util.Comparator.MaintenanceTimeStampComparator;
 import com.example.telefixmain.Util.Comparator.SOSTimeStampComparator;
 import com.example.telefixmain.Util.DatabaseHandler;
+import com.example.telefixmain.Util.NotificationHandler;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
@@ -329,7 +330,6 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         // Clear current request list & add again
-//                        Toast.makeText(fragmentActivity, "DATA CHANGE DETECTED", Toast.LENGTH_SHORT).show();
                         sosRequests.clear();
                         ArrayList<SOSRequest> tmp = new ArrayList<>();
                         for (DataSnapshot ds : snapshot.getChildren()) {
@@ -339,7 +339,6 @@ public class HomeFragment extends Fragment {
                             }
 
                         }
-//                         Sort collections by time created
                         Collections.sort(tmp, new SOSTimeStampComparator());
                         sosRequests.addAll(tmp);
 
@@ -353,6 +352,11 @@ public class HomeFragment extends Fragment {
                         }
                         sosRequestAdapter.notifyDataSetChanged();
 
+                        if (sosRequests.size() > 0) {
+                            // Push notification
+                            String content = "SOS Requests has been updated!";
+                            NotificationHandler.sendProgressTrackingNotification(fragmentActivity, "TeleFix - SOS Request", content);
+                        }
                     }
 
                     @Override
@@ -391,9 +395,8 @@ public class HomeFragment extends Fragment {
                                 tmp.add(request);
                             }
 
-                            // Sort collections by time created
-//                            Collections.sort(tmp, new RequestTimeStampComparator());
                         }
+                        // Sort collections by time created
                         Collections.sort(tmp, new MaintenanceTimeStampComparator());
                         maintenanceRequests.addAll(tmp);
                         if (maintenanceRequests.size() > 0) {
@@ -405,7 +408,11 @@ public class HomeFragment extends Fragment {
                             maintenanceRecyclerView.setVisibility(View.GONE);
                         }
                         maintenanceRequestListAdapter.notifyDataSetChanged();
-
+                        if (maintenanceRequests.size() > 0) {
+                            // Push notification
+                            String content = "Maintenance Requests has been updated!";
+                            NotificationHandler.sendProgressTrackingNotification(fragmentActivity, "TeleFix - Maintenance Request", content);
+                        }
                     }
 
                     @Override
