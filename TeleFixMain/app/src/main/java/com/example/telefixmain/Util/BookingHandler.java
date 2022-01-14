@@ -275,12 +275,12 @@ public class BookingHandler {
                                                   String mechanicId,
                                                   String respond) {
         // Get the root reference of chosen vendor
-        DatabaseReference bookingRef = rootNode.getReference(vendorId).child("maintenance").child("progress").child(requestId);
+        DatabaseReference bookingRef = rootNode.getReference(vendorId).child("maintenance").child("request").child(requestId);
 
         // Respond to maintenance booking
         switch (respond) {
             case "accepted":
-                bookingRef.child("mechanicId").setValue(mechanicId);
+                bookingRef.child("respond").setValue(mechanicId);
                 bookingRef.child("status").setValue("accepted")
                         .addOnCompleteListener(task -> Toast.makeText(context,
                                 "MAINTENANCE BOOKING ACCEPTED!", Toast.LENGTH_SHORT).show())
@@ -288,6 +288,7 @@ public class BookingHandler {
                                 e.getMessage(), Toast.LENGTH_SHORT).show());
                 break;
             case "rejected":
+                bookingRef.child("respond").setValue(respond);
                 bookingRef.child("status").setValue("rejected")
                         .addOnCompleteListener(task -> Toast.makeText(context,
                                 "MAINTENANCE BOOKING REJECTED!", Toast.LENGTH_SHORT).show())

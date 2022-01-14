@@ -3,7 +3,6 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="../../../../../../layout/custom_preview.xml" value="0.45123537061118335" />
         <entry key="app/src/main/res/drawable-anydpi/ic_login_email.xml" value="0.4425925925925926" />
         <entry key="app/src/main/res/drawable-anydpi/ic_login_name.xml" value="0.4425925925925926" />
         <entry key="app/src/main/res/drawable-hdpi/custom_btn_bg_2.xml" value="0.3104166666666667" />
@@ -12,12 +11,7 @@
         <entry key="app/src/main/res/drawable/custom_btn_bg_0.xml" value="0.2693693693693694" />
         <entry key="app/src/main/res/drawable/custom_btn_bg_1.xml" value="0.3104166666666667" />
         <entry key="app/src/main/res/drawable/custom_btn_bg_10.xml" value="0.2693693693693694" />
-        <entry key="app/src/main/res/drawable/custom_btn_bg_11.xml" value="0.5835897435897436" />
-        <entry key="app/src/main/res/drawable/custom_btn_bg_12.xml" value="0.2693693693693694" />
-        <entry key="app/src/main/res/drawable/custom_btn_bg_13.xml" value="0.5748717948717949" />
-        <entry key="app/src/main/res/drawable/custom_btn_bg_14.xml" value="0.5748717948717949" />
-        <entry key="app/src/main/res/drawable/custom_btn_bg_15.xml" value="0.5927083333333333" />
-        <entry key="app/src/main/res/drawable/custom_btn_bg_16.xml" value="0.5708333333333333" />
+        <entry key="app/src/main/res/drawable/custom_btn_bg_17.xml" value="0.5354166666666667" />
         <entry key="app/src/main/res/drawable/custom_btn_bg_3.xml" value="0.3104166666666667" />
         <entry key="app/src/main/res/drawable/custom_btn_bg_4.xml" value="0.2693693693693694" />
         <entry key="app/src/main/res/drawable/custom_btn_bg_5.xml" value="0.4425925925925926" />
@@ -29,44 +23,33 @@
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.4425925925925926" />
         <entry key="app/src/main/res/drawable/ic_nvg_home.xml" value="0.26846846846846845" />
         <entry key="app/src/main/res/drawable/ic_sos_back.xml" value="0.2693693693693694" />
-        <entry key="app/src/main/res/drawable/ic_sos_back_down.xml" value="0.5838541666666667" />
+        <entry key="app/src/main/res/drawable/ic_sos_refresh.xml" value="0.2693693693693694" />
         <entry key="app/src/main/res/drawable/nvg_item_selector.xml" value="0.2693693693693694" />
         <entry key="app/src/main/res/drawable/signup_thumb.xml" value="0.26846846846846845" />
         <entry key="app/src/main/res/drawable/signup_track.xml" value="0.2693693693693694" />
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.2554054054054054" />
-        <entry key="app/src/main/res/layout/activity_login.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.45" />
-        <entry key="app/src/main/res/layout/activity_mechanic_sos.xml" value="0.2554054054054054" />
-        <entry key="app/src/main/res/layout/activity_mechanic_sos_request.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/activity_mechanic_sos.xml" value="0.3078125" />
+        <entry key="app/src/main/res/layout/activity_mechanic_sos_request.xml" value="0.3078125" />
         <entry key="app/src/main/res/layout/activity_on_way.xml" value="0.12522522522522522" />
         <entry key="app/src/main/res/layout/activity_request_processing.xml" value="0.2554054054054054" />
         <entry key="app/src/main/res/layout/activity_signup.xml" value="0.375" />
         <entry key="app/src/main/res/layout/activity_sos.xml" value="0.2554054054054054" />
         <entry key="app/src/main/res/layout/activity_splash_screen.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/activity_user_maintenance.xml" value="0.14895833333333333" />
-        <entry key="app/src/main/res/layout/bottom_dialog_change_password.xml" value="0.375" />
-        <entry key="app/src/main/res/layout/bottom_dialog_mechanic_waiting.xml" value="0.5765625" />
-        <entry key="app/src/main/res/layout/bottom_dialog_vehicle_register.xml" value="0.39594594594594595" />
-        <entry key="app/src/main/res/layout/bottom_dialog_vendor_details.xml" value="0.2266533512836268" />
-        <entry key="app/src/main/res/layout/center_dialog_maintenance_booking.xml" value="0.27794871794871795" />
+        <entry key="app/src/main/res/layout/activity_user_maintenance.xml" value="0.3078125" />
+        <entry key="app/src/main/res/layout/center_dialog_maintenance_booking.xml" value="0.3104166666666667" />
         <entry key="app/src/main/res/layout/change_password_dialog.xml" value="0.45" />
-        <entry key="app/src/main/res/layout/custom_pricelist_dialog.xml" value="0.45" />
         <entry key="app/src/main/res/layout/custom_progress_dialog.xml" value="0.2554054054054054" />
         <entry key="app/src/main/res/layout/fragment_history.xml" value="0.2554054054054054" />
-        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.23688846865998162" />
-        <entry key="app/src/main/res/layout/fragment_home_mechanic.xml" value="0.5398365679264555" />
+        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.375" />
-        <entry key="app/src/main/res/layout/fragment_vehicle_register.xml" value="0.5" />
         <entry key="app/src/main/res/layout/loading_progress.xml" value="0.5078755725825527" />
-        <entry key="app/src/main/res/layout/map_bottom_sheet.xml" value="0.3404255319148936" />
+        <entry key="app/src/main/res/layout/map_bottom_sheet.xml" value="0.3185483870967742" />
         <entry key="app/src/main/res/layout/mechanic_waiting.xml" value="0.41388888888888886" />
-        <entry key="app/src/main/res/layout/row_billing.xml" value="0.28229166666666666" />
-        <entry key="app/src/main/res/layout/row_price_item.xml" value="0.28229166666666666" />
-        <entry key="app/src/main/res/layout/row_sos_request_item.xml" value="0.335" />
-        <entry key="app/src/main/res/layout/row_vehicle_item.xml" value="0.5398365679264555" />
-        <entry key="app/src/main/res/layout/row_vendor_list_item.xml" value="1.3630215768856244" />
+        <entry key="app/src/main/res/layout/row_vehicle_item.xml" value="0.3078125" />
+        <entry key="app/src/main/res/layout/row_vendor_list_item.xml" value="0.3078125" />
         <entry key="app/src/main/res/menu/item_menu.xml" value="0.2554054054054054" />
-        <entry key="app/src/main/res/menu/search_menu.xml" value="0.27794871794871795" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.371875" />
       </map>
     </option>
@@ -76,12 +59,5 @@
   </component>
   <component name="ProjectType">
     <option name="id" value="Android" />
-  </component>
-  <component name="VisualizationToolProject">
-    <option name="state">
-      <ProjectState>
-        <option name="scale" value="0.5677083333333334" />
-      </ProjectState>
-    </option>
   </component>
 </project>

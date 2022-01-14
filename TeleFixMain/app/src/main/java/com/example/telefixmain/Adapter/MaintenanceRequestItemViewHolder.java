@@ -13,7 +13,7 @@ import com.example.telefixmain.R;
 public class MaintenanceRequestItemViewHolder extends RecyclerView.ViewHolder {
     TextView title, status;
     EditText date, time;
-    LinearLayout actionButtons;
+    LinearLayout actionButtons, dialog;
     View mView;
 
     public MaintenanceRequestItemViewHolder(@NonNull View itemView) {
@@ -25,5 +25,6 @@ public class MaintenanceRequestItemViewHolder extends RecyclerView.ViewHolder {
         time = itemView.findViewById(R.id.edit_time_picker);
         status = itemView.findViewById(R.id.tv_maintenance_status);
         actionButtons = itemView.findViewById(R.id.ll_maintenance_actions);
+        dialog = itemView.findViewById(R.id.dialog_maintenance_booking);
     }
 }

@@ -4,7 +4,7 @@ public class MaintenanceRequest {
     private String requestId;
     private String userId;
     private String vendorId;
-    private String mechanicId;
+    private String respond;
     private long datetime;
     private String status;
 
@@ -14,7 +14,7 @@ public class MaintenanceRequest {
         this.requestId = requestId;
         this.userId = userId;
         this.vendorId = vendorId;
-        this.mechanicId = "";
+        this.respond = "";
         this.datetime = datetime;
         this.status = "on-going";
     }
@@ -43,12 +43,12 @@ public class MaintenanceRequest {
         this.vendorId = vendorId;
     }
 
-    public String getMechanicId() {
-        return mechanicId;
+    public String getRespond() {
+        return respond;
     }
 
-    public void setMechanicId(String mechanicId) {
-        this.mechanicId = mechanicId;
+    public void setRespond(String respond) {
+        this.respond = respond;
     }
 
     public long getDatetime() {
