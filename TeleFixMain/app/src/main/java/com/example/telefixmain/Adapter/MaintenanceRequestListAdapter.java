@@ -46,6 +46,10 @@ public class MaintenanceRequestListAdapter extends RecyclerView.Adapter<Maintena
         holder.actionButtons.setVisibility(View.GONE);
 
         String userId = maintenanceRequests.get(position).getUserId();
+        long dtValue = maintenanceRequests.get(position).getDatetime();
+        String dtString = timeConverter(dtValue);
+        String[] dtArray = dtString.split("\\s");
+
         // get customer info (name + phone) and set text on mechanic screen
         ArrayList<User> tmp = new ArrayList<>();
         DatabaseHandler.getSingleUser(db, userId, tmp, () -> {
@@ -54,8 +58,9 @@ public class MaintenanceRequestListAdapter extends RecyclerView.Adapter<Maintena
 
         holder.status.setVisibility(View.VISIBLE);
         holder.status.setText("Waiting for acceptance");
-        holder.date.setText(timeConverter(maintenanceRequests.get(position).getDate(),"date"));
-        holder.time.setText(timeConverter(maintenanceRequests.get(position).getTime(), "time"));
+
+        holder.date.setText(dtArray[0]);
+        holder.time.setText(dtArray[1]);
 
         holder.date.setEnabled(false);
         holder.time.setEnabled(false);
@@ -73,19 +78,13 @@ public class MaintenanceRequestListAdapter extends RecyclerView.Adapter<Maintena
     /**
      * Method to convert the unix timestamp to GMT
      */
-    @SuppressLint("SimpleDateFormat")
-    public static String timeConverter(long unixValue, String type) {
-        SimpleDateFormat sdf;
-        if (type.equals("date")) {
-            sdf = new SimpleDateFormat("dd/MM/yyyy");
-            sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT+7"));
-            return sdf.format(new Date (unixValue));
-        }
-        else {
-            sdf = new SimpleDateFormat("HH:mm");
-            sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT+7"));
-            return sdf.format(new Date (unixValue + 3600*1000L));
-        }
 
+    public static String timeConverter(long unixValue) {
+        Date date = new java.util.Date(unixValue * 1000L);
+        // the format of your date
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd-MM-yyy HH:mm");
+        // give a timezone reference for formatting (see comment at the bottom)
+        sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT+7"));
+        return sdf.format(date);
     }
 }
