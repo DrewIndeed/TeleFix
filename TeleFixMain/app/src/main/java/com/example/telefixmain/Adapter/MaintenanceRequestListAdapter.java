@@ -1,10 +1,7 @@
 package com.example.telefixmain.Adapter;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,14 +13,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.telefixmain.Activity.Mechanic.SOSProgressActivity;
 import com.example.telefixmain.Dialog.CustomProgressDialog;
 import com.example.telefixmain.Model.Booking.MaintenanceRequest;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.BookingHandler;
 import com.example.telefixmain.Util.DatabaseHandler;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -52,7 +47,7 @@ public class MaintenanceRequestListAdapter extends RecyclerView.Adapter<Maintena
     @Override
     public MaintenanceRequestItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.center_dialog_maintenance_booking, parent, false);
+                .inflate(R.layout.progress_dialog_maintenance_booking, parent, false);
         return new MaintenanceRequestItemViewHolder(itemView);
     }
 
@@ -117,7 +112,7 @@ public class MaintenanceRequestListAdapter extends RecyclerView.Adapter<Maintena
     }
 
     private void openRespondDialog(String vendorId, String requestId, String[] time) {
-        CustomProgressDialog respondDialog = new CustomProgressDialog(activityContext, R.style.SheetDialog, R.layout.center_dialog_maintenance_booking);
+        CustomProgressDialog respondDialog = new CustomProgressDialog(activityContext, R.style.SheetDialog, R.layout.progress_dialog_maintenance_booking);
         View root = respondDialog.getDialogRootView();
 
         // Bind element

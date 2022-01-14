@@ -108,13 +108,12 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
         // add steps for step view
         List<String> steps = new ArrayList<>();
-        steps.add("Mechanic found");
-        steps.add("Mechanic arriving");
-        steps.add("Inspecting");
-        steps.add("Confirm Proceed Fixing");
+        steps.add("Mechanic Found");
+        steps.add("Mechanic Arriving");
+        steps.add("Inspecting Vehicle");
+        steps.add("Confirm Inspection");
         steps.add("Proceed Payment");
         stepView.setSteps(steps);
-
         stepView.go(1, true);
 
         currentBilling = vendorsBookings.getReference(vendorId).child("sos").child("billing").child(requestId);

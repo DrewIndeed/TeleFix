@@ -72,7 +72,7 @@
         <TextView
             android:id="@+id/cv_no_sos_request"
             android:layout_width="match_parent"
-            android:layout_height="225dp"
+            android:layout_height="180dp"
             android:layout_marginStart="15dp"
             android:layout_marginEnd="15dp"
             android:background="@drawable/custom_btn_bg_2"
@@ -113,7 +113,7 @@
         <TextView
             android:id="@+id/cv_no_maintain_request"
             android:layout_width="match_parent"
-            android:layout_height="225dp"
+            android:layout_height="180dp"
             android:layout_marginStart="15dp"
             android:layout_marginEnd="15dp"
             android:background="@drawable/custom_btn_bg_2"

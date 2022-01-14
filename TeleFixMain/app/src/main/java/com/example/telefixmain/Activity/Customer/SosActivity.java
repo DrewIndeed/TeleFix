@@ -120,6 +120,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
     // lottie anim
     LottieAnimationView lotteAboveMsg;
+    LottieAnimationView lotteAboveMsgCancel;
     GifImageView waitGif;
 
     // results containers
@@ -321,6 +322,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
                             // init waiting anim
                             lotteAboveMsg = waitDialog.findViewById(R.id.done_waiting_anim);
+                            lotteAboveMsgCancel = waitDialog.findViewById(R.id.done_waiting_anim_cancel);
                             waitGif = waitDialog.findViewById(R.id.mechanic_wait_gif);
 
                             // Create sos booking request on Realtime Database
@@ -394,44 +396,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                                    // Getting Post failed, log a message
-                                    gotResult[0] = true;
-                                    closeDialogBtn.setEnabled(false);
-                                    closeDialogBtn.setVisibility(View.INVISIBLE);
-                                    sosBottomDialog.setCancelable(false);
 
-                                    // hide waiting gif
-                                    waitGif.startAnimation(AnimationUtils.loadAnimation(
-                                            SosActivity.this, R.anim.fade_out));
-
-                                    // lottie done anim
-                                    lotteAboveMsg.setVisibility(View.VISIBLE);
-                                    lotteAboveMsg.startAnimation(AnimationUtils.loadAnimation(
-                                            SosActivity.this, R.anim.fade_in));
-
-                                    // change msg
-                                    dialogMsg.startAnimation(AnimationUtils.loadAnimation(
-                                            SosActivity.this, R.anim.fade_out));
-                                    dialogMsg.setText("Your mechanic is on his/her way!");
-                                    dialogMsg.startAnimation(AnimationUtils.loadAnimation(
-                                            SosActivity.this, R.anim.fade_in));
-
-                                    // jump to mechanic arrival tracking activity
-                                    new Handler().postDelayed(() -> {
-                                        // dismiss dialog before open a new one to avoid window leak
-                                        sosBottomDialog.dismiss();
-
-                                        // start intent
-                                        Intent i = new Intent(SosActivity.this,
-                                                RequestProcessingActivity.class);
-                                        i.putExtra("currentVendorId", currentVendorId);
-                                        i.putExtra("currentRequestId", currentRequestId);
-                                        i.putExtra("loggedInUser", userTracker);
-                                        i.putExtra("vehiclesHashMapList", vehiclesHashMapList);
-                                        startActivity(i);
-                                        finish();
-
-                                    }, 4000);
                                 }
                             };
                             System.out.println("Done setting up ValueEventListener");
@@ -446,6 +411,26 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                 System.out.println("<><><><><> IN TESTING DELAY <><><><><>");
 
                                 if (!gotResult[0]) { //  Timeout
+                                    // timeout animation
+                                    closeDialogBtn.setEnabled(false);
+                                    closeDialogBtn.setVisibility(View.INVISIBLE);
+                                    sosBottomDialog.setCancelable(false);
+
+                                    // hide waiting gif
+                                    waitGif.startAnimation(AnimationUtils.loadAnimation(
+                                            SosActivity.this, R.anim.fade_out));
+
+                                    // lottie done anim
+                                    lotteAboveMsgCancel.setVisibility(View.VISIBLE);
+                                    lotteAboveMsgCancel.startAnimation(AnimationUtils.loadAnimation(
+                                            SosActivity.this, R.anim.fade_in));
+
+                                    // change msg
+                                    dialogMsg.startAnimation(AnimationUtils.loadAnimation(
+                                            SosActivity.this, R.anim.fade_out));
+                                    dialogMsg.setText("Chosen vendor is unavailable right now ...");
+                                    dialogMsg.startAnimation(AnimationUtils.loadAnimation(
+                                            SosActivity.this, R.anim.fade_in));
 
                                     // handle real-time database request cancellation
                                     if (currentVendorRef != null && currentRequestId != null) {
@@ -460,8 +445,10 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                         currentVendorId = null;
                                     }
 
-                                    // dismiss waiting dialog
-                                    sosBottomDialog.dismiss();
+                                    new Handler().postDelayed(() -> {
+                                        // dismiss waiting dialog
+                                        sosBottomDialog.dismiss();
+                                    }, 3000);
                                 }
                             }, 10000);
                         });
@@ -471,7 +458,7 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void openScheduleMaintenanceDialog() {
-        CustomProgressDialog scheduleDialog = new CustomProgressDialog(this, R.style.SheetDialog, R.layout.center_dialog_maintenance_booking);
+        CustomProgressDialog scheduleDialog = new CustomProgressDialog(this, R.style.SheetDialog, R.layout.progress_dialog_maintenance_booking);
         View root = scheduleDialog.getDialogRootView();
 
         EditText datePicker = root.findViewById(R.id.edit_date_picker);
@@ -497,7 +484,8 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                 Toast.makeText(this, "Please input all information", Toast.LENGTH_SHORT).show();
             } else {
                 String datetime = dateValue + " " + timeValue;
-                DateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+                @SuppressLint("SimpleDateFormat") DateFormat sdf =
+                        new SimpleDateFormat("dd-MM-yyyy HH:mm");
                 try {
                     Date dt = (Date) sdf.parse(datetime);
 
