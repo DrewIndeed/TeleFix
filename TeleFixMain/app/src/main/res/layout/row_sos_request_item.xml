@@ -5,9 +5,10 @@
     android:id="@+id/sos_request_viewholder"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="15dp"
     android:paddingLeft="15dp"
     android:paddingRight="15dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp"
     android:background="@drawable/custom_btn_bg_15"
     android:gravity="center"
     android:orientation="vertical">

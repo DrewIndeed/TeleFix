@@ -487,7 +487,6 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
 
         cancelBtn.setOnClickListener(view -> scheduleDialog.dismiss());
 
-
         confirmBtn.setOnClickListener(view -> {
             String dateValue = datePicker.getText().toString();
             String timeValue = timePicker.getText().toString();
@@ -515,7 +514,6 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                                 backToHome.putExtra("vehiclesHashMapList", vehiclesHashMapList);
                                 startActivity(backToHome);
                                 finish();
-
                             });
                 } catch (ParseException e) {
                     e.printStackTrace();

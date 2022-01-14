@@ -188,7 +188,6 @@ public class HomeFragment extends Fragment {
 
                             String vehicleId = UUID.randomUUID().toString();
 
-
                             // create new vehicle on database
                             DatabaseHandler.createVehicle(db,
                                     fragmentActivity, mUser.getUid(),
@@ -328,7 +327,7 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         // Clear current request list & add again
-                        Toast.makeText(fragmentActivity, "DATA CHANGE DETECTED", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(fragmentActivity, "DATA CHANGE DETECTED", Toast.LENGTH_SHORT).show();
                         sosRequests.clear();
                         ArrayList<SOSRequest> tmp = new ArrayList<>();
                         for (DataSnapshot ds : snapshot.getChildren()) {

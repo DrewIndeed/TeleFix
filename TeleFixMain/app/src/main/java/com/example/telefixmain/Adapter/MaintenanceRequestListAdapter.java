@@ -49,7 +49,7 @@ public class MaintenanceRequestListAdapter extends RecyclerView.Adapter<Maintena
         // get customer info (name + phone) and set text on mechanic screen
         ArrayList<User> tmp = new ArrayList<>();
         DatabaseHandler.getSingleUser(db, userId, tmp, () -> {
-            holder.title.setText(tmp.get(0).getName() + " - " + tmp.get(0).getPhone());
+            holder.title.setText(tmp.get(0).getName() + "\n" + tmp.get(0).getPhone());
         });
 
         holder.status.setVisibility(View.VISIBLE);
@@ -73,6 +73,7 @@ public class MaintenanceRequestListAdapter extends RecyclerView.Adapter<Maintena
     /**
      * Method to convert the unix timestamp to GMT
      */
+    @SuppressLint("SimpleDateFormat")
     public static String timeConverter(long unixValue, String type) {
         SimpleDateFormat sdf;
         if (type.equals("date")) {
