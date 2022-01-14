@@ -504,13 +504,12 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                     Date time = (Date) timeFormat.parse(timeValue);
 
                     // Add to maintenance booking
-                    currentRequestId = UUID.randomUUID().toString();<<<<<<< minh_final
-                    BookingHandler.sendMaintenanceRequest(vendorsBookings, this, currentVendor.getId(), userTracker.getId(), currentRequestId,
-                            date.getTime()/1000L, time.getTime()/1000L,
-
+                    currentRequestId = UUID.randomUUID().toString();
+                    BookingHandler.sendMaintenanceRequest(vendorsBookings, this,
+                            currentVendor.getId(), userTracker.getId(), currentRequestId,
+                            Objects.requireNonNull(date).getTime() / 1000L,
+                            Objects.requireNonNull(time).getTime() / 1000L,
                             () -> {
-
-
                                 Intent backToHome = new Intent(this, MainActivity.class);
                                 backToHome.putExtra("loggedInUser", userTracker);
                                 backToHome.putExtra("vehiclesHashMapList", vehiclesHashMapList);

@@ -13,13 +13,14 @@
       </Target>
     </targetSelectedWithDropDown>
     <timeTargetWasSelectedWithDropDown value="2022-01-13T10:51:59.718960Z" />
+    <multipleDevicesSelectedInDropDown value="true" />
     <runningDeviceTargetsSelectedWithDialog>
       <Target>
         <type value="RUNNING_DEVICE_TARGET" />
         <deviceKey>
           <Key>
             <type value="VIRTUAL_DEVICE_PATH" />
-            <value value="$USER_HOME$/.android/avd/3.avd" />
+            <value value="$USER_HOME$/.android/avd/mechanic.avd" />
           </Key>
         </deviceKey>
       </Target>
@@ -28,7 +29,7 @@
         <deviceKey>
           <Key>
             <type value="VIRTUAL_DEVICE_PATH" />
-            <value value="$USER_HOME$/.android/avd/Mechanic.avd" />
+            <value value="$USER_HOME$/.android/avd/customer.avd" />
           </Key>
         </deviceKey>
       </Target>
