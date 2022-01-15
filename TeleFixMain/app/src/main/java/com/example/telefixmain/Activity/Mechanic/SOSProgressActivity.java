@@ -248,34 +248,34 @@ public class SOSProgressActivity extends AppCompatActivity {
 
         //--------End progress-------
 
-        mechanicBtnEndProgress.setOnClickListener(view ->
-                BookingHandler.confirmSOSBilling(vendorBookings, SOSProgressActivity.this, vendorId, requestId, System.currentTimeMillis() / 1000L, () -> {
-                    // Add to events database and exit
-                    AlertDialog.Builder builder = new AlertDialog.Builder(SOSProgressActivity.this);
-                    builder.setTitle("Closing SOS request");
-                    builder.setMessage("Please make sure the user has paid properly.");
-                    builder.setPositiveButton("Confirm", (dialog, id) -> {
-                        // if aborted
-                        if (isAborted) {
-                            DatabaseHandler.createEvent(db, SOSProgressActivity.this, requestId, customerId, vendorId,
-                                    mUser.getUid(), "sos", "aborted", startTime, System.currentTimeMillis() / 1000L,
-                                    billings, currentTotal);
-                        } else {
-                            DatabaseHandler.createEvent(db, SOSProgressActivity.this, requestId, customerId, vendorId,
-                                    mUser.getUid(), "sos", "success", startTime, System.currentTimeMillis() / 1000L,
-                                    billings, currentTotal);
-                        }
-
-                        // Return to home activity
-                        Intent i = new Intent(SOSProgressActivity.this, MainActivity.class);
-                        i.putExtra("loggedInUser", userTracker);
-                        i.putExtra("vehiclesHashMapList", vehiclesHashMapList);
-                        startActivity(i);
-                    });
-                    builder.setNegativeButton("Cancel", (dialog, id) -> dialog.dismiss());
-                    AlertDialog alert = builder.create();
-                    alert.show();
-                }));
+        mechanicBtnEndProgress.setOnClickListener(view -> {
+                // Add to events database and exit
+                AlertDialog.Builder builder = new AlertDialog.Builder(SOSProgressActivity.this);
+                builder.setTitle("Closing SOS request");
+                builder.setMessage("Please make sure the user has paid properly.");
+                builder.setPositiveButton("Confirm", (dialog, id) -> {
+                    BookingHandler.confirmSOSBilling(vendorBookings, SOSProgressActivity.this, vendorId, requestId, System.currentTimeMillis() / 1000L, () -> {
+                                // if aborted
+                                if (isAborted) {
+                                    DatabaseHandler.createEvent(db, SOSProgressActivity.this, requestId, customerId, vendorId,
+                                            mUser.getUid(), "sos", "aborted", startTime, System.currentTimeMillis() / 1000L,
+                                            billings, currentTotal);
+                                } else {
+                                    DatabaseHandler.createEvent(db, SOSProgressActivity.this, requestId, customerId, vendorId,
+                                            mUser.getUid(), "sos", "success", startTime, System.currentTimeMillis() / 1000L,
+                                            billings, currentTotal);
+                                }
+                            });
+                    // Return to home activity
+                    Intent i = new Intent(SOSProgressActivity.this, MainActivity.class);
+                    i.putExtra("loggedInUser", userTracker);
+                    i.putExtra("vehiclesHashMapList", vehiclesHashMapList);
+                    startActivity(i);
+                });
+                builder.setNegativeButton("Cancel", (dialog, id) -> dialog.dismiss());
+                AlertDialog alert = builder.create();
+                alert.show();
+                });
     }
 
     @SuppressLint("SetTextI18n")
