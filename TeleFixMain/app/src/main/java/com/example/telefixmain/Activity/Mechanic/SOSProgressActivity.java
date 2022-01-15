@@ -24,10 +24,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.telefixmain.Activity.Customer.MainActivity;
-import com.example.telefixmain.Activity.Customer.RequestProcessingActivity;
 import com.example.telefixmain.Adapter.BillingListAdapter;
-import com.example.telefixmain.Adapter.SOSRequestListAdapter;
-import com.example.telefixmain.Model.Booking.SOSBilling;
+import com.example.telefixmain.Model.Booking.Billing;
 import com.example.telefixmain.Model.Booking.SOSProgress;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.R;
@@ -77,7 +75,7 @@ public class SOSProgressActivity extends AppCompatActivity {
     HashMap<String, String> repairPriceContainer = new HashMap<>();
 
     //current billing
-    ArrayList<SOSBilling> billings = new ArrayList<>();
+    ArrayList<Billing> billings = new ArrayList<>();
     ArrayList<String> progressCompletedTime = new ArrayList<>();
     private int currentTotal;
 
@@ -169,7 +167,7 @@ public class SOSProgressActivity extends AppCompatActivity {
                                     isRemoved = true;
                                     Toast.makeText(this, "Removed the existed service", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    billings.set(i, new SOSBilling(billingItem.getText().toString(), Integer.parseInt(billingQuantity.getText().toString())));
+                                    billings.set(i, new Billing(billingItem.getText().toString(), Integer.parseInt(billingQuantity.getText().toString())));
                                     Toast.makeText(this, "Updated current billing", Toast.LENGTH_SHORT).show();
                                 }
                                 break;
