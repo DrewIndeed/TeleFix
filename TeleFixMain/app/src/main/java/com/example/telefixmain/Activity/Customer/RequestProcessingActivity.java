@@ -234,11 +234,12 @@ public class RequestProcessingActivity extends AppCompatActivity {
             stepView.go(currentStep, true);
             stepView.done(true);
 
-            billingLayout.setVisibility(View.GONE);
+            ((ConstraintLayout) findViewById(R.id.cl_request_processing)).removeView(billingLayout);
             userBtnConfirmProgress.setVisibility(View.GONE);
             userBtnDraftPayment.setVisibility(View.GONE);
             userBtnCancelProgress.setVisibility(View.GONE);
 
+            Toast.makeText(this, "Thank you for choosing us! See you again!", Toast.LENGTH_SHORT).show();
             findViewById(R.id.ll_mechanic_info_at_request_processing).setVisibility(View.VISIBLE);
             findViewById(R.id.ll_mechanic_info_at_request_processing).startAnimation(
                     AnimationUtils.loadAnimation(RequestProcessingActivity.this, R.anim.fade_in));
@@ -266,6 +267,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
             userBtnAcceptBilling.setVisibility(View.GONE);
 
+            Toast.makeText(this, "Thank you for choosing us! See you again!", Toast.LENGTH_SHORT).show();
             userBackToHome.setVisibility(View.VISIBLE);
             userBackToHome.startAnimation(
                     AnimationUtils.loadAnimation(RequestProcessingActivity.this, R.anim.fade_in));

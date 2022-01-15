@@ -12,13 +12,13 @@
     <LinearLayout
         android:id="@+id/layout_billing_user"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_height="wrap_content"
         android:layout_marginBottom="300dp"
         android:orientation="vertical"
         android:paddingBottom="10dp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -28,6 +28,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="Current billing"
+            android:textColor="@color/bmw_dark_blue"
             android:textSize="20sp"
             android:textStyle="bold"
             tools:ignore="HardcodedText" />
@@ -41,9 +42,9 @@
             android:id="@+id/tv_current_total_user"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:gravity="center"
             android:text="Total: "
-            android:layout_marginTop="10dp"
             android:textColor="@color/bmw_dark_blue"
             android:textSize="16sp"
             android:visibility="visible"
@@ -150,7 +151,7 @@
         <androidx.cardview.widget.CardView
             android:layout_width="100dp"
             android:layout_height="100dp"
-            app:cardCornerRadius="100dp">
+            app:cardCornerRadius="80dp">
 
             <ImageView
                 android:layout_width="match_parent"
