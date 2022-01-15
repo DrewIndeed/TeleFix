@@ -2,6 +2,7 @@ package com.example.telefixmain.Activity.Customer;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -13,11 +14,13 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.telefixmain.Adapter.BillingListAdapter;
 import com.example.telefixmain.Model.Booking.SOSBilling;
@@ -60,7 +63,6 @@ public class RequestProcessingActivity extends AppCompatActivity {
     // keep track of currentStep
     private int currentStep = 0;
 
-    // xml
     // xml
     StepView stepView;
     LinearLayout billingLayout;
@@ -126,14 +128,6 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
         System.out.println("RequestID: " + requestId + " ------------------ " + "VendorID: " + vendorId);
 
-        // xml bindings
-        Button userBtnDraftPayment = findViewById(R.id.btn_draft_billing);
-        Button userBtnProceedPayment = findViewById(R.id.btn_accept_billing);
-        Button userBtnCancelProgress = findViewById(R.id.btn_cancel_progress);
-
-        Button userBtnAcceptProgress = findViewById(R.id.btn_confirm_progress);
-        Button userBackToHome = findViewById(R.id.btn_back_home_at_request_process);
-
         // add steps for step view
         List<String> steps = new ArrayList<>();
         steps.add("Mechanic Found");
@@ -144,6 +138,14 @@ public class RequestProcessingActivity extends AppCompatActivity {
         stepView.setSteps(steps);
         stepView.go(1, true);
 
+        Button userBtnDraftPayment = findViewById(R.id.btn_draft_billing);
+        Button userBtnAcceptBilling = findViewById(R.id.btn_accept_billing);
+        Button userBtnCancelProgress = findViewById(R.id.btn_cancel_progress);
+
+        Button userBtnConfirmProgress = findViewById(R.id.btn_confirm_progress);
+        Button userBackToHome = findViewById(R.id.btn_back_home_at_request_process);
+
+
         currentBilling = vendorsBookings.getReference(vendorId).child("sos").child("billing").child(requestId).child("timestamp");
         sosBillingListener = new ValueEventListener() {
             @Override
@@ -151,13 +153,10 @@ public class RequestProcessingActivity extends AppCompatActivity {
                 if (snapshot.exists()) {
                     if (!isApproved) {
                         // Send notification when MECHANIC has issued the bill
-                        String content = "Mechanic has issued the inspecting bill. Please approve to continue!";
+                        String content = "Mechanic has issued the inspecting bill.";
                         NotificationHandler.sendProgressTrackingNotification(RequestProcessingActivity.this, "TeleFix - SOS Request", content);
+                        userBtnDraftPayment.setVisibility(View.VISIBLE);
                         userBtnDraftPayment.startAnimation(AnimationUtils.loadAnimation(
-                                RequestProcessingActivity.this, R.anim.fade_in));
-                        userBtnCancelProgress.startAnimation(AnimationUtils.loadAnimation(
-                                RequestProcessingActivity.this, R.anim.fade_in));
-                        userBtnAcceptProgress.startAnimation(AnimationUtils.loadAnimation(
                                 RequestProcessingActivity.this, R.anim.fade_in));
                     }
                 }
@@ -188,10 +187,10 @@ public class RequestProcessingActivity extends AppCompatActivity {
 
                 } else if (Objects.requireNonNull(sosProgress).getStartFixingTimestamp() != 0
                         && Objects.requireNonNull(sosProgress).getStartBillingTimestamp() != 0) {
-                    userBtnProceedPayment.setVisibility(View.VISIBLE);
+                    userBtnAcceptBilling.setVisibility(View.VISIBLE);
 
                     // Send notification when MECHANIC has updated the final bill
-                    String content = "Mechanic has updated the finalized bill!";
+                    String content = "Mechanic has finalized your request's billing!";
                     NotificationHandler.sendProgressTrackingNotification(RequestProcessingActivity.this, "TeleFix - SOS Request", content);
                 }
             }
@@ -211,13 +210,15 @@ public class RequestProcessingActivity extends AppCompatActivity {
             billingLayout.startAnimation(
                     AnimationUtils.loadAnimation(RequestProcessingActivity.this, R.anim.fade_in));
 
+            findViewById(R.id.ll_accept_cancel_buttons).setVisibility(View.VISIBLE);
+            findViewById(R.id.ll_accept_cancel_buttons).startAnimation(
+                    AnimationUtils.loadAnimation(RequestProcessingActivity.this, R.anim.fade_in));
+
             findViewById(R.id.ll_mechanic_info_at_request_processing).setVisibility(View.GONE);
             findViewById(R.id.ll_mechanic_info_at_request_processing).startAnimation(
                     AnimationUtils.loadAnimation(RequestProcessingActivity.this, R.anim.fade_out));
 
-            userBtnDraftPayment.startAnimation(
-                    AnimationUtils.loadAnimation(RequestProcessingActivity.this, R.anim.fade_out));
-            userBtnDraftPayment.setVisibility(View.GONE);
+            ((ConstraintLayout) findViewById(R.id.cl_request_processing)).removeView(userBtnDraftPayment);
 
             BookingHandler.viewSOSBilling(vendorsBookings, this, vendorId, requestId,
                     billings, currentPrice, () -> billingAdapter.notifyDataSetChanged());
@@ -234,9 +235,13 @@ public class RequestProcessingActivity extends AppCompatActivity {
             stepView.done(true);
 
             billingLayout.setVisibility(View.GONE);
-            userBtnAcceptProgress.setVisibility(View.GONE);
+            userBtnConfirmProgress.setVisibility(View.GONE);
             userBtnDraftPayment.setVisibility(View.GONE);
             userBtnCancelProgress.setVisibility(View.GONE);
+
+            findViewById(R.id.ll_mechanic_info_at_request_processing).setVisibility(View.VISIBLE);
+            findViewById(R.id.ll_mechanic_info_at_request_processing).startAnimation(
+                    AnimationUtils.loadAnimation(RequestProcessingActivity.this, R.anim.fade_in));
 
             userBackToHome.setVisibility(View.VISIBLE);
             userBackToHome.startAnimation(
@@ -252,41 +257,40 @@ public class RequestProcessingActivity extends AppCompatActivity {
             });
         });
 
-        userBtnAcceptProgress.setOnClickListener(view -> {
+        userBtnAcceptBilling.setOnClickListener(view -> {
+            stepView.done(true);
+            // Set billing visible
+            billingLayout.setVisibility(View.VISIBLE);
+            BookingHandler.viewSOSBilling(vendorsBookings, this, vendorId, requestId,
+                    billings, currentPrice, () -> billingAdapter.notifyDataSetChanged());
+
+            userBtnAcceptBilling.setVisibility(View.GONE);
+
+            userBackToHome.setVisibility(View.VISIBLE);
+            userBackToHome.startAnimation(
+                    AnimationUtils.loadAnimation(RequestProcessingActivity.this, R.anim.fade_in));
+
+            // back home
+            userBackToHome.setOnClickListener(view1 -> {
+                Intent backToHome = new Intent(RequestProcessingActivity.this, MainActivity.class);
+                backToHome.putExtra("loggedInUser", userTracker);
+                backToHome.putExtra("vehiclesHashMapList", vehiclesHashMapList);
+                startActivity(backToHome);
+                finish();
+            });
+        });
+
+        userBtnConfirmProgress.setOnClickListener(view -> {
             isApproved = true;
             BookingHandler.confirmProgressFromUser(vendorsBookings, this,
                     vendorId, requestId, System.currentTimeMillis() / 1000L, "confirmed");
             currentStep = 4;
             stepView.go(currentStep, true);
 
-            billingLayout.setVisibility(View.GONE);
-            userBtnAcceptProgress.setVisibility(View.GONE);
+            userBtnConfirmProgress.setVisibility(View.GONE);
             userBtnDraftPayment.setVisibility(View.GONE);
             userBtnCancelProgress.setVisibility(View.GONE);
         });
-
-        userBtnProceedPayment.setOnClickListener(view -> {
-            stepView.done(true);
-            // Set billing visible
-            billingLayout.setVisibility(View.VISIBLE);
-            BookingHandler.viewSOSBilling(vendorsBookings, this, vendorId, requestId,
-                    billings, currentPrice, () -> billingAdapter.notifyDataSetChanged());
-            userBtnProceedPayment.setVisibility(View.GONE);
-
-            userBackToHome.setVisibility(View.VISIBLE);
-            userBackToHome.startAnimation(
-                    AnimationUtils.loadAnimation(RequestProcessingActivity.this, R.anim.fade_in));
-
-            // back home
-            userBackToHome.setOnClickListener(view1 -> {
-                Intent backToHome = new Intent(RequestProcessingActivity.this, MainActivity.class);
-                backToHome.putExtra("loggedInUser", userTracker);
-                backToHome.putExtra("vehiclesHashMapList", vehiclesHashMapList);
-                startActivity(backToHome);
-                finish();
-            });
-        });
-
     }
 
     @Override
