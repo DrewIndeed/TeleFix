@@ -11,8 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -23,13 +21,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.telefixmain.Adapter.BillingListAdapter;
-import com.example.telefixmain.Model.Booking.SOSBilling;
+import com.example.telefixmain.Model.Booking.Billing;
 import com.example.telefixmain.Model.Booking.SOSProgress;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.BookingHandler;
 import com.example.telefixmain.Util.NotificationHandler;
-import com.example.telefixmain.Util.NotificationInstance;
 import com.example.telefixmain.Util.DatabaseHandler;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,7 +39,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.shuhart.stepview.StepView;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -72,7 +68,7 @@ public class RequestProcessingActivity extends AppCompatActivity {
     private boolean isApproved = false;
 
     // billing
-    ArrayList<SOSBilling> billings = new ArrayList<>();
+    ArrayList<Billing> billings = new ArrayList<>();
 
     // intent data receivers
     User userTracker;

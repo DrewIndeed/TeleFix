@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                 case R.id.nav_history:
-                    fragmentContainer = new HistoryFragment();
+                    fragmentContainer = new HistoryFragment(userTracker);
                     break;
 
                 case R.id.nav_profile:

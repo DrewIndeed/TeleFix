@@ -7,14 +7,19 @@ import android.widget.Toast;
 
 import com.example.telefixmain.Adapter.SOSRequestListAdapter;
 import com.example.telefixmain.Model.Booking.MaintenanceRequest;
-import com.example.telefixmain.Model.Booking.SOSBilling;
+import com.example.telefixmain.Model.Booking.Billing;
 import com.example.telefixmain.Model.Booking.SOSRequest;
 import com.example.telefixmain.Model.Booking.SOSProgress;
+import com.example.telefixmain.Model.EventTitle;
+import com.example.telefixmain.Util.Comparator.EventTitleTimeStampComparator;
+import com.example.telefixmain.Util.Comparator.MaintenanceTimeStampComparator;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -134,14 +139,14 @@ public class BookingHandler {
                                         Context context,
                                         String vendorId,
                                         String requestId,
-                                        ArrayList<SOSBilling> currentBilling,
+                                        ArrayList<Billing> currentBilling,
                                         int total,
                                         Runnable callback) {
         DatabaseReference billingRef = rootNode.getReference(vendorId).child("sos").child("billing").child(requestId);
 
         Map<String, Integer> billingData = new HashMap<>();
 
-        for (SOSBilling bill :
+        for (Billing bill :
                 currentBilling) {
             billingData.put(bill.getItem(), bill.getQuantity());
         }
@@ -164,7 +169,7 @@ public class BookingHandler {
                                       Context context,
                                       String vendorId,
                                       String requestId,
-                                      ArrayList<SOSBilling> currentBilling,
+                                      ArrayList<Billing> currentBilling,
                                       TextView tvTotal,
                                       Runnable callback) {
         DatabaseReference billingRef = rootNode.getReference(vendorId).child("sos").child("billing").child(requestId);
@@ -176,9 +181,9 @@ public class BookingHandler {
                     };
                     Map<String, Integer> data = dataSnapshot.child("data").getValue(genericTypeIndicator);
 
-                    ArrayList<SOSBilling> tmpBillList = new ArrayList<>();
+                    ArrayList<Billing> tmpBillList = new ArrayList<>();
                     for (Map.Entry<String, Integer> entry : Objects.requireNonNull(data).entrySet()) {
-                        SOSBilling tmpBilling = new SOSBilling(entry.getKey(), entry.getValue());
+                        Billing tmpBilling = new Billing(entry.getKey(), entry.getValue());
                         tmpBillList.add(tmpBilling);
                     }
                     currentBilling.clear();
@@ -242,7 +247,7 @@ public class BookingHandler {
     }
     //-------------------//------------------//-------------------//-------------------//-------------------
     // Booking MAINTENANCE service
-
+    // Method for USER to create & push maintenance request to db
     public static void sendMaintenanceRequest (FirebaseDatabase rootNode,
                                                Context context,
                                                String vendorId,
@@ -267,6 +272,7 @@ public class BookingHandler {
         callback.run();
     }
 
+    // Method for MECHANIC to respond to the maintenance request
     public static void respondMaintenanceRequest (FirebaseDatabase rootNode,
                                                   Context context,
                                                   String vendorId,
@@ -295,5 +301,44 @@ public class BookingHandler {
                                 e.getMessage(), Toast.LENGTH_SHORT).show());
                 break;
         }
+    }
+
+    /** method for MECHANIC to GET all the pending maintenance request for him/herself
+     * this is single GET method (no need to update on realtime)
+      */
+    public static void getAssignedMaintenanceRequest (FirebaseDatabase rootNode,
+                                                      Context context,
+                                                      String vendorId,
+                                                      String userId,
+                                                      ArrayList<EventTitle> resultContainer,
+                                                      Runnable callback) {
+        // Get the root reference of chosen vendor
+        DatabaseReference maintenanceRef = rootNode.getReference(vendorId).child("maintenance").child("request");
+
+        // Loop through and find the assigned request(s)
+        maintenanceRef.get()
+                .addOnSuccessListener(dataSnapshot -> {
+                    resultContainer.clear();
+                    ArrayList<EventTitle> tmp = new ArrayList<>();
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        MaintenanceRequest request = ds.getValue(MaintenanceRequest.class);
+
+                        // If respond is mechanicId -> assigned one
+                        if (Objects.requireNonNull(request).getRespond().equals(userId)) {
+                            EventTitle et = new EventTitle(request.getDatetime(), "Maintenance", request.getStatus());
+                            tmp.add(et);
+                        }
+                    }
+                    // Sort collections by time created
+                    Collections.sort(tmp, new EventTitleTimeStampComparator());
+
+                    resultContainer.addAll(tmp);
+
+                    // Run any callback (Eg. Update adapter)
+                    callback.run();
+
+                })
+                .addOnFailureListener(e -> Toast.makeText(context, "" +
+                        e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 }

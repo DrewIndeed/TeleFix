@@ -352,11 +352,11 @@ public class HomeFragment extends Fragment {
                         }
                         sosRequestAdapter.notifyDataSetChanged();
 
-                        if (sosRequests.size() > 0) {
-                            // Push notification
-                            String content = "SOS Requests has been updated!";
-                            NotificationHandler.sendProgressTrackingNotification(fragmentActivity, "TeleFix - SOS Request", content);
-                        }
+//                        if (sosRequests.size() > 0) {
+//                            // Push notification
+//                            String content = "SOS Requests has been updated!";
+//                            NotificationHandler.sendProgressTrackingNotification(fragmentActivity, "TeleFix - SOS Request", content);
+//                        }
                     }
 
                     @Override
@@ -408,11 +408,11 @@ public class HomeFragment extends Fragment {
                             maintenanceRecyclerView.setVisibility(View.GONE);
                         }
                         maintenanceRequestListAdapter.notifyDataSetChanged();
-                        if (maintenanceRequests.size() > 0) {
-                            // Push notification
-                            String content = "Maintenance Requests has been updated!";
-                            NotificationHandler.sendProgressTrackingNotification(fragmentActivity, "TeleFix - Maintenance Request", content);
-                        }
+//                        if (maintenanceRequests.size() > 0) {
+//                            // Push notification
+//                            String content = "Maintenance Requests has been updated!";
+//                            NotificationHandler.sendProgressTrackingNotification(fragmentActivity, "TeleFix - Maintenance Request", content);
+//                        }
                     }
 
                     @Override

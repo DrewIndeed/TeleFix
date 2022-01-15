@@ -33,6 +33,7 @@ import com.example.telefixmain.Model.User;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.BookingHandler;
 import com.example.telefixmain.Util.DatabaseHandler;
+import com.example.telefixmain.Util.NotificationHandler;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -158,7 +159,7 @@ public class SOSProgressActivity extends AppCompatActivity {
                     boolean isRemoved = false;
 
                     if (billings.size() == 0) {
-                        billings.add(new SOSBilling(billingItem.getText().toString(), Integer.parseInt(billingQuantity.getText().toString())));
+                        billings.add(new Billing(billingItem.getText().toString(), Integer.parseInt(billingQuantity.getText().toString())));
                     } else {
                         for (int i = 0; i < billings.size(); i++) {
                             index = i;
@@ -174,7 +175,7 @@ public class SOSProgressActivity extends AppCompatActivity {
                                 break;
                             }
                             if (i == billings.size() - 1) {
-                                billings.add(new SOSBilling(billingItem.getText().toString(), Integer.parseInt(billingQuantity.getText().toString())));
+                                billings.add(new Billing(billingItem.getText().toString(), Integer.parseInt(billingQuantity.getText().toString())));
                             }
                         }
                     }
@@ -232,10 +233,16 @@ public class SOSProgressActivity extends AppCompatActivity {
 
                 // if user not abort and approve (by setting confirm billing time) --> Set Fixed (final button) visible
                 if (Objects.requireNonNull(sosProgress).getAbortTime() == 0 && sosProgress.getConfirmBillingTime() != 0) {
+                    // Send notification when USER has accepted the bill
+                    String content = "User has accepted the bill";
+                    NotificationHandler.sendProgressTrackingNotification(SOSProgressActivity.this, "TeleFix - SOS Request", content);
                     mechanicBtnFixed.setVisibility(View.VISIBLE);
                     addBillingButton.setEnabled(true);
                 } else if (Objects.requireNonNull(sosProgress).getAbortTime() != 0) {
                     isAborted = true;
+                    // Send notification when USER has rejected the bill
+                    String content = "User has rejected the bill";
+                    NotificationHandler.sendProgressTrackingNotification(SOSProgressActivity.this, "TeleFix - SOS Request", content);
                     mechanicBtnEndProgress.setVisibility(View.VISIBLE);
                 }
             }
@@ -285,7 +292,6 @@ public class SOSProgressActivity extends AppCompatActivity {
         );
 
         //--------End progress-------
-
         mechanicBtnEndProgress.setOnClickListener(view ->
                 BookingHandler.confirmSOSBilling(vendorBookings, SOSProgressActivity.this, vendorId, requestId, System.currentTimeMillis() / 1000L,
                         progressCompletedTime, () -> {
@@ -342,7 +348,7 @@ public class SOSProgressActivity extends AppCompatActivity {
 
     private void calculateTotal() {
         currentTotal = 0;
-        for (SOSBilling bill : billings) {
+        for (Billing bill : billings) {
             String currentItem = bill.getItem();
             if (inspectionPriceContainer.containsKey(bill.getItem())) {
                 currentTotal += bill.getQuantity() * Integer.parseInt(Objects.requireNonNull(inspectionPriceContainer.get(currentItem)));

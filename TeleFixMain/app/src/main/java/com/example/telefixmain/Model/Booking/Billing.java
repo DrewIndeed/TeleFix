@@ -1,12 +1,12 @@
 package com.example.telefixmain.Model.Booking;
 
-public class SOSBilling {
+public class Billing {
     private String item;
     private int quantity;
 
-    public SOSBilling() {}
+    public Billing() {}
 
-    public SOSBilling(String item, int quantity) {
+    public Billing(String item, int quantity) {
         this.item = item;
         this.quantity = quantity;
     }
