@@ -232,15 +232,14 @@ public class BookingHandler {
                                          String vendorId,
                                          String requestId,
                                          long timestamp,
+                                         ArrayList<String> progressCompletedTime,
                                          Runnable callback) {
         DatabaseReference vendorRef = rootNode.getReference(vendorId);
 
         // Set value to "mechanicId"
         vendorRef.child("sos").child("billing").child(requestId).child("paidTime").setValue(timestamp)
                 .addOnCompleteListener(task -> {
-                    Toast.makeText(context,
-                            "Transaction completed at: " +
-                                    SOSRequestListAdapter.timestampConverter(timestamp), Toast.LENGTH_SHORT).show();
+                    progressCompletedTime.add(SOSRequestListAdapter.timestampConverter(timestamp));
                     callback.run();
                 })
                 .addOnFailureListener(e -> Toast.makeText(context, "" +

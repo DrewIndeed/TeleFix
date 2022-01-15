@@ -2,118 +2,169 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_sos_progress_mechanic"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:gravity="center"
     android:orientation="vertical"
-    android:layout_margin="20dp"
+    android:padding="10dp"
     tools:context=".Activity.Mechanic.SOSProgressActivity">
 
     <LinearLayout
+        android:id="@+id/ll_bill_view_at_sos_progress_mechanic"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="230dp"
+        android:gravity="center"
         android:orientation="vertical"
-        android:paddingBottom="10dp">
+        android:paddingBottom="10dp"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/tv_billing_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Current billing"
             android:gravity="center"
+            android:text="Current billing"
+            android:textColor="@color/bmw_dark_blue"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/issue_billing_recyclerview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="160dp" />
 
         <TextView
-            android:layout_marginTop="10dp"
             android:id="@+id/tv_current_total"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
             android:text="Total: "
             android:textColor="@color/bmw_dark_blue"
             android:textSize="16sp"
-            android:gravity="center"
-            android:visibility="visible" />
+            android:visibility="visible"
+            tools:ignore="HardcodedText" />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_service_adding_at_sos_progress_mechanic"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="10dp">
+        android:paddingBottom="10dp"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Service Name:" />
+            android:text="Service Name:"
+            tools:ignore="HardcodedText" />
 
         <AutoCompleteTextView
             android:id="@+id/add_billing_item"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="SOS inspection" />
+            android:layout_height="50dp"
+            android:text="SOS inspection"
+            tools:ignore="HardcodedText,LabelFor" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Quantity:" />
+            android:text="Quantity:"
+            tools:ignore="HardcodedText" />
 
         <EditText
-            android:inputType="number"
             android:id="@+id/add_billing_quantity"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="1" />
+            android:layout_height="50dp"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:text="1"
+            tools:ignore="HardcodedText,LabelFor" />
 
         <Button
             android:id="@+id/btn_add_item_billing"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Add Item" />
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="30dp"
+            android:background="@drawable/custom_btn_bg_4"
+            android:text="Update Bill"
+            tools:ignore="HardcodedText,TextContrastCheck" />
 
     </LinearLayout>
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_issue_billing"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/bmw_red"
-        android:text="Issue Billing" />
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:background="@drawable/custom_btn_bg_17"
+        android:backgroundTint="@color/delete"
+        android:text="Issue Billing"
+        android:textColor="@color/bmw_white"
+        android:visibility="gone"
+        tools:ignore="HardcodedText,TextContrastCheck" />
 
-    <LinearLayout
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/mechanic_wait_gif_at_request_processing"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/mechanic_waiting" />
+    <TextView
+        android:id="@+id/customer_address"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:letterSpacing="0.05"
+        android:layout_marginBottom="20dp"
+        android:text="95 Đ. Nguyễn Văn Cừ, Phường 1, Quận 5, Thành phố Hồ Chí Minh, Việt Nam"
+        android:textColor="@color/bmw_dark_blue"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        tools:ignore="HardcodedText" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_mock_arrived"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:background="@drawable/custom_btn_bg_21"
+        android:text="Arrived"
+        android:textColor="@color/bmw_white"
+        tools:ignore="HardcodedText" />
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_mock_fixed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:background="@drawable/custom_btn_bg_19"
+        android:text="Fixed"
+        android:textColor="@color/bmw_white"
+        android:visibility="gone"
+        tools:ignore="HardcodedText,TextContrastCheck" />
 
-        <Button
-            android:id="@+id/btn_mock_arrived"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/bmw_dark_blue"
-            android:text="Arrived" />
-
-        <Button
-            android:id="@+id/btn_mock_fixed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/gray"
-            android:visibility="gone"
-            android:text="Fixed" />
-
-    </LinearLayout>
-
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_end_sos_progress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/bmw_light_gray"
-        android:visibility="invisible"
-        android:text="End Progress" />
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="30dp"
+        android:background="@drawable/custom_btn_bg_22"
+        android:text="End Progress"
+        android:textColor="@color/bmw_white"
+        android:visibility="gone"
+        tools:ignore="HardcodedText,TextContrastCheck" />
 
 </LinearLayout>

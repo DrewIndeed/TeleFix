@@ -8,26 +8,33 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.telefixmain.Activity.Customer.MainActivity;
 import com.example.telefixmain.Activity.Customer.RequestProcessingActivity;
 import com.example.telefixmain.Adapter.BillingListAdapter;
-import com.example.telefixmain.Model.Booking.Billing;
+import com.example.telefixmain.Adapter.SOSRequestListAdapter;
+import com.example.telefixmain.Model.Booking.SOSBilling;
 import com.example.telefixmain.Model.Booking.SOSProgress;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.BookingHandler;
 import com.example.telefixmain.Util.DatabaseHandler;
 import com.example.telefixmain.Util.NotificationHandler;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -39,6 +46,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class SOSProgressActivity extends AppCompatActivity {
@@ -68,7 +77,8 @@ public class SOSProgressActivity extends AppCompatActivity {
     HashMap<String, String> repairPriceContainer = new HashMap<>();
 
     //current billing
-    ArrayList<Billing> billings = new ArrayList<>();
+    ArrayList<SOSBilling> billings = new ArrayList<>();
+    ArrayList<String> progressCompletedTime = new ArrayList<>();
     private int currentTotal;
 
     // current progress
@@ -99,6 +109,11 @@ public class SOSProgressActivity extends AppCompatActivity {
         String vendorId = (String) intent.getExtras().get("vendorId");
         String customerId = (String) intent.getExtras().get("customerId");
         long startTime = (Long) intent.getExtras().get("startTime");
+        double customerLat = (double) intent.getExtras().get("customerLat");
+        double customerLng = (double) intent.getExtras().get("customerLng");
+        String customerAddress = getAddressFromLatLng(this,
+                new LatLng(customerLat, customerLng));
+        ((TextView) findViewById(R.id.customer_address)).setText(customerAddress);
 
         getPriceList(vendorId);
 
@@ -133,12 +148,11 @@ public class SOSProgressActivity extends AppCompatActivity {
 
         // update current billing (local)
         addBillingButton.setOnClickListener(view -> {
-            // TODO: Handle invalid input
             if (billingItem.getText().toString().equals("") || billingQuantity.getText().toString().equals("")) {
                 Toast.makeText(this, "Please fill in all information!", Toast.LENGTH_SHORT).show();
             } else {
                 if (!services.contains(billingItem.getText().toString())) {
-                    Toast.makeText(this, "Please select the registered services!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Please select a service!", Toast.LENGTH_SHORT).show();
                 } else {
                     // Check existed in current billing --> Show the current quantity to avoid duplicated
                     int index = 0;
@@ -150,14 +164,13 @@ public class SOSProgressActivity extends AppCompatActivity {
                         for (int i = 0; i < billings.size(); i++) {
                             index = i;
                             if (billingItem.getText().toString().equals(billings.get(i).getItem())) {
-                                // TODO: If mechanic want to delete an item --> Set quantity to 0 --> Delete on list
                                 if (Integer.parseInt(billingQuantity.getText().toString()) == 0) {
                                     billings.remove(i);
                                     isRemoved = true;
                                     Toast.makeText(this, "Removed the existed service", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    billings.set(i, new Billing(billingItem.getText().toString(), Integer.parseInt(billingQuantity.getText().toString())));
-                                    Toast.makeText(this, "Update existed service's quantity", Toast.LENGTH_SHORT).show();
+                                    billings.set(i, new SOSBilling(billingItem.getText().toString(), Integer.parseInt(billingQuantity.getText().toString())));
+                                    Toast.makeText(this, "Updated current billing", Toast.LENGTH_SHORT).show();
                                 }
                                 break;
                             }
@@ -187,18 +200,17 @@ public class SOSProgressActivity extends AppCompatActivity {
         // push billing to database (this is the 1st draft billing);
         issueBillingButton = findViewById(R.id.btn_issue_billing);
         issueBillingButton.setOnClickListener(view -> {
-
             AlertDialog.Builder builder = new AlertDialog.Builder(SOSProgressActivity.this);
             builder.setTitle("Finalizing billing");
-            builder.setMessage("Do you want to upload this bill to user?");
+            builder.setMessage("Do you want to issue this bill to user?");
             builder.setPositiveButton("Confirm", (dialog, id) ->
                     BookingHandler.uploadSOSBilling(vendorBookings,
                             SOSProgressActivity.this, vendorId, requestId, billings,
                             currentTotal, () -> {
                                 isUploaded = true;
                                 checkBillStatus();
-                                // Hide push draft billing
-                                issueBillingButton.setVisibility(View.GONE);
+                                ((LinearLayout) findViewById(R.id.ll_sos_progress_mechanic)).removeView(issueBillingButton);
+                                addBillingButton.setEnabled(false);
                             }));
             builder.setNegativeButton("Cancel", (dialog, id) -> dialog.dismiss());
             AlertDialog alert = builder.create();
@@ -225,6 +237,7 @@ public class SOSProgressActivity extends AppCompatActivity {
                     String content = "User has accepted the bill";
                     NotificationHandler.sendProgressTrackingNotification(SOSProgressActivity.this, "TeleFix - SOS Request", content);
                     mechanicBtnFixed.setVisibility(View.VISIBLE);
+                    addBillingButton.setEnabled(true);
                 } else if (Objects.requireNonNull(sosProgress).getAbortTime() != 0) {
                     isAborted = true;
                     // Send notification when USER has rejected the bill
@@ -243,26 +256,50 @@ public class SOSProgressActivity extends AppCompatActivity {
 
         mechanicBtnArrived.setOnClickListener(view -> {
             BookingHandler.updateProgressFromMechanic(vendorBookings, this, vendorId, requestId, System.currentTimeMillis() / 1000L, "arrived");
-            mechanicBtnArrived.setVisibility(View.GONE);
+
+            // disappearing views
+            mechanicBtnArrived.startAnimation(AnimationUtils.loadAnimation(
+                    this, R.anim.fade_out));
+            findViewById(R.id.mechanic_wait_gif_at_request_processing).startAnimation(AnimationUtils.loadAnimation(
+                    this, R.anim.fade_out));
+            findViewById(R.id.customer_address).startAnimation(AnimationUtils.loadAnimation(
+                    this, R.anim.fade_out));
+            ((LinearLayout) findViewById(R.id.ll_sos_progress_mechanic)).removeView(mechanicBtnArrived);
+            ((LinearLayout) findViewById(R.id.ll_sos_progress_mechanic)).removeView(findViewById(R.id.mechanic_wait_gif_at_request_processing));
+            ((LinearLayout) findViewById(R.id.ll_sos_progress_mechanic)).removeView(findViewById(R.id.customer_address));
+
+            // appearing view
+            findViewById(R.id.ll_bill_view_at_sos_progress_mechanic).setVisibility(View.VISIBLE);
+            findViewById(R.id.ll_service_adding_at_sos_progress_mechanic).setVisibility(View.VISIBLE);
+            findViewById(R.id.btn_issue_billing).setVisibility(View.VISIBLE);
+            findViewById(R.id.ll_bill_view_at_sos_progress_mechanic).startAnimation(AnimationUtils.loadAnimation(
+                    this, R.anim.fade_in));
+            findViewById(R.id.ll_service_adding_at_sos_progress_mechanic).startAnimation(AnimationUtils.loadAnimation(
+                    this, R.anim.fade_in));
+            findViewById(R.id.btn_issue_billing).startAnimation(AnimationUtils.loadAnimation(
+                    this, R.anim.fade_in));
         });
 
         mechanicBtnFixed.setOnClickListener(view ->
                 BookingHandler.uploadSOSBilling(vendorBookings, SOSProgressActivity.this, vendorId, requestId, billings, currentTotal, () -> {
                     isUploaded = true;
                     checkBillStatus();
+                    ((LinearLayout) findViewById(R.id.ll_sos_progress_mechanic)).removeView(mechanicBtnFixed);
+                    ((LinearLayout) findViewById(R.id.ll_sos_progress_mechanic)).removeView(findViewById(R.id.ll_service_adding_at_sos_progress_mechanic));
                     mechanicBtnEndProgress.setVisibility(View.VISIBLE);
                     BookingHandler.updateProgressFromMechanic(vendorBookings, this, vendorId, requestId, System.currentTimeMillis() / 1000L, "fixed");
-                }));
+                })
+        );
 
         //--------End progress-------
-
-        mechanicBtnEndProgress.setOnClickListener(view -> {
-                // Add to events database and exit
-                AlertDialog.Builder builder = new AlertDialog.Builder(SOSProgressActivity.this);
-                builder.setTitle("Closing SOS request");
-                builder.setMessage("Please make sure the user has paid properly.");
-                builder.setPositiveButton("Confirm", (dialog, id) -> {
-                    BookingHandler.confirmSOSBilling(vendorBookings, SOSProgressActivity.this, vendorId, requestId, System.currentTimeMillis() / 1000L, () -> {
+        mechanicBtnEndProgress.setOnClickListener(view ->
+                BookingHandler.confirmSOSBilling(vendorBookings, SOSProgressActivity.this, vendorId, requestId, System.currentTimeMillis() / 1000L,
+                        progressCompletedTime, () -> {
+                            // Add to events database and exit
+                            AlertDialog.Builder builder = new AlertDialog.Builder(SOSProgressActivity.this);
+                            builder.setTitle("Closing SOS request");
+                            builder.setMessage("Please make sure customer has paid properly.");
+                            builder.setPositiveButton("Confirm", (dialog, id) -> {
                                 // if aborted
                                 if (isAborted) {
                                     DatabaseHandler.createEvent(db, SOSProgressActivity.this, requestId, customerId, vendorId,
@@ -272,26 +309,29 @@ public class SOSProgressActivity extends AppCompatActivity {
                                     DatabaseHandler.createEvent(db, SOSProgressActivity.this, requestId, customerId, vendorId,
                                             mUser.getUid(), "sos", "success", startTime, System.currentTimeMillis() / 1000L,
                                             billings, currentTotal);
+                                    Toast.makeText(this,
+                                            "Transaction completed at: " +
+                                                    progressCompletedTime.get(0), Toast.LENGTH_SHORT).show();
                                 }
+
+                                // Return to home activity
+                                Intent i = new Intent(SOSProgressActivity.this, MainActivity.class);
+                                i.putExtra("loggedInUser", userTracker);
+                                i.putExtra("vehiclesHashMapList", vehiclesHashMapList);
+                                startActivity(i);
                             });
-                    // Return to home activity
-                    Intent i = new Intent(SOSProgressActivity.this, MainActivity.class);
-                    i.putExtra("loggedInUser", userTracker);
-                    i.putExtra("vehiclesHashMapList", vehiclesHashMapList);
-                    startActivity(i);
-                });
-                builder.setNegativeButton("Cancel", (dialog, id) -> dialog.dismiss());
-                AlertDialog alert = builder.create();
-                alert.show();
-                });
+                            builder.setNegativeButton("Cancel", (dialog, id) -> dialog.dismiss());
+                            AlertDialog alert = builder.create();
+                            alert.show();
+                        }));
     }
 
     @SuppressLint("SetTextI18n")
     private void checkBillStatus() {
         if (!isUploaded) {
-            billingStatus.setText("Local changes haven't been uploaded!");
+            billingStatus.setText("Bill hasn't been issued to customer");
         } else {
-            billingStatus.setText("Current bill is up to date!");
+            billingStatus.setText("Bill is now up to date");
         }
     }
 
@@ -303,7 +343,6 @@ public class SOSProgressActivity extends AppCompatActivity {
                 repairPriceContainer, () -> {
                     services.addAll(inspectionPriceContainer.keySet());
                     services.addAll(repairPriceContainer.keySet());
-                    System.out.println("Done Fetching Services////////////////---------");
                 });
     }
 
@@ -316,6 +355,21 @@ public class SOSProgressActivity extends AppCompatActivity {
             } else {
                 currentTotal += bill.getQuantity() * Integer.parseInt(Objects.requireNonNull(repairPriceContainer.get(currentItem)));
             }
+        }
+    }
+
+    /**
+     * Method to String address based on LatLng location
+     */
+    public static String getAddressFromLatLng(Context context, LatLng latLng) {
+        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+        List<Address> addresses;
+        try {
+            addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+            return addresses.get(0).getAddressLine(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
         }
     }
 }

@@ -99,6 +99,9 @@ public class SOSRequestListAdapter extends RecyclerView.Adapter<SOSRequestItemVi
             String requestId = sosRequests.get(position).getRequestId();
             String customerId = sosRequests.get(position).getUserId();
             long startTime = sosRequests.get(position).getTimestampCreated();
+            double customerLat = sosRequests.get(position).getLat();
+            double customerLng = sosRequests.get(position).getLng();
+
             // Confirm accept SOS request
             AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
             builder.setTitle("Accepting SOS request");
@@ -130,6 +133,8 @@ public class SOSRequestListAdapter extends RecyclerView.Adapter<SOSRequestItemVi
                                         cpd.dismiss();
 
                                         Intent i = new Intent(activityContext, SOSProgressActivity.class);
+                                        i.putExtra("customerLat", customerLat);
+                                        i.putExtra("customerLng", customerLng);
                                         i.putExtra("vendorId", vendorId);
                                         i.putExtra("requestId", requestId);
                                         i.putExtra("customerId", customerId);
