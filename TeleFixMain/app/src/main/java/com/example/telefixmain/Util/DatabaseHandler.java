@@ -5,6 +5,7 @@ import android.widget.Toast;
 
 import com.example.telefixmain.Model.Booking.Billing;
 import com.example.telefixmain.Model.Event;
+import com.example.telefixmain.Model.EventTitle;
 import com.example.telefixmain.Model.User;
 import com.example.telefixmain.Model.Vehicle;
 import com.example.telefixmain.Model.Vendor;
@@ -460,7 +461,7 @@ public class DatabaseHandler {
      */
     public static void getEvents(FirebaseFirestore db,
                                  String userId,
-                                 ArrayList<Event> resultContainer,
+                                 ArrayList<EventTitle> resultContainer,
                                  Runnable callback) {
         // target "events" collection
         db.collection("events")
@@ -471,7 +472,10 @@ public class DatabaseHandler {
                     for (DocumentSnapshot doc : Objects.requireNonNull(task.getResult())) {
                         Event event = doc.toObject(Event.class);
                         if (Objects.requireNonNull(event).getUserId().equals(userId)) {
-                            resultContainer.add(event);
+
+                            EventTitle et = new EventTitle(event.getEndTime(), "SOS", event.getStatus());
+
+                            resultContainer.add(et);
                         }
 
                     }

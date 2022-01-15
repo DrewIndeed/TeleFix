@@ -10,6 +10,8 @@ import com.example.telefixmain.Model.Booking.MaintenanceRequest;
 import com.example.telefixmain.Model.Booking.Billing;
 import com.example.telefixmain.Model.Booking.SOSRequest;
 import com.example.telefixmain.Model.Booking.SOSProgress;
+import com.example.telefixmain.Model.EventTitle;
+import com.example.telefixmain.Util.Comparator.EventTitleTimeStampComparator;
 import com.example.telefixmain.Util.Comparator.MaintenanceTimeStampComparator;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -308,8 +310,8 @@ public class BookingHandler {
     public static void getAssignedMaintenanceRequest (FirebaseDatabase rootNode,
                                                       Context context,
                                                       String vendorId,
-                                                      String mechanicId,
-                                                      ArrayList<MaintenanceRequest> resultContainer,
+                                                      String userId,
+                                                      ArrayList<EventTitle> resultContainer,
                                                       Runnable callback) {
         // Get the root reference of chosen vendor
         DatabaseReference maintenanceRef = rootNode.getReference(vendorId).child("maintenance").child("request");
@@ -318,17 +320,19 @@ public class BookingHandler {
         maintenanceRef.get()
                 .addOnSuccessListener(dataSnapshot -> {
                     resultContainer.clear();
-                    ArrayList<MaintenanceRequest> tmp = new ArrayList<>();
+                    ArrayList<EventTitle> tmp = new ArrayList<>();
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         MaintenanceRequest request = ds.getValue(MaintenanceRequest.class);
 
                         // If respond is mechanicId -> assigned one
-                        if (Objects.requireNonNull(request).getRespond().equals(mechanicId)) {
-                            tmp.add(request);
+                        if (Objects.requireNonNull(request).getRespond().equals(userId)) {
+                            EventTitle et = new EventTitle(request.getDatetime(), "Maintenance", request.getStatus());
+                            tmp.add(et);
                         }
                     }
                     // Sort collections by time created
-                    Collections.sort(tmp, new MaintenanceTimeStampComparator());
+                    Collections.sort(tmp, new EventTitleTimeStampComparator());
+
                     resultContainer.addAll(tmp);
 
                     // Run any callback (Eg. Update adapter)

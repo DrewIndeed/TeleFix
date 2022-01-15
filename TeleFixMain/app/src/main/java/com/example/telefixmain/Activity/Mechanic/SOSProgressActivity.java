@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.telefixmain.Activity.Customer.MainActivity;
+import com.example.telefixmain.Activity.Customer.RequestProcessingActivity;
 import com.example.telefixmain.Adapter.BillingListAdapter;
 import com.example.telefixmain.Model.Booking.Billing;
 import com.example.telefixmain.Model.Booking.SOSProgress;
@@ -26,6 +27,7 @@ import com.example.telefixmain.Model.User;
 import com.example.telefixmain.R;
 import com.example.telefixmain.Util.BookingHandler;
 import com.example.telefixmain.Util.DatabaseHandler;
+import com.example.telefixmain.Util.NotificationHandler;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -219,9 +221,15 @@ public class SOSProgressActivity extends AppCompatActivity {
 
                 // if user not abort and approve (by setting confirm billing time) --> Set Fixed (final button) visible
                 if (Objects.requireNonNull(sosProgress).getAbortTime() == 0 && sosProgress.getConfirmBillingTime() != 0) {
+                    // Send notification when USER has accepted the bill
+                    String content = "User has accepted the bill";
+                    NotificationHandler.sendProgressTrackingNotification(SOSProgressActivity.this, "TeleFix - SOS Request", content);
                     mechanicBtnFixed.setVisibility(View.VISIBLE);
                 } else if (Objects.requireNonNull(sosProgress).getAbortTime() != 0) {
                     isAborted = true;
+                    // Send notification when USER has rejected the bill
+                    String content = "User has rejected the bill";
+                    NotificationHandler.sendProgressTrackingNotification(SOSProgressActivity.this, "TeleFix - SOS Request", content);
                     mechanicBtnEndProgress.setVisibility(View.VISIBLE);
                 }
             }
