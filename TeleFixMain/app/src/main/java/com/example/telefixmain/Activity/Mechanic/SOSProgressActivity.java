@@ -371,5 +371,7 @@ public class SOSProgressActivity extends AppCompatActivity {
         }
     }
 
-
+    @Override
+    public void onBackPressed() {
+    }
 }
