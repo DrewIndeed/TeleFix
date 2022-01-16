@@ -102,11 +102,11 @@ Due to the lack of time and human resources, the following features are not impl
 
 4. If `UI is not responding` or any no-error auto turn-off happens on the first time running, just re-run the app.
 
-5. Note: most of bottom dialogs will no tbe dismissed by clicking out on the screen, please use `x` icon to dismiss them.
+5. Note: most of bottom dialogs will not be dismissed by clicking out on the screen, please use `x` icon to dismiss them.
 
 ## Technology Used
 
-The application was developed natively in `Java` with `Android Studio` as IDE. In order to develop this application fast and secured, `Google Firebase Platform` features are used:
+The application was developed natively in `Java` with `Android Studio` as IDE. In order to develop this application fast and secured, these `Google Firebase Platform` features are used:
 
 - `Authentication`: For login, registration, and update information process
 
