@@ -263,8 +263,8 @@ public class SosActivity extends AppCompatActivity implements OnMapReadyCallback
                 });
 
         // on map clicked listener (for testing to see if connection is fine)
-        mMap.setOnMapClickListener(location -> Toast.makeText(this,
-                "Detected map clicked", Toast.LENGTH_SHORT).show());
+        // mMap.setOnMapClickListener(location -> Toast.makeText(this
+        // "Detected map clicked", Toast.LENGTH_SHORT).show());
 
         // on markers clicked listener
         mMap.setOnMarkerClickListener(clickedMarker -> {
