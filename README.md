@@ -17,7 +17,7 @@ Moreover, in the process of vehicles maintenance, some inconveniences may occur 
 
 ### Solution
 
-**TeleFix** is a Android mobile application aiming to help motorcycle owners to find assistance when their vehices malfunction, as well as having a more convenient experience in vehicle's maintenance process.
+**TeleFix** is an Android mobile application aiming to help motorcycle owners to find assistance when their vehices malfunction, as well as having a more convenient experience in vehicle's maintenance process.
 
 The application serves 2 major types of users: Customer or Vehicle Owner and Vendor or Mechanic
 
